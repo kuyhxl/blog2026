@@ -41,7 +41,7 @@ export default function SearchDialog({ onClose }: { onClose: () => void }) {
   const onVeil = useRef(false);
   const ptr = useRef("");
   const reveal = useRef(false);
-  // 열려 있는 동안 뒤 화면을 막는다(Tab, Esc, 스크롤은 아래에서 이 창이 직접 다룬다)
+  // 열려 있는 동안 뒤 화면을 막고 스크롤을 잠근다(Tab, Esc는 아래에서 이 창이 직접 다룬다)
   useModal(win);
 
   useEffect(() => {
@@ -60,14 +60,9 @@ export default function SearchDialog({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
-  // 열려 있는 동안 입력칸이 포커스를 갖고, 뒤 화면은 스크롤되지 않는다
+  // 열리면 입력칸이 포커스를 갖는다
   useEffect(() => {
     input.current?.focus({ preventScroll: true });
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
   }, []);
 
   // 검색어나 인덱스가 바뀔 때만 다시 찾는다. 행에 마우스를 올리거나 화살표 키로 옮길 때는 찾지 않는다

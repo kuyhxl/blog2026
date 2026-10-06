@@ -17,6 +17,7 @@
 // - slug끼리(대소문자만 달라도), 또는 CS가 아닌 글의 slug와 지도의 개념 id가 겹치면 멈춘다
 // - 빌드는 노트 속 위험한 HTML을 지우고, content/에 publish: true가 아닌 노트가 있으면 개수만 알리며 멈춘다
 // - 링크 그래프는 인라인 코드 안의 [[…]]를 링크로 세지 않고, 노트가 바뀌면 다시 만든다
+// - 빌드가 내보내는 SVG 첨부 파일에는 스크립트, on… 속성, <foreignObject>, 바깥을 가리키는 href가 남지 않는다
 // out/이 있으면(npm run build:fixture 뒤) 빌드 결과물에도 비공개 표식이 없는지 본다
 import fs from "node:fs";
 import os from "node:os";
@@ -467,6 +468,25 @@ console.log("\n19. 글 주소가 겹치면 멈춘다");
   check(ok.r.status === 0, "CS 노트의 주소가 자기 id인 것은 겹침이 아니다");
 }
 
+console.log("\n20. SVG 첨부 파일은 그림을 그리는 것만 남기고 내보낸다");
+{
+  const { cleanSvg } = await import("../lib/content/svg.ts");
+  const clean = (body: string, head = "") => cleanSvg(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"${head}>${body}</svg>`) ?? "";
+  const bad = /script|alert|javascript|onload|onclick|onerror|foreignObject|iframe|<set|<animate|evil/i;
+  check(!bad.test(clean('<script>alert(1)</script><script type="text/ecmascript"><![CDATA[alert(2)]]></script><rect onclick="alert(3)"/>', ' onload="alert(4)"')), "<script>와 on… 속성을 지운다");
+  check(!bad.test(clean('<foreignObject><iframe src="javascript:alert(1)"></iframe><img src="x" onerror="alert(2)"/></foreignObject>')), "HTML을 담는 <foreignObject>를 지운다");
+  const link = clean('<a xlink:href="javascript:alert(1)"><circle r="5"/></a><a href="javascript:alert(2)"><set attributeName="href" to="javascript:alert(3)"/><animate attributeName="href" values="javascript:alert(4)"/><rect/></a>');
+  check(!bad.test(link) && link.includes("<circle") && link.includes("<rect"), "<a>는 껍질만 벗기고, 주소를 바꾸는 애니메이션은 지운다");
+  const refs = clean('<g id="a"/><use href="#a"/><use xlink:href="data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=#x"/><use href="https://evil.example/x.svg#a"/><image href="data:image/png;base64,iVBORw0KGgo="/><image href="javascript:alert(1)"/><feImage href="data:text/html,x"/>');
+  check(!bad.test(refs) && refs.includes('<use href="#a">') && refs.includes('href="data:image/png;base64,iVBORw0KGgo="') && !refs.includes("svg+xml") && !refs.includes("text/html"), "href는 같은 그림 안(#id)과 data: 주소의 래스터 그림만 남는다");
+  check(!bad.test(cleanSvg('<?xml-stylesheet type="text/xsl" href="evil.xsl"?><!DOCTYPE svg [<!ENTITY x "y">]><svg xmlns="http://www.w3.org/2000/svg"><!-- <script>alert(1)</script> --><style>.c{fill:red}</style><script>alert(2)</script><rect class="c"/></svg>') ?? "script"), "처리 명령, DOCTYPE, 주석을 지운다");
+  const attr = clean(`<rect fill='x" onload="alert(1)' xml:base="javascript:x"/><text>a &amp; b &lt;c&gt;</text>`);
+  check(attr.includes('fill="x&quot; onload=&quot;alert(1)"') && !attr.includes("xml:base") && attr.includes("a &amp; b &lt;c&gt;"), "속성 값과 글자는 XML로 이스케이프한다");
+  const ink = clean('<sodipodi:namedview pagecolor="#fff"/><metadata>meta</metadata><g inkscape:label="L"><path d="M0 0L1 1" stroke-width="2"/></g>', ' viewBox="0 0 1 1" width="10"');
+  check(ink.includes('viewBox="0 0 1 1"') && ink.includes('<path d="M0 0L1 1" stroke-width="2">') && !/sodipodi|inkscape|meta/.test(ink), "그림을 그리는 요소와 속성은 그대로 두고, 편집기가 넣은 다른 이름 공간은 지운다");
+  check(cleanSvg("<p>그림이 아니다</p>") === null, "<svg>가 없으면 null(빌드가 멈춘다)");
+}
+
 const outDir = path.join(ROOT, "out");
 if (fs.existsSync(path.join(outDir, "blog/os-paging"))) {
   console.log("\n7. 빌드 결과물(out/)");
@@ -481,6 +501,9 @@ if (fs.existsSync(path.join(outDir, "blog/os-paging"))) {
   const idx = fs.existsSync(idxFile) ? (JSON.parse(fs.readFileSync(idxFile, "utf8")) as { slug: string; text: string }[]) : [];
   check(idx.length === 5 && !idx.some((e) => e.slug === "ds-tree"), "검색 인덱스에는 본문이 있는 공개 글 5개만 들어간다(빈 CS 노드 제외)");
   check(idx.some((e) => e.text.includes("invlpg")), "검색 인덱스에 본문 글자가 들어간다");
+  // 가짜 볼트의 frame.svg에는 스크립트, onload, <foreignObject>가 들어 있다
+  const svg = fs.existsSync(path.join(outDir, "assets/frame.svg")) ? fs.readFileSync(path.join(outDir, "assets/frame.svg"), "utf8") : "";
+  check(svg.includes("<rect") && !/SVG-SCRIPT-RAN|<script|onload|foreignObject/i.test(svg), "out/assets의 SVG는 정화되어 있다");
 }
 
 console.log(failed ? `\n${failed}개 실패\n` : "\n모두 통과\n");

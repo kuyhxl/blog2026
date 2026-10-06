@@ -1,7 +1,9 @@
 // content/assets의 그림을 /assets/<이름>으로 내보낸다. 빌드 때 정적 파일로 만들어진다
+// SVG는 주소창에서 바로 열면 그 안의 스크립트가 사이트와 같은 출처에서 돌기 때문에 정화해서 내보낸다(lib/content/svg.ts)
 import fs from "node:fs";
 import path from "node:path";
 import { contentDir } from "@/lib/content/posts";
+import { cleanSvg } from "@/lib/content/svg";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -33,5 +35,10 @@ export async function GET(_req: Request, ctx: RouteContext<"/assets/[name]">) {
   if (!name) return new Response("Not found", { status: 404 });
   const file = path.join(contentDir(), "assets", name);
   const type = TYPES[path.extname(name).slice(1).toLowerCase()] ?? "application/octet-stream";
+  if (type === "image/svg+xml") {
+    const svg = cleanSvg(fs.readFileSync(file, "utf8"));
+    if (svg === null) throw new Error(`content/assets/${name}: SVG로 읽을 수 없습니다(<svg> 요소가 없습니다)`);
+    return new Response(svg, { headers: { "Content-Type": type } });
+  }
   return new Response(fs.readFileSync(file), { headers: { "Content-Type": type } });
 }
