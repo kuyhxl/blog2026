@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="160" viewBox="0 0 480 160" font-family="sans-serif" font-size="13">
+  <rect x="20" y="40" width="140" height="80" fill="none" stroke="#525D55"/>
+  <text x="90" y="85" text-anchor="middle" fill="#525D55">가상 페이지</text>
+  <rect x="320" y="40" width="140" height="80" fill="none" stroke="#525D55"/>
+  <text x="390" y="85" text-anchor="middle" fill="#525D55">물리 프레임</text>
+  <path d="M160 80H312M304 74l8 6-8 6" fill="none" stroke="#525D55"/>
+</svg>

@@ -1,0 +1,46 @@
+/* 홈. 원본은 HomeV2(데스크톱)와 HomeV2M(모바일). 900px 이하는 한 줄로 쌓는다 */
+.head { padding: 56px var(--gutter) 72px; }
+.name { margin: 0; font-size: 120px; line-height: .95; font-weight: 300; letter-spacing: -0.045em; word-break: keep-all; }
+.intro { max-width: 720px; margin: 36px 0 0; font-size: 22px; line-height: 1.65; letter-spacing: -0.01em; color: var(--ink-2); word-break: keep-all; }
+
+.grid { padding: 0 var(--gutter); display: grid; grid-template-columns: 272px minmax(0, 1fr); column-gap: 64px; row-gap: 96px; align-items: start; }
+.boxHead { height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.dim { color: var(--ink-3); }
+
+.allSide { margin-top: 18px; height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--ink); }
+.allBelow { display: none; }
+
+.latest { min-width: 0; }
+.listHead { height: 36px; display: flex; align-items: center; border-bottom: 1px solid var(--ink); }
+.mobileHead { display: none; }
+.pad { width: 24px; flex: none; }
+.colDate { width: 128px; flex: none; color: var(--ink-3); }
+.colName { flex: none; color: var(--ink-3); }
+.fill { flex: 1 1 auto; }
+.empty { margin: 0; padding: 40px 0 40px 24px; font-size: 16px; color: var(--ink-2); }
+
+.csText { margin: 16px 0 0; font-size: 14.5px; line-height: 1.75; color: var(--ink-2); word-break: keep-all; }
+.csOpen { margin-top: 20px; height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500; color: var(--bg); background: var(--ink); }
+.arrow { font-family: var(--mono); }
+.csPreview { min-width: 0; }
+.csOpenBelow { display: none; }
+
+@media (max-width: 900px) {
+  .grid { display: block; }
+  .latestSide { display: none; }
+  .listHead { display: none; }
+  .mobileHead { height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+  .allBelow { margin-top: 20px; height: 44px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid var(--ink); }
+  .csSide { margin-top: 64px; }
+  .csSide .csOpen { display: none; }
+  .csPreview { margin-top: 18px; }
+  .csOpenBelow { margin-top: 14px; height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500; color: var(--bg); background: var(--ink); }
+}
+@media (max-width: 720px) {
+  .head { padding: 28px var(--gutter) 40px; }
+  .name { max-width: 232px; min-height: 68px; font-size: 44px; line-height: 1.1; letter-spacing: -0.04em; }
+  .intro { margin-top: 20px; font-size: 17px; line-height: 1.7; letter-spacing: -0.005em; }
+  .empty { padding: 36px 0; font-size: 15.5px; }
+  .csText { font-size: 15px; }
+  .csOpenBelow { height: 48px; font-size: 14.5px; }
+}

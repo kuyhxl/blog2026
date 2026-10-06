@@ -1,0 +1,406 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "BeautyOfCS.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "화면 5 · Beauty of CS",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "BeautyOfCSV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 5 · Beauty of CS",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "BeautyOfCSV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 5 · Beauty of CS · 다크",
+      "w": 1440,
+      "x": 7760,
+      "y": 0
+    },
+    "BeautyOfCSV2M.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 5 · Beauty of CS · 모바일",
+      "w": 390,
+      "x": 1880,
+      "y": 8840
+    },
+    "BeautyOfCSV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 5 · Beauty of CS · 모바일 · 다크",
+      "w": 390,
+      "x": 4390,
+      "y": 8840
+    },
+    "FaviconV2.dc.html": {
+      "expand": "fill",
+      "h": 1814,
+      "page": "v2",
+      "title": "파비콘 · 시안 A·B·C",
+      "w": 1440,
+      "x": 5020,
+      "y": 8840
+    },
+    "HomeV2.dc.html": {
+      "expand": "fill",
+      "h": 1410,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 2 · 홈",
+      "w": 1440,
+      "x": 0,
+      "y": 7000
+    },
+    "HomeV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 1410,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 2 · 홈 · 다크",
+      "w": 1440,
+      "x": 6240,
+      "y": 7000
+    },
+    "HomeV2M.dc.html": {
+      "expand": "fill",
+      "h": 1560,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 2 · 홈 · 모바일",
+      "w": 390,
+      "x": 470,
+      "y": 8840
+    },
+    "HomeV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 1560,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 2 · 홈 · 모바일 · 다크",
+      "w": 390,
+      "x": 2980,
+      "y": 8840
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 2440,
+      "is_interactive": true,
+      "title": "화면 1 · 글 목록",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MainV2.dc.html": {
+      "expand": "fill",
+      "h": 2440,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 1 · 글 목록",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MainV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 2440,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 1 · 글 목록 · 다크",
+      "w": 1440,
+      "x": 4720,
+      "y": 0
+    },
+    "MainV2M.dc.html": {
+      "expand": "fill",
+      "h": 3520,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 1 · 글 목록 · 모바일",
+      "w": 390,
+      "x": 0,
+      "y": 8840
+    },
+    "MainV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 3520,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 1 · 글 목록 · 모바일 · 다크",
+      "w": 390,
+      "x": 2510,
+      "y": 8840
+    },
+    "Post.dc.html": {
+      "expand": "fill",
+      "h": 6560,
+      "is_interactive": true,
+      "title": "화면 3 · 글 본문",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "PostV2.dc.html": {
+      "expand": "fill",
+      "h": 6560,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 3 · 글 본문",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "PostV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 6560,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 3 · 글 본문 · 다크",
+      "w": 1440,
+      "x": 6240,
+      "y": 0
+    },
+    "PostV2M.dc.html": {
+      "expand": "fill",
+      "h": 7800,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 3 · 글 본문 · 모바일",
+      "w": 390,
+      "x": 940,
+      "y": 8840
+    },
+    "PostV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 7800,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 3 · 글 본문 · 모바일 · 다크",
+      "w": 390,
+      "x": 3450,
+      "y": 8840
+    },
+    "SearchHitV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 결과 있음",
+      "w": 1440,
+      "x": 3040,
+      "y": 7000
+    },
+    "SearchHitV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 결과 있음 · 다크",
+      "w": 1440,
+      "x": 9280,
+      "y": 7000
+    },
+    "SearchHitV2M.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 모바일",
+      "w": 390,
+      "x": 1410,
+      "y": 8840
+    },
+    "SearchHitV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 모바일 · 다크",
+      "w": 390,
+      "x": 3920,
+      "y": 8840
+    },
+    "SearchIdleV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 입력 전",
+      "w": 1440,
+      "x": 1520,
+      "y": 7000
+    },
+    "SearchIdleV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 입력 전 · 다크",
+      "w": 1440,
+      "x": 7760,
+      "y": 7000
+    },
+    "SearchNoneV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 결과 없음",
+      "w": 1440,
+      "x": 4560,
+      "y": 7000
+    },
+    "SearchNoneV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 4 · 검색 · 결과 없음 · 다크",
+      "w": 1440,
+      "x": 10800,
+      "y": 7000
+    },
+    "SearchV2.dc.html": {
+      "h": 760,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "부품 · 검색 창",
+      "w": 880,
+      "x": 12480,
+      "y": 7000
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-02T11:40:43Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "page": "v2",
+    "view": "canvas"
+  },
+  "notes": {
+    "row-light-desktop": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "라이트 · 데스크톱 1440",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "v2-dark-desktop": {
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "v2",
+      "text": "다크 · 데스크톱 1440",
+      "w": 240,
+      "x": 4720,
+      "y": -300
+    },
+    "v2-dark-desktop-2": {
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "v2",
+      "text": "다크 · 데스크톱 1440 · 홈과 검색",
+      "w": 240,
+      "x": 6240,
+      "y": 6700
+    },
+    "v2-dark-mobile": {
+      "kind": "title1",
+      "maxW": 2270,
+      "page": "v2",
+      "text": "다크 · 모바일 390",
+      "w": 240,
+      "x": 2510,
+      "y": 8540
+    },
+    "v2-light-desktop": {
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "v2",
+      "text": "라이트 · 데스크톱 1440",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "v2-light-desktop-2": {
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "v2",
+      "text": "라이트 · 데스크톱 1440 · 홈과 검색",
+      "w": 240,
+      "x": 0,
+      "y": 6700
+    },
+    "v2-light-mobile": {
+      "kind": "title1",
+      "maxW": 2270,
+      "page": "v2",
+      "text": "라이트 · 모바일 390",
+      "w": 240,
+      "x": 0,
+      "y": 8540
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Post.dc.html",
+    "BeautyOfCS.dc.html",
+    "MainV2.dc.html",
+    "PostV2.dc.html",
+    "BeautyOfCSV2.dc.html",
+    "MainV2Dark.dc.html",
+    "PostV2Dark.dc.html",
+    "BeautyOfCSV2Dark.dc.html",
+    "HomeV2.dc.html",
+    "SearchIdleV2.dc.html",
+    "SearchHitV2.dc.html",
+    "SearchNoneV2.dc.html",
+    "HomeV2Dark.dc.html",
+    "SearchIdleV2Dark.dc.html",
+    "SearchHitV2Dark.dc.html",
+    "SearchNoneV2Dark.dc.html",
+    "SearchV2.dc.html",
+    "MainV2M.dc.html",
+    "HomeV2M.dc.html",
+    "PostV2M.dc.html",
+    "SearchHitV2M.dc.html",
+    "BeautyOfCSV2M.dc.html",
+    "MainV2MDark.dc.html",
+    "HomeV2MDark.dc.html",
+    "PostV2MDark.dc.html",
+    "SearchHitV2MDark.dc.html",
+    "BeautyOfCSV2MDark.dc.html",
+    "FaviconV2.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "v1",
+      "name": "v1 · 회색 바탕"
+    },
+    {
+      "id": "v2",
+      "name": "v2 · 녹색 바탕 · 소나무"
+    }
+  ],
+  "title": "기술 블로그 화면 디자인"
+}

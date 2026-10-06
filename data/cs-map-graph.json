@@ -1,0 +1,1769 @@
+{
+ "subjects": {
+  "ca": "컴퓨터 구조",
+  "ds": "자료구조",
+  "os": "운영체제",
+  "net": "네트워크",
+  "db": "데이터베이스"
+ },
+ "nodes": [
+  {
+   "id": "ca-data-repr",
+   "title": "데이터 표현",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-binary",
+   "title": "2진수와 보수 표현",
+   "subject": "ca",
+   "parent": "ca-data-repr"
+  },
+  {
+   "id": "ca-floating-point",
+   "title": "부동소수점(IEEE 754)",
+   "subject": "ca",
+   "parent": "ca-data-repr"
+  },
+  {
+   "id": "ca-endianness",
+   "title": "엔디언(바이트 순서)",
+   "subject": "ca",
+   "parent": "ca-data-repr"
+  },
+  {
+   "id": "ca-char-encoding",
+   "title": "문자 인코딩",
+   "subject": "ca",
+   "parent": "ca-data-repr"
+  },
+  {
+   "id": "ca-digital-logic",
+   "title": "디지털 논리",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-logic-gates",
+   "title": "논리 게이트와 불 대수",
+   "subject": "ca",
+   "parent": "ca-digital-logic"
+  },
+  {
+   "id": "ca-combinational",
+   "title": "조합 회로(가산기·MUX)",
+   "subject": "ca",
+   "parent": "ca-digital-logic"
+  },
+  {
+   "id": "ca-sequential",
+   "title": "순차 회로(플립플롭·레지스터)",
+   "subject": "ca",
+   "parent": "ca-digital-logic"
+  },
+  {
+   "id": "ca-alu",
+   "title": "ALU",
+   "subject": "ca",
+   "parent": "ca-digital-logic"
+  },
+  {
+   "id": "ca-isa",
+   "title": "명령어 집합 구조",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-instruction-format",
+   "title": "명령어 형식과 주소 지정 방식",
+   "subject": "ca",
+   "parent": "ca-isa"
+  },
+  {
+   "id": "ca-registers",
+   "title": "레지스터",
+   "subject": "ca",
+   "parent": "ca-isa"
+  },
+  {
+   "id": "ca-procedure-call",
+   "title": "프로시저 호출과 스택 프레임",
+   "subject": "ca",
+   "parent": "ca-isa"
+  },
+  {
+   "id": "ca-risc-cisc",
+   "title": "RISC와 CISC",
+   "subject": "ca",
+   "parent": "ca-isa"
+  },
+  {
+   "id": "ca-processor",
+   "title": "프로세서",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-datapath",
+   "title": "데이터패스와 제어 유닛",
+   "subject": "ca",
+   "parent": "ca-processor"
+  },
+  {
+   "id": "ca-pipelining",
+   "title": "파이프라이닝",
+   "subject": "ca",
+   "parent": "ca-processor"
+  },
+  {
+   "id": "ca-hazards",
+   "title": "해저드와 분기 예측",
+   "subject": "ca",
+   "parent": "ca-processor"
+  },
+  {
+   "id": "ca-interrupt",
+   "title": "인터럽트와 예외",
+   "subject": "ca",
+   "parent": "ca-processor"
+  },
+  {
+   "id": "ca-performance",
+   "title": "성능 측정(CPU 시간·CPI)",
+   "subject": "ca",
+   "parent": "ca-processor"
+  },
+  {
+   "id": "ca-memory-hierarchy",
+   "title": "메모리 계층",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-locality",
+   "title": "지역성의 원리",
+   "subject": "ca",
+   "parent": "ca-memory-hierarchy"
+  },
+  {
+   "id": "ca-cache",
+   "title": "캐시 메모리",
+   "subject": "ca",
+   "parent": "ca-memory-hierarchy"
+  },
+  {
+   "id": "ca-ram",
+   "title": "주기억장치(RAM)",
+   "subject": "ca",
+   "parent": "ca-memory-hierarchy"
+  },
+  {
+   "id": "ca-mmu-tlb",
+   "title": "MMU와 TLB",
+   "subject": "ca",
+   "parent": "ca-memory-hierarchy"
+  },
+  {
+   "id": "ca-storage-io",
+   "title": "저장장치와 입출력",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-hdd-ssd",
+   "title": "하드디스크와 SSD",
+   "subject": "ca",
+   "parent": "ca-storage-io"
+  },
+  {
+   "id": "ca-raid",
+   "title": "RAID",
+   "subject": "ca",
+   "parent": "ca-storage-io"
+  },
+  {
+   "id": "ca-io-methods",
+   "title": "입출력 방식(폴링·인터럽트·DMA)",
+   "subject": "ca",
+   "parent": "ca-storage-io"
+  },
+  {
+   "id": "ca-bus",
+   "title": "버스",
+   "subject": "ca",
+   "parent": "ca-storage-io"
+  },
+  {
+   "id": "ca-parallelism",
+   "title": "병렬 처리",
+   "subject": "ca",
+   "parent": null
+  },
+  {
+   "id": "ca-multicore",
+   "title": "멀티코어 프로세서",
+   "subject": "ca",
+   "parent": "ca-parallelism"
+  },
+  {
+   "id": "ca-cache-coherence",
+   "title": "캐시 일관성",
+   "subject": "ca",
+   "parent": "ca-parallelism"
+  },
+  {
+   "id": "ca-atomic",
+   "title": "원자적 명령어(test-and-set·CAS)",
+   "subject": "ca",
+   "parent": "ca-parallelism"
+  },
+  {
+   "id": "ca-amdahl",
+   "title": "암달의 법칙",
+   "subject": "ca",
+   "parent": "ca-parallelism"
+  },
+  {
+   "id": "ds-complexity",
+   "title": "복잡도 분석",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-asymptotic",
+   "title": "점근 표기법",
+   "subject": "ds",
+   "parent": "ds-complexity"
+  },
+  {
+   "id": "ds-time-space",
+   "title": "시간·공간 복잡도",
+   "subject": "ds",
+   "parent": "ds-complexity"
+  },
+  {
+   "id": "ds-amortized",
+   "title": "분할 상환 분석",
+   "subject": "ds",
+   "parent": "ds-complexity"
+  },
+  {
+   "id": "ds-linear",
+   "title": "배열과 연결 리스트",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-array",
+   "title": "배열",
+   "subject": "ds",
+   "parent": "ds-linear"
+  },
+  {
+   "id": "ds-dynamic-array",
+   "title": "동적 배열",
+   "subject": "ds",
+   "parent": "ds-linear"
+  },
+  {
+   "id": "ds-linked-list",
+   "title": "연결 리스트",
+   "subject": "ds",
+   "parent": "ds-linear"
+  },
+  {
+   "id": "ds-stack-queue",
+   "title": "스택과 큐",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-stack",
+   "title": "스택",
+   "subject": "ds",
+   "parent": "ds-stack-queue"
+  },
+  {
+   "id": "ds-queue",
+   "title": "큐",
+   "subject": "ds",
+   "parent": "ds-stack-queue"
+  },
+  {
+   "id": "ds-deque",
+   "title": "덱",
+   "subject": "ds",
+   "parent": "ds-stack-queue"
+  },
+  {
+   "id": "ds-circular-queue",
+   "title": "원형 큐",
+   "subject": "ds",
+   "parent": "ds-stack-queue"
+  },
+  {
+   "id": "ds-tree",
+   "title": "트리",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-binary-tree",
+   "title": "이진 트리와 순회",
+   "subject": "ds",
+   "parent": "ds-tree"
+  },
+  {
+   "id": "ds-bst",
+   "title": "이진 탐색 트리",
+   "subject": "ds",
+   "parent": "ds-tree"
+  },
+  {
+   "id": "ds-balanced-tree",
+   "title": "균형 트리(AVL·레드-블랙)",
+   "subject": "ds",
+   "parent": "ds-tree"
+  },
+  {
+   "id": "ds-btree",
+   "title": "B-트리와 B+트리",
+   "subject": "ds",
+   "parent": "ds-tree"
+  },
+  {
+   "id": "ds-trie",
+   "title": "트라이",
+   "subject": "ds",
+   "parent": "ds-tree"
+  },
+  {
+   "id": "ds-heap",
+   "title": "힙과 우선순위 큐",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-binary-heap",
+   "title": "이진 힙",
+   "subject": "ds",
+   "parent": "ds-heap"
+  },
+  {
+   "id": "ds-priority-queue",
+   "title": "우선순위 큐",
+   "subject": "ds",
+   "parent": "ds-heap"
+  },
+  {
+   "id": "ds-hashing",
+   "title": "해싱",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-hash-function",
+   "title": "해시 함수",
+   "subject": "ds",
+   "parent": "ds-hashing"
+  },
+  {
+   "id": "ds-collision",
+   "title": "충돌 해결(체이닝·개방 주소법)",
+   "subject": "ds",
+   "parent": "ds-hashing"
+  },
+  {
+   "id": "ds-hash-table",
+   "title": "해시 테이블",
+   "subject": "ds",
+   "parent": "ds-hashing"
+  },
+  {
+   "id": "ds-graph",
+   "title": "그래프",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-graph-repr",
+   "title": "그래프 표현",
+   "subject": "ds",
+   "parent": "ds-graph"
+  },
+  {
+   "id": "ds-graph-traversal",
+   "title": "그래프 탐색(BFS·DFS)",
+   "subject": "ds",
+   "parent": "ds-graph"
+  },
+  {
+   "id": "ds-shortest-path",
+   "title": "최단 경로",
+   "subject": "ds",
+   "parent": "ds-graph"
+  },
+  {
+   "id": "ds-mst",
+   "title": "최소 신장 트리",
+   "subject": "ds",
+   "parent": "ds-graph"
+  },
+  {
+   "id": "ds-topological-sort",
+   "title": "위상 정렬",
+   "subject": "ds",
+   "parent": "ds-graph"
+  },
+  {
+   "id": "ds-sorting",
+   "title": "정렬과 탐색",
+   "subject": "ds",
+   "parent": null
+  },
+  {
+   "id": "ds-comparison-sort",
+   "title": "비교 정렬(퀵·병합·힙)",
+   "subject": "ds",
+   "parent": "ds-sorting"
+  },
+  {
+   "id": "ds-external-sort",
+   "title": "외부 정렬",
+   "subject": "ds",
+   "parent": "ds-sorting"
+  },
+  {
+   "id": "ds-binary-search",
+   "title": "이진 탐색",
+   "subject": "ds",
+   "parent": "ds-sorting"
+  },
+  {
+   "id": "os-structure",
+   "title": "운영체제 구조",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-kernel-mode",
+   "title": "커널과 이중 모드",
+   "subject": "os",
+   "parent": "os-structure"
+  },
+  {
+   "id": "os-system-call",
+   "title": "시스템 콜",
+   "subject": "os",
+   "parent": "os-structure"
+  },
+  {
+   "id": "os-interrupt-handling",
+   "title": "인터럽트 처리",
+   "subject": "os",
+   "parent": "os-structure"
+  },
+  {
+   "id": "os-boot",
+   "title": "부팅",
+   "subject": "os",
+   "parent": "os-structure"
+  },
+  {
+   "id": "os-process",
+   "title": "프로세스와 스레드",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-pcb",
+   "title": "프로세스와 PCB",
+   "subject": "os",
+   "parent": "os-process"
+  },
+  {
+   "id": "os-thread",
+   "title": "스레드",
+   "subject": "os",
+   "parent": "os-process"
+  },
+  {
+   "id": "os-context-switch",
+   "title": "문맥 교환",
+   "subject": "os",
+   "parent": "os-process"
+  },
+  {
+   "id": "os-ipc",
+   "title": "프로세스 간 통신(IPC)",
+   "subject": "os",
+   "parent": "os-process"
+  },
+  {
+   "id": "os-scheduling",
+   "title": "CPU 스케줄링",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-sched-criteria",
+   "title": "스케줄링 기준",
+   "subject": "os",
+   "parent": "os-scheduling"
+  },
+  {
+   "id": "os-sched-algorithms",
+   "title": "스케줄링 알고리즘(FCFS·SJF·RR)",
+   "subject": "os",
+   "parent": "os-scheduling"
+  },
+  {
+   "id": "os-mlfq",
+   "title": "다단계 피드백 큐",
+   "subject": "os",
+   "parent": "os-scheduling"
+  },
+  {
+   "id": "os-smp-scheduling",
+   "title": "멀티프로세서 스케줄링",
+   "subject": "os",
+   "parent": "os-scheduling"
+  },
+  {
+   "id": "os-sync",
+   "title": "동기화",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-race-condition",
+   "title": "경쟁 상태와 임계 구역",
+   "subject": "os",
+   "parent": "os-sync"
+  },
+  {
+   "id": "os-mutex-semaphore",
+   "title": "뮤텍스와 세마포어",
+   "subject": "os",
+   "parent": "os-sync"
+  },
+  {
+   "id": "os-monitor",
+   "title": "모니터와 조건 변수",
+   "subject": "os",
+   "parent": "os-sync"
+  },
+  {
+   "id": "os-classic-problems",
+   "title": "고전 동기화 문제",
+   "subject": "os",
+   "parent": "os-sync"
+  },
+  {
+   "id": "os-deadlock",
+   "title": "교착 상태",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-deadlock-conditions",
+   "title": "발생 조건",
+   "subject": "os",
+   "parent": "os-deadlock"
+  },
+  {
+   "id": "os-deadlock-avoidance",
+   "title": "예방과 회피(은행원 알고리즘)",
+   "subject": "os",
+   "parent": "os-deadlock"
+  },
+  {
+   "id": "os-deadlock-detection",
+   "title": "탐지와 회복",
+   "subject": "os",
+   "parent": "os-deadlock"
+  },
+  {
+   "id": "os-memory",
+   "title": "메모리 관리",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-address-space",
+   "title": "주소 공간",
+   "subject": "os",
+   "parent": "os-memory"
+  },
+  {
+   "id": "os-paging",
+   "title": "페이징과 페이지 테이블",
+   "subject": "os",
+   "parent": "os-memory"
+  },
+  {
+   "id": "os-segmentation",
+   "title": "세그멘테이션",
+   "subject": "os",
+   "parent": "os-memory"
+  },
+  {
+   "id": "os-memory-allocation",
+   "title": "메모리 할당과 단편화",
+   "subject": "os",
+   "parent": "os-memory"
+  },
+  {
+   "id": "os-vm",
+   "title": "가상 메모리",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-demand-paging",
+   "title": "요구 페이징",
+   "subject": "os",
+   "parent": "os-vm"
+  },
+  {
+   "id": "os-page-replacement",
+   "title": "페이지 교체 알고리즘",
+   "subject": "os",
+   "parent": "os-vm"
+  },
+  {
+   "id": "os-thrashing",
+   "title": "스래싱",
+   "subject": "os",
+   "parent": "os-vm"
+  },
+  {
+   "id": "os-io",
+   "title": "입출력 시스템",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-device-driver",
+   "title": "장치 드라이버",
+   "subject": "os",
+   "parent": "os-io"
+  },
+  {
+   "id": "os-disk-scheduling",
+   "title": "디스크 스케줄링",
+   "subject": "os",
+   "parent": "os-io"
+  },
+  {
+   "id": "os-fs",
+   "title": "파일 시스템",
+   "subject": "os",
+   "parent": null
+  },
+  {
+   "id": "os-file-directory",
+   "title": "파일과 디렉터리",
+   "subject": "os",
+   "parent": "os-fs"
+  },
+  {
+   "id": "os-allocation",
+   "title": "할당 방식과 inode",
+   "subject": "os",
+   "parent": "os-fs"
+  },
+  {
+   "id": "os-journaling",
+   "title": "저널링",
+   "subject": "os",
+   "parent": "os-fs"
+  },
+  {
+   "id": "os-buffer-cache",
+   "title": "버퍼 캐시",
+   "subject": "os",
+   "parent": "os-fs"
+  },
+  {
+   "id": "net-basics",
+   "title": "네트워크 기초",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-layers",
+   "title": "계층 모델(OSI·TCP/IP)",
+   "subject": "net",
+   "parent": "net-basics"
+  },
+  {
+   "id": "net-packet-switching",
+   "title": "패킷 교환",
+   "subject": "net",
+   "parent": "net-basics"
+  },
+  {
+   "id": "net-delay-loss",
+   "title": "지연·손실·처리율",
+   "subject": "net",
+   "parent": "net-basics"
+  },
+  {
+   "id": "net-encapsulation",
+   "title": "캡슐화",
+   "subject": "net",
+   "parent": "net-basics"
+  },
+  {
+   "id": "net-app",
+   "title": "애플리케이션 계층",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-http",
+   "title": "HTTP",
+   "subject": "net",
+   "parent": "net-app"
+  },
+  {
+   "id": "net-dns",
+   "title": "DNS",
+   "subject": "net",
+   "parent": "net-app"
+  },
+  {
+   "id": "net-socket",
+   "title": "소켓",
+   "subject": "net",
+   "parent": "net-app"
+  },
+  {
+   "id": "net-cdn",
+   "title": "CDN과 웹 캐싱",
+   "subject": "net",
+   "parent": "net-app"
+  },
+  {
+   "id": "net-transport",
+   "title": "전송 계층",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-udp",
+   "title": "UDP와 다중화",
+   "subject": "net",
+   "parent": "net-transport"
+  },
+  {
+   "id": "net-rdt",
+   "title": "신뢰적 데이터 전송",
+   "subject": "net",
+   "parent": "net-transport"
+  },
+  {
+   "id": "net-tcp",
+   "title": "TCP 연결 관리",
+   "subject": "net",
+   "parent": "net-transport"
+  },
+  {
+   "id": "net-flow-control",
+   "title": "흐름 제어",
+   "subject": "net",
+   "parent": "net-transport"
+  },
+  {
+   "id": "net-congestion-control",
+   "title": "혼잡 제어",
+   "subject": "net",
+   "parent": "net-transport"
+  },
+  {
+   "id": "net-network",
+   "title": "네트워크 계층",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-ip-subnet",
+   "title": "IP 주소와 서브넷",
+   "subject": "net",
+   "parent": "net-network"
+  },
+  {
+   "id": "net-forwarding",
+   "title": "포워딩과 최장 프리픽스 매칭",
+   "subject": "net",
+   "parent": "net-network"
+  },
+  {
+   "id": "net-routing",
+   "title": "라우팅 알고리즘",
+   "subject": "net",
+   "parent": "net-network"
+  },
+  {
+   "id": "net-nat",
+   "title": "NAT와 DHCP",
+   "subject": "net",
+   "parent": "net-network"
+  },
+  {
+   "id": "net-link",
+   "title": "링크 계층",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-error-detection",
+   "title": "오류 검출(패리티·체크섬·CRC)",
+   "subject": "net",
+   "parent": "net-link"
+  },
+  {
+   "id": "net-multiple-access",
+   "title": "다중 접속 프로토콜",
+   "subject": "net",
+   "parent": "net-link"
+  },
+  {
+   "id": "net-ethernet",
+   "title": "이더넷과 MAC 주소",
+   "subject": "net",
+   "parent": "net-link"
+  },
+  {
+   "id": "net-arp",
+   "title": "ARP",
+   "subject": "net",
+   "parent": "net-link"
+  },
+  {
+   "id": "net-switch",
+   "title": "스위치",
+   "subject": "net",
+   "parent": "net-link"
+  },
+  {
+   "id": "net-security",
+   "title": "네트워크 보안",
+   "subject": "net",
+   "parent": null
+  },
+  {
+   "id": "net-crypto",
+   "title": "대칭키·공개키 암호",
+   "subject": "net",
+   "parent": "net-security"
+  },
+  {
+   "id": "net-hash-signature",
+   "title": "해시와 전자서명",
+   "subject": "net",
+   "parent": "net-security"
+  },
+  {
+   "id": "net-tls",
+   "title": "TLS",
+   "subject": "net",
+   "parent": "net-security"
+  },
+  {
+   "id": "db-relational",
+   "title": "관계 모델",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-relation-key",
+   "title": "릴레이션과 키",
+   "subject": "db",
+   "parent": "db-relational"
+  },
+  {
+   "id": "db-relational-algebra",
+   "title": "관계 대수",
+   "subject": "db",
+   "parent": "db-relational"
+  },
+  {
+   "id": "db-integrity",
+   "title": "무결성 제약",
+   "subject": "db",
+   "parent": "db-relational"
+  },
+  {
+   "id": "db-sql",
+   "title": "SQL",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-ddl-dml",
+   "title": "DDL과 DML",
+   "subject": "db",
+   "parent": "db-sql"
+  },
+  {
+   "id": "db-join",
+   "title": "조인",
+   "subject": "db",
+   "parent": "db-sql"
+  },
+  {
+   "id": "db-subquery-aggregate",
+   "title": "서브쿼리와 집계",
+   "subject": "db",
+   "parent": "db-sql"
+  },
+  {
+   "id": "db-view",
+   "title": "뷰",
+   "subject": "db",
+   "parent": "db-sql"
+  },
+  {
+   "id": "db-design",
+   "title": "데이터베이스 설계",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-er-model",
+   "title": "E-R 모델",
+   "subject": "db",
+   "parent": "db-design"
+  },
+  {
+   "id": "db-functional-dependency",
+   "title": "함수 종속",
+   "subject": "db",
+   "parent": "db-design"
+  },
+  {
+   "id": "db-normalization",
+   "title": "정규화",
+   "subject": "db",
+   "parent": "db-design"
+  },
+  {
+   "id": "db-storage",
+   "title": "저장 구조",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-disk-page",
+   "title": "디스크와 페이지",
+   "subject": "db",
+   "parent": "db-storage"
+  },
+  {
+   "id": "db-record-file",
+   "title": "레코드와 파일 구성",
+   "subject": "db",
+   "parent": "db-storage"
+  },
+  {
+   "id": "db-buffer-manager",
+   "title": "버퍼 관리자",
+   "subject": "db",
+   "parent": "db-storage"
+  },
+  {
+   "id": "db-index",
+   "title": "인덱스",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-bptree-index",
+   "title": "B+트리 인덱스",
+   "subject": "db",
+   "parent": "db-index"
+  },
+  {
+   "id": "db-hash-index",
+   "title": "해시 인덱스",
+   "subject": "db",
+   "parent": "db-index"
+  },
+  {
+   "id": "db-clustered-index",
+   "title": "클러스터형·비클러스터형 인덱스",
+   "subject": "db",
+   "parent": "db-index"
+  },
+  {
+   "id": "db-query",
+   "title": "질의 처리",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-join-algorithms",
+   "title": "조인 알고리즘",
+   "subject": "db",
+   "parent": "db-query"
+  },
+  {
+   "id": "db-query-optimization",
+   "title": "질의 최적화와 실행 계획",
+   "subject": "db",
+   "parent": "db-query"
+  },
+  {
+   "id": "db-transaction",
+   "title": "트랜잭션",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-acid",
+   "title": "ACID",
+   "subject": "db",
+   "parent": "db-transaction"
+  },
+  {
+   "id": "db-serializability",
+   "title": "직렬 가능성",
+   "subject": "db",
+   "parent": "db-transaction"
+  },
+  {
+   "id": "db-isolation-level",
+   "title": "격리 수준",
+   "subject": "db",
+   "parent": "db-transaction"
+  },
+  {
+   "id": "db-concurrency",
+   "title": "동시성 제어",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-lock-2pl",
+   "title": "락과 2단계 락킹",
+   "subject": "db",
+   "parent": "db-concurrency"
+  },
+  {
+   "id": "db-deadlock",
+   "title": "교착 상태 처리",
+   "subject": "db",
+   "parent": "db-concurrency"
+  },
+  {
+   "id": "db-mvcc",
+   "title": "MVCC",
+   "subject": "db",
+   "parent": "db-concurrency"
+  },
+  {
+   "id": "db-recovery",
+   "title": "회복",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-wal",
+   "title": "로그와 WAL",
+   "subject": "db",
+   "parent": "db-recovery"
+  },
+  {
+   "id": "db-checkpoint",
+   "title": "체크포인트",
+   "subject": "db",
+   "parent": "db-recovery"
+  },
+  {
+   "id": "db-distributed",
+   "title": "분산 데이터베이스",
+   "subject": "db",
+   "parent": null
+  },
+  {
+   "id": "db-replication",
+   "title": "복제",
+   "subject": "db",
+   "parent": "db-distributed"
+  },
+  {
+   "id": "db-sharding",
+   "title": "분할(샤딩)",
+   "subject": "db",
+   "parent": "db-distributed"
+  },
+  {
+   "id": "db-2pc",
+   "title": "2단계 커밋",
+   "subject": "db",
+   "parent": "db-distributed"
+  }
+ ],
+ "edges": [
+  {
+   "from": "ca-data-repr",
+   "to": "ca-digital-logic",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-data-repr",
+   "to": "ca-isa",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-digital-logic",
+   "to": "ca-processor",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-isa",
+   "to": "ca-processor",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-processor",
+   "to": "ca-memory-hierarchy",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-processor",
+   "to": "ca-storage-io",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-processor",
+   "to": "ca-parallelism",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-memory-hierarchy",
+   "to": "ca-parallelism",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-complexity",
+   "to": "ds-linear",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-linear",
+   "to": "ds-stack-queue",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-linear",
+   "to": "ds-hashing",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-linear",
+   "to": "ds-sorting",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-stack-queue",
+   "to": "ds-tree",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-tree",
+   "to": "ds-heap",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-tree",
+   "to": "ds-graph",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-stack-queue",
+   "to": "ds-graph",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-heap",
+   "to": "ds-graph",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ds-heap",
+   "to": "ds-sorting",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-structure",
+   "to": "os-process",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-process",
+   "to": "os-scheduling",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-process",
+   "to": "os-sync",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-sync",
+   "to": "os-deadlock",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-structure",
+   "to": "os-memory",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-process",
+   "to": "os-memory",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-memory",
+   "to": "os-vm",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-structure",
+   "to": "os-io",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "os-io",
+   "to": "os-fs",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "net-basics",
+   "to": "net-app",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "net-app",
+   "to": "net-transport",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "net-transport",
+   "to": "net-network",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "net-network",
+   "to": "net-link",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "net-transport",
+   "to": "net-security",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-relational",
+   "to": "db-sql",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-relational",
+   "to": "db-design",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-storage",
+   "to": "db-index",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-index",
+   "to": "db-query",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-sql",
+   "to": "db-query",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-sql",
+   "to": "db-transaction",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-transaction",
+   "to": "db-concurrency",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-transaction",
+   "to": "db-recovery",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-storage",
+   "to": "db-recovery",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-concurrency",
+   "to": "db-distributed",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "db-recovery",
+   "to": "db-distributed",
+   "type": "prerequisite",
+   "scope": "intra",
+   "note": ""
+  },
+  {
+   "from": "ca-interrupt",
+   "to": "os-interrupt-handling",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "하드웨어 인터럽트가 있어야 OS의 인터럽트 처리 루틴을 이해"
+  },
+  {
+   "from": "ca-interrupt",
+   "to": "os-system-call",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "시스템 콜은 트랩(예외)으로 커널에 진입"
+  },
+  {
+   "from": "ca-registers",
+   "to": "os-context-switch",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "문맥 교환은 레지스터 값을 저장·복원하는 일"
+  },
+  {
+   "from": "ca-procedure-call",
+   "to": "os-address-space",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "스택 프레임이 프로세스 주소 공간의 스택 영역을 이룸"
+  },
+  {
+   "from": "ca-mmu-tlb",
+   "to": "os-paging",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "주소 변환 하드웨어 위에서 페이지 테이블이 동작"
+  },
+  {
+   "from": "ca-cache",
+   "to": "os-page-replacement",
+   "type": "related",
+   "scope": "cross",
+   "note": "캐시 교체와 페이지 교체는 같은 문제의 다른 계층"
+  },
+  {
+   "from": "ca-locality",
+   "to": "os-thrashing",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "작업 집합 모델은 지역성에 근거"
+  },
+  {
+   "from": "ca-atomic",
+   "to": "os-mutex-semaphore",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "락은 test-and-set·CAS 같은 원자적 명령어로 구현"
+  },
+  {
+   "from": "ca-multicore",
+   "to": "os-smp-scheduling",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "멀티코어 구조가 멀티프로세서 스케줄링의 전제"
+  },
+  {
+   "from": "ca-hdd-ssd",
+   "to": "os-disk-scheduling",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "탐색 시간·회전 지연이 디스크 스케줄링의 동기"
+  },
+  {
+   "from": "ca-io-methods",
+   "to": "os-device-driver",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "폴링·인터럽트·DMA가 드라이버의 동작 방식"
+  },
+  {
+   "from": "ca-ram",
+   "to": "ds-array",
+   "type": "related",
+   "scope": "cross",
+   "note": "배열의 O(1) 접근은 연속 메모리의 주소 계산"
+  },
+  {
+   "from": "ca-locality",
+   "to": "ds-linked-list",
+   "type": "related",
+   "scope": "cross",
+   "note": "연결 리스트는 캐시 지역성이 나빠 배열보다 느릴 수 있음"
+  },
+  {
+   "from": "ds-stack",
+   "to": "ca-procedure-call",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "호출 스택은 스택 자료구조"
+  },
+  {
+   "from": "ca-hdd-ssd",
+   "to": "ds-btree",
+   "type": "related",
+   "scope": "cross",
+   "note": "B-트리는 블록 단위 디스크 I/O를 줄이려는 구조"
+  },
+  {
+   "from": "ca-endianness",
+   "to": "net-socket",
+   "type": "related",
+   "scope": "cross",
+   "note": "네트워크 바이트 순서(빅 엔디언) 변환"
+  },
+  {
+   "from": "ca-binary",
+   "to": "net-ip-subnet",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "서브넷 마스크는 비트 연산"
+  },
+  {
+   "from": "ca-binary",
+   "to": "net-error-detection",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "인터넷 체크섬은 1의 보수 합, CRC는 XOR 나눗셈"
+  },
+  {
+   "from": "ca-hdd-ssd",
+   "to": "db-disk-page",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "디스크 블록 특성이 페이지 단위 저장의 이유"
+  },
+  {
+   "from": "ca-raid",
+   "to": "db-disk-page",
+   "type": "related",
+   "scope": "cross",
+   "note": "DB 저장소의 신뢰성과 성능을 RAID가 뒷받침"
+  },
+  {
+   "from": "ca-cache",
+   "to": "db-buffer-manager",
+   "type": "related",
+   "scope": "cross",
+   "note": "버퍼 풀은 디스크에 대한 캐시, 같은 계층 구조 원리"
+  },
+  {
+   "from": "ds-queue",
+   "to": "os-sched-algorithms",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "준비 큐가 스케줄링의 기본 구조"
+  },
+  {
+   "from": "ds-priority-queue",
+   "to": "os-sched-algorithms",
+   "type": "related",
+   "scope": "cross",
+   "note": "우선순위 스케줄링의 구현"
+  },
+  {
+   "from": "ds-linked-list",
+   "to": "os-memory-allocation",
+   "type": "related",
+   "scope": "cross",
+   "note": "가용 공간 리스트(free list)"
+  },
+  {
+   "from": "ds-circular-queue",
+   "to": "os-classic-problems",
+   "type": "related",
+   "scope": "cross",
+   "note": "유한 버퍼(생산자-소비자)는 원형 큐"
+  },
+  {
+   "from": "ds-hash-table",
+   "to": "os-paging",
+   "type": "related",
+   "scope": "cross",
+   "note": "해시형·역 페이지 테이블"
+  },
+  {
+   "from": "ds-tree",
+   "to": "os-file-directory",
+   "type": "related",
+   "scope": "cross",
+   "note": "디렉터리 구조는 트리"
+  },
+  {
+   "from": "ds-graph-traversal",
+   "to": "os-deadlock-detection",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "자원 할당 그래프의 사이클 탐지"
+  },
+  {
+   "from": "ds-linked-list",
+   "to": "os-page-replacement",
+   "type": "related",
+   "scope": "cross",
+   "note": "LRU는 이중 연결 리스트(+해시)로 구현"
+  },
+  {
+   "from": "os-ipc",
+   "to": "net-socket",
+   "type": "related",
+   "scope": "cross",
+   "note": "소켓은 네트워크를 넘는 IPC"
+  },
+  {
+   "from": "os-pcb",
+   "to": "net-udp",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "포트 번호로 프로세스를 구분하는 다중화·역다중화"
+  },
+  {
+   "from": "os-classic-problems",
+   "to": "net-flow-control",
+   "type": "related",
+   "scope": "cross",
+   "note": "수신 버퍼와 흐름 제어는 생산자-소비자 문제"
+  },
+  {
+   "from": "os-page-replacement",
+   "to": "db-buffer-manager",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "버퍼 교체 정책은 페이지 교체 알고리즘의 응용"
+  },
+  {
+   "from": "os-buffer-cache",
+   "to": "db-buffer-manager",
+   "type": "related",
+   "scope": "cross",
+   "note": "OS 캐시와 DB 버퍼의 이중 버퍼링 문제"
+  },
+  {
+   "from": "os-mutex-semaphore",
+   "to": "db-lock-2pl",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "상호 배제 개념 위에 트랜잭션 락이 올라감"
+  },
+  {
+   "from": "os-deadlock-conditions",
+   "to": "db-deadlock",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "교착 상태 조건과 대기 그래프를 그대로 사용"
+  },
+  {
+   "from": "os-journaling",
+   "to": "db-wal",
+   "type": "related",
+   "scope": "cross",
+   "note": "둘 다 '먼저 로그에 쓰고 나중에 반영'"
+  },
+  {
+   "from": "os-file-directory",
+   "to": "db-record-file",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "DB 파일은 OS 파일 위에 구성"
+  },
+  {
+   "from": "os-race-condition",
+   "to": "db-isolation-level",
+   "type": "related",
+   "scope": "cross",
+   "note": "격리 수준의 이상 현상은 경쟁 상태의 DB 버전"
+  },
+  {
+   "from": "ds-btree",
+   "to": "db-bptree-index",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "B+트리를 알아야 인덱스 동작을 이해"
+  },
+  {
+   "from": "ds-hash-table",
+   "to": "db-hash-index",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "해시 테이블이 해시 인덱스의 기반"
+  },
+  {
+   "from": "ds-hash-table",
+   "to": "db-join-algorithms",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "해시 조인"
+  },
+  {
+   "from": "ds-external-sort",
+   "to": "db-join-algorithms",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "정렬 병합 조인과 ORDER BY 처리"
+  },
+  {
+   "from": "ds-graph-traversal",
+   "to": "db-serializability",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "선행 그래프의 사이클 검사"
+  },
+  {
+   "from": "ds-shortest-path",
+   "to": "net-routing",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "다익스트라=링크 상태, 벨만-포드=거리 벡터"
+  },
+  {
+   "from": "ds-trie",
+   "to": "net-forwarding",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "최장 프리픽스 매칭은 트라이 탐색"
+  },
+  {
+   "from": "ds-queue",
+   "to": "net-delay-loss",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "라우터 출력 큐에서 큐잉 지연과 손실 발생"
+  },
+  {
+   "from": "ds-hash-function",
+   "to": "net-hash-signature",
+   "type": "related",
+   "scope": "cross",
+   "note": "해시 함수 개념의 암호학적 확장"
+  },
+  {
+   "from": "ds-tree",
+   "to": "net-dns",
+   "type": "related",
+   "scope": "cross",
+   "note": "도메인 이름 공간은 트리 계층"
+  },
+  {
+   "from": "net-basics",
+   "to": "db-distributed",
+   "type": "prerequisite",
+   "scope": "cross",
+   "note": "분산 DB는 노드 간 통신을 전제"
+  },
+  {
+   "from": "net-dns",
+   "to": "db-distributed",
+   "type": "related",
+   "scope": "cross",
+   "note": "DNS 자체가 계층적 분산 데이터베이스"
+  }
+ ]
+}

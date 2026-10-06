@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>검색 · 입력 전 (v2 다크)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#162119}
+</style>
+</helmet>
+<dc-import name="HomeV2" theme="dark" search="open" hint-size="100%,900px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+// 검색 · 입력 전(SearchIdleV2)의 다크 테마. 검색 창은 SearchV2에서, 뒤 화면은 HomeV2에서 고친다.
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

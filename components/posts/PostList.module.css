@@ -1,0 +1,86 @@
+/* 글 목록. 원본은 MainV2(데스크톱)와 MainV2M(모바일).
+   시안 사이의 폭: 900px 이하는 필터가 목록 위의 옆으로 미는 줄로 바뀐다 */
+.head { padding: 56px var(--gutter) 44px; }
+.title { margin: 0; display: flex; align-items: flex-start; gap: 10px; font-size: 120px; line-height: .95; font-weight: 300; letter-spacing: -0.045em; }
+.count { margin-top: 14px; font-family: var(--mono); font-size: 15px; line-height: 1; font-weight: 400; letter-spacing: 0; }
+
+.grid { padding: 0 var(--gutter); display: grid; grid-template-columns: 272px minmax(0, 1fr); column-gap: 64px; align-items: start; }
+
+/* 데스크톱 필터 창 */
+.side { position: sticky; top: 24px; max-height: calc(100vh - 48px); display: flex; flex-direction: column; }
+.sideHead { flex: none; height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.reset { color: var(--ink-3); }
+.groups { flex: 1 1 auto; min-height: 0; padding: 4px 0 2px; overflow-y: auto; display: flex; flex-direction: column; }
+/* /Type: 시안에 없는 칸이라 /Filters의 머리 줄과 체크박스를 그대로 쓰고, 아래 /Filters와는 한 묶음만큼 띄운다 */
+.typeGroup { flex: none; padding: 10px 0 24px; }
+.group { min-width: 0; margin: 0; padding: 0 0 6px; border: 0; }
+.legend { padding: 14px 0 6px; font-size: 11px; color: var(--ink-3); }
+.cols1 { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 24px; }
+.cols2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; }
+.chk { min-width: 0; height: 26px; display: flex; align-items: center; gap: 9px; cursor: pointer; }
+.chkI { flex: none; width: 14px; height: 14px; margin: 0; display: grid; place-content: center; border: 1px solid var(--ink-3); border-radius: 0; background: var(--panel); cursor: pointer; appearance: none; -webkit-appearance: none; }
+.chkI:checked { border-color: var(--ink); }
+.chkI:checked::after { content: ""; width: 8px; height: 8px; background: var(--ink); }
+.chkL { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; line-height: 1; white-space: nowrap; color: var(--ink-2); }
+.chk.on .chkL { color: var(--ink); font-weight: 500; }
+.chkN { font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--ink-3); }
+@media (hover: hover) {
+  .chk:hover .chkI { border-color: var(--ink); }
+  .chk:hover .chkL { color: var(--ink); }
+}
+
+/* 좁은 화면 필터 줄 */
+.strips { display: none; }
+.stripsHead { margin-right: var(--gutter); height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.stripsHead .reset { height: 44px; margin: -4px 0; padding-left: 12px; }
+.strip { display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+/* /Type 줄은 머리 줄이 이름을 대신하므로 왼쪽 이름 칸이 없다. 아래 /Filters 머리 줄과 띄운다 */
+.typeStrip { margin-bottom: 16px; border-bottom: 0; }
+.stripLabel { flex: none; width: 50px; font-size: 11px; color: var(--ink-3); }
+.hs { flex: 1 1 auto; min-width: 0; padding-right: var(--gutter); display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.hs::-webkit-scrollbar { display: none; }
+.chipBtn { flex: none; height: 48px; display: flex; align-items: center; }
+.chip { height: 32px; padding: 0 9px; display: flex; align-items: center; gap: 7px; font-size: 13.5px; line-height: 1; white-space: nowrap; color: var(--ink-2); border: 1px solid var(--line-2); }
+.chipN { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+.chip.on { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+.chip.on .chipN { color: var(--bg); }
+
+/* 목록 */
+.list { min-width: 0; }
+.listHead { height: 36px; display: flex; align-items: center; border-bottom: 1px solid var(--ink); }
+.pad { width: 24px; flex: none; }
+.sortDate { width: 128px; flex: none; text-align: left; color: var(--ink-3); }
+.sortName { flex: none; text-align: left; color: var(--ink-3); }
+.sortDate.cur, .sortName.cur { color: var(--ink); }
+.fill { flex: 1 1 auto; }
+.shown { color: var(--ink-3); }
+.empty { margin: 0; padding: 40px 0 40px 24px; font-size: 16px; color: var(--ink-2); }
+
+@keyframes la { from { opacity: .3; } to { opacity: 1; } }
+@keyframes lb { from { opacity: .3; } to { opacity: 1; } }
+.a { animation: la .24s ease-out; }
+.b { animation: lb .24s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .a, .b { animation: none; }
+}
+
+@media (max-width: 900px) {
+  .grid { padding: 0; display: block; }
+  .side { display: none; }
+  .strips { display: block; padding-left: var(--gutter); }
+  .list { margin-top: 20px; padding: 0 var(--gutter); }
+}
+@media (max-width: 720px) {
+  .head { padding: 32px var(--gutter) 30px; }
+  .title { gap: 7px; font-size: 68px; }
+  .count { margin-top: 8px; font-size: 13px; }
+  .pad { display: none; }
+  .sortDate, .sortName { width: auto; height: 44px; margin: -4px 0; padding-right: 18px; }
+  .empty { padding: 36px 0; font-size: 15.5px; line-height: 1.7; }
+}
+
+/* 좁은 화면의 브레인 맵 창: 필터 줄 아래 */
+.foldMap { display: none; }
+@media (max-width: 900px) {
+  .foldMap { display: block; margin: 16px var(--gutter) 0; }
+}

@@ -1,0 +1,19 @@
+/* 홈의 지도 미리 보기. 데스크톱은 0.9배로 320px, 좁은 화면은 0.75배로 216px 창 */
+.fig { min-width: 0; margin: 0; border: 1px solid var(--ink); background: var(--panel); }
+.bar { height: 28px; padding: 0 3px 0 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken); }
+.no { font-size: 11px; white-space: nowrap; }
+.dim { color: var(--ink-3); }
+.stripes { flex: 1 1 auto; height: 9px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px); }
+.iconBtn { width: 22px; height: 22px; display: grid; place-items: center; }
+.canvas { display: block; position: relative; height: 320px; overflow: hidden; background-color: var(--bg); background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 14.4px 14.4px; background-position: 24px 28px; }
+.layer { position: absolute; left: 0; top: 0; transform: translate(24px, 28px) scale(.9); transform-origin: 0 0; pointer-events: none; }
+.cap { height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden; }
+.cap .mono { font-size: 11px; }
+.capNote { font-size: 12px; color: var(--ink-3); }
+
+@media (max-width: 720px) {
+  .bar { padding: 0 10px; }
+  .iconBtn { display: none; }
+  .canvas { height: 216px; background-size: 12px 12px; background-position: 14px 20px; }
+  .layer { transform: translate(14px, 20px) scale(.75); }
+}

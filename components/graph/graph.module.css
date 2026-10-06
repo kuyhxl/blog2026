@@ -1,0 +1,67 @@
+/* 브레인 맵과 FIG. 01의 점과 선. 원본은 MainV2·MainV2M·PostV2·PostV2M의 .gl, .gn과 크게 본 창의 .gn.lg
+   hot: 보고 있는 점, near: 그 이웃, far: 점을 직접 가리켰을 때의 그 밖, dim: 필터에 걸리지 않은 글과 빈 노드 */
+.fig { position: relative; overflow: hidden; }
+.fig[data-dragging], .fig[data-dragging] .gn { cursor: grabbing; }
+.layer { position: absolute; left: 0; top: 0; width: 100%; height: 100%; animation: fi .4s ease-out both; }
+@keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+.lines { position: absolute; left: 0; top: 0; width: 100%; height: 100%; fill: none; overflow: visible; }
+
+.gl { stroke: var(--ink); stroke-width: 1; stroke-opacity: .32; transition: stroke-opacity .2s linear; }
+.gl.faint { stroke-opacity: .1; }
+.gl.hot { stroke-opacity: 1; stroke-width: 1.25; }
+
+.gn { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; display: grid; place-items: center; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: transparent; transition: opacity .2s linear; }
+.hit { display: contents; }
+.sq { width: 6px; height: 6px; background: var(--ink); outline: 1px solid transparent; outline-offset: 2px; transition: width .18s ease-out, height .18s ease-out; }
+.near .sq { width: 8px; height: 8px; }
+.hot .sq { width: 10px; height: 10px; outline-color: var(--ink); }
+.far { opacity: .3; }
+.dim { opacity: .16; }
+.dim.hot { opacity: 1; }
+.lb { display: none; }
+
+/* 크게 본 창: 점마다 오른쪽에 이름표 */
+.large .gl.hot { stroke-width: 1.5; }
+.large .gn { width: auto; height: 24px; margin: -12px 0 0 -12px; display: flex; align-items: center; }
+.large .hit { width: 24px; height: 24px; flex: none; display: grid; place-items: center; }
+.large .sq { width: 8px; height: 8px; outline-offset: 3px; }
+.large .near .sq { width: 10px; height: 10px; }
+.large .hot .sq { width: 12px; height: 12px; }
+.large .lb { display: block; padding: 2px 4px; font-size: 12px; line-height: 1.2; white-space: nowrap; color: var(--ink-2); background: var(--panel); }
+.large .near .lb { color: var(--ink); }
+.large .hot .lb { color: var(--ink); font-weight: 600; }
+
+/* 글 본문의 FIG. 01: 이 글(self)을 가운데에 크게, 이름표는 점 아래(위쪽 점은 위) */
+.post .gl { stroke-opacity: .28; }
+.post .gn { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
+.post .sq { width: 7px; height: 7px; }
+.post .near .sq { width: 7px; height: 7px; }
+.post .hot .sq { width: 10px; height: 10px; }
+.post .self .sq { width: 12px; height: 12px; }
+.post .far { opacity: .35; }
+.post .lb { display: block; position: absolute; left: 50%; top: 20px; transform: translateX(-50%); padding: 1px 4px; font-size: 11px; line-height: 1.3; white-space: nowrap; pointer-events: none; color: var(--ink-3); background: var(--panel); }
+.post .lb.up { top: auto; bottom: 21px; }
+.post .lb.start { left: 0; transform: none; }
+.post .lb.end { left: auto; right: 0; transform: none; }
+.post .near .lb { color: var(--ink); }
+.post .hot .lb { color: var(--ink); font-weight: 600; }
+
+/* 좁은 화면: 손가락으로 누르기 좋게 점을 키운다 */
+@media (max-width: 720px) {
+  .list .gn { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+  .list .sq { width: 7px; height: 7px; }
+  .list .near .sq { width: 9px; height: 9px; }
+  .list .hot .sq { width: 11px; height: 11px; }
+  .post .gn { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
+  .post .sq { width: 8px; height: 8px; }
+  .post .near .sq { width: 8px; height: 8px; }
+  .post .hot .sq { width: 11px; height: 11px; }
+  .post .self .sq { width: 13px; height: 13px; }
+  .post .lb { top: 25px; font-size: 12px; }
+  .post .lb.up { bottom: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl, .gn, .sq { transition: none; }
+  .layer { animation: none; }
+}

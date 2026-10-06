@@ -1,0 +1,138 @@
+/* Beauty of CS. 원본은 BeautyOfCSV2(데스크톱)와 BeautyOfCSV2M(720px 이하). 화면 높이를 가득 채우고 스크롤하지 않는다 */
+.screen { height: calc(100dvh - var(--header-h)); min-height: calc(620px - var(--header-h)); display: flex; flex-direction: column; overflow: hidden; }
+
+/* 제목 줄. 오른쪽 끝은 소나무 자리(7단계) */
+.titleBar { flex: none; position: relative; overflow: hidden; height: 60px; padding: 0 148px 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; border-bottom: 1px solid var(--ink); }
+.title { margin: 0; display: flex; align-items: flex-start; gap: 6px; font-size: 34px; line-height: 1; font-weight: 300; letter-spacing: -0.035em; white-space: nowrap; }
+.count { margin-top: 1px; font-family: var(--mono); font-size: 12px; line-height: 1; font-weight: 400; letter-spacing: 0; }
+.hint { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); text-align: right; word-break: keep-all; }
+
+.body { flex: 1 1 auto; min-height: 0; display: flex; }
+.region { flex: 1 1 auto; min-width: 0; position: relative; }
+.canvas { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); }
+.layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+
+/* 지도 층 */
+.zone { position: absolute; border: 1px solid var(--line-2); pointer-events: none; }
+.lines { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; fill: none; stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; }
+.crossDash { stroke-opacity: .3; stroke-dasharray: 3 3; }
+.crossSolid { stroke-opacity: .22; }
+.crossHeads { fill: var(--ink); fill-opacity: .36; stroke: none; }
+.tree { stroke-opacity: .4; }
+.intra { stroke-opacity: .66; }
+.intraHeads { fill: var(--ink); fill-opacity: .76; stroke: none; }
+.hotHalo { stroke: var(--bg); stroke-width: 5; }
+.hotDash { stroke-width: 1.5; stroke-dasharray: 4 3; }
+.hotSolid { stroke-width: 1.5; }
+.hotHeads { fill: var(--ink); stroke: none; }
+.zoneLabel { position: absolute; height: 18px; padding: 0 8px; display: flex; align-items: center; gap: 8px; white-space: nowrap; pointer-events: none; background: var(--bg); }
+.zoneLabel :global(.mono) { font-size: 11px; }
+.zoneName { font-size: 13px; line-height: 1; font-weight: 500; }
+.zoneStat { font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink-3); }
+
+/* 상자: 글이 있으면 진하게(검은 네모), 없으면 흐리게. 고른 상자는 반전, 고른 것과 이어진 상자는 테두리 */
+.nd { -webkit-tap-highlight-color: transparent; position: absolute; display: flex; align-items: center; gap: 6px; overflow: hidden; text-align: left; font-weight: 400; color: var(--ink-3); background: var(--panel); border: 1px solid var(--line); outline: 0 solid transparent; outline-offset: 2px; }
+.big { padding: 0 8px 0 9px; font-size: 14px; border-color: var(--line-2); }
+.kid { padding: 0 5px 0 8px; font-size: 12px; }
+.filled { color: var(--ink); font-weight: 500; }
+.big.filled { border-color: var(--ink); }
+.linked { outline: 1px solid var(--ink); }
+/* 키보드로 고른 상자: 시안의 .bx :focus-visible과 같다(.nd의 outline 0이 전역 규칙을 덮지 않게 다시 적는다) */
+.nd:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.nd.sel { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+.mk { width: 7px; height: 7px; flex: none; border: 1px solid currentColor; }
+.filled .mk { background: currentColor; }
+.label { flex: 1 1 auto; min-width: 0; line-height: 16px; white-space: nowrap; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
+.big .label { line-height: 18px; }
+.two .label { line-height: 15px; white-space: pre-line; }
+.sign { flex: none; font-family: var(--mono); font-size: 12px; line-height: 1; }
+@media (hover: hover) {
+  .nd:not(.sel):hover { background: var(--sunken); }
+}
+
+/* 요약 패널(데스크톱) */
+.panel { flex: none; width: 360px; display: flex; flex-direction: column; border-left: 1px solid var(--ink); background: var(--panel); }
+.panelBar { flex: none; height: 32px; padding: 0 4px 0 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken); }
+.no { font-size: 11px; white-space: nowrap; }
+.stripes { flex: 1 1 auto; height: 9px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px); }
+.closeBtn { width: 24px; height: 24px; display: grid; place-items: center; }
+.panelBody { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 24px 28px; }
+.path { display: flex; align-items: center; gap: 8px; font-size: 12.5px; line-height: 1; color: var(--ink-3); }
+.path :global(.mono) { font-size: 11px; color: var(--ink); }
+.nodeTitle { margin: 14px 0 0; font-size: 26px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02em; word-break: keep-all; }
+.status { margin-top: 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 1; color: var(--ink-2); }
+.summary { margin: 18px 0 0; font-size: 15px; line-height: 1.75; word-break: keep-all; color: var(--ink); }
+.summaryDim { color: var(--ink-3); }
+.group { margin-top: 26px; }
+.groupHead { height: 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.groupName { display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 1; font-weight: 500; }
+.sym { width: 14px; font-family: var(--mono); font-size: 12px; line-height: 1; }
+.groupN { font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink-3); }
+.item { width: 100%; padding: 11px 0 12px; display: grid; grid-template-columns: 18px minmax(0, 1fr); text-align: left; border-bottom: 1px solid var(--line); }
+.itemSq { margin-top: 6px; }
+.itemBody { display: flex; flex-direction: column; gap: 4px; }
+.itemTop { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.itemTitle { font-size: 14px; line-height: 1.4; word-break: keep-all; color: var(--ink-2); }
+.itemOn .itemTitle { color: var(--ink); font-weight: 500; }
+.itemWhere { flex: none; font-size: 11.5px; line-height: 1.4; color: var(--ink-3); white-space: nowrap; }
+.itemNote { font-size: 12.5px; line-height: 1.55; color: var(--ink-2); word-break: keep-all; }
+@media (hover: hover) {
+  .item:hover { background: var(--hover); }
+}
+.panelFoot { flex: none; padding: 16px 24px 20px; border-top: 1px solid var(--line); }
+.postTitle { margin: 0 0 10px; font-size: 13px; line-height: 1.5; color: var(--ink-2); word-break: keep-all; }
+.read { height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500; color: var(--bg); background: var(--ink); }
+.arrow { font-family: var(--mono); }
+.noPost { height: 44px; padding: 0 16px; display: flex; align-items: center; font-size: 14px; color: var(--ink-3); border: 1px dashed var(--line-2); }
+
+/* 범례 */
+.legend { display: flex; align-items: center; gap: 22px; }
+.lg { display: flex; align-items: center; gap: 7px; }
+.lgSq { width: 7px; height: 7px; flex: none; border: 1px solid var(--ink-3); }
+.lgSq.lgOn { background: var(--ink); border-color: var(--ink); }
+
+/* 아래 줄(데스크톱): 범례, 확대·축소, 그리고 이 화면의 푸터 */
+.bottom { flex: none; height: 40px; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--ink); font-size: 12.5px; line-height: 1; color: var(--ink-2); white-space: nowrap; }
+.bottomRight { display: flex; align-items: center; gap: 24px; }
+.zoom { height: 26px; display: flex; align-items: stretch; color: var(--ink); border: 1px solid var(--line-2); }
+.zoom button { width: 28px; display: grid; place-items: center; font-family: var(--mono); font-size: 14px; }
+.zoomPct { width: 50px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; border-left: 1px solid var(--line-2); border-right: 1px solid var(--line-2); }
+.zoom .fit { width: auto; padding: 0 10px; font-size: 11px; border-left: 1px solid var(--line-2); }
+.copy { display: flex; align-items: center; gap: 8px; color: var(--ink-3); }
+
+/* 좁은 화면 전용: 지도 위의 확대·축소와 범례, 아래에서 올라오는 시트 */
+.mZoom, .mLegend { display: none; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; flex-direction: column; border-top: 1px solid var(--ink); background: var(--panel); transition: height .32s var(--ease); }
+.sheet.drag { transition: none; }
+.sheet.rise { animation: up .32s var(--ease) both; }
+@keyframes up { from { transform: translateY(100%); } to { transform: none; } }
+.grip { flex: none; height: 44px; padding: 0 0 0 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.sheetBtn { flex: none; width: 44px; height: 44px; display: grid; place-items: center; }
+@media (prefers-reduced-motion: reduce) {
+  .sheet { transition: none; }
+  .sheet.rise { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .screen { min-height: calc(560px - var(--header-h)); }
+  .titleBar { height: 56px; padding: 0 140px 0 20px; }
+  .title { font-size: 26px; }
+  .count { font-size: 11px; }
+  .hint, .bottom { display: none; }
+  .mZoom { position: absolute; right: 12px; top: 12px; display: flex; align-items: stretch; color: var(--ink); border: 1px solid var(--ink); background: var(--panel); }
+  .mZoom button { width: 44px; height: 44px; display: grid; place-items: center; font-family: var(--mono); font-size: 16px; }
+  .mZoom button + button { border-left: 1px solid var(--line-2); }
+  .mZoom :global(.mono) { width: 48px; font-size: 11px; }
+  .mLegend { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; padding: 0 20px; display: flex; align-items: center; border-top: 1px solid var(--ink); background: var(--bg); font-size: 12px; line-height: 1; color: var(--ink-2); white-space: nowrap; }
+  .mLegend .legend { width: 100%; justify-content: space-between; gap: 0; }
+  .mLegend .lg { gap: 6px; }
+  .panelBody { padding: 18px 20px 24px; }
+  .nodeTitle { margin-top: 12px; font-size: 23px; line-height: 1.32; }
+  .status { margin-top: 12px; }
+  .summary { margin-top: 16px; }
+  .group { margin-top: 24px; }
+  .item { min-height: 44px; }
+  .itemTitle { font-size: 14.5px; }
+  .panelFoot { padding: 12px 20px 16px; }
+  .read { height: 48px; font-size: 14.5px; }
+}

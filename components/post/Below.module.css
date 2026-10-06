@@ -1,0 +1,50 @@
+/* 본문 아래: 백링크와 이전·다음 글. 원본은 PostV2와 PostV2M */
+.dim { color: var(--ink-3); }
+
+.backlinks { margin-top: 88px; }
+.head { height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.lead { margin: 16px 0 4px; font-size: 13.5px; line-height: 1.6; color: var(--ink-3); }
+.row { padding: 16px 0 18px; display: grid; grid-template-columns: 24px 112px minmax(0, 1fr); align-items: baseline; border-bottom: 1px solid var(--line); }
+.sq { width: 8px; height: 8px; background: var(--ink); }
+.date { font-family: var(--mono); font-size: 12.5px; }
+.body { display: flex; flex-direction: column; gap: 6px; }
+.title { font-size: 19px; line-height: 1.4; letter-spacing: -0.015em; word-break: keep-all; }
+.snip { font-size: 14px; line-height: 1.65; color: var(--ink-2); word-break: keep-all; }
+.mark { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.arr { margin-left: 8px; vertical-align: 1px; opacity: 0; transition: opacity .15s linear; }
+.row:focus-visible .arr { opacity: 1; }
+
+.pn { margin-top: 72px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); }
+.prev { padding: 20px 24px 26px 0; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--line); }
+.next { padding: 20px 0 26px 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; text-align: right; }
+.pnTitle { font-size: 19px; line-height: 1.4; letter-spacing: -0.015em; word-break: keep-all; }
+
+@media (hover: hover) {
+  a.row:hover, a.prev:hover, a.next:hover { background: var(--hover); }
+  .row:hover .arr { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arr { transition: none; }
+}
+
+@media (max-width: 720px) {
+  .backlinks { margin-top: 64px; }
+  .lead { margin: 14px 0 2px; }
+  /* 날짜 줄 아래에 제목과 발췌 */
+  .row { padding: 15px 0 17px; grid-template-columns: 18px minmax(0, 1fr); align-items: center; row-gap: 9px; }
+  .date { font-size: 12px; line-height: 1; }
+  .body { grid-column: 1 / -1; gap: 9px; }
+  .title { font-size: 18px; line-height: 1.42; }
+  .arr { display: none; }
+  .pn { margin-top: 56px; display: flex; flex-direction: column; border-bottom: 0; }
+  .prev, .next { padding: 18px 0 20px; align-items: flex-start; gap: 11px; text-align: left; border-right: 0; border-bottom: 1px solid var(--line); }
+  span.prev, span.next { display: none; }
+  .pnTitle { font-size: 18px; line-height: 1.42; }
+}
+
+/* 댓글: 머리 아래에 giscus가 그린다 */
+.comments { margin-top: 72px; }
+.giscus { margin-top: 20px; min-height: 120px; }
+@media (max-width: 720px) {
+  .comments { margin-top: 56px; }
+}

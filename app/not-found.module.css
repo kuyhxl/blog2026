@@ -1,0 +1,15 @@
+/* 내용이 짧아도 푸터가 화면 아래에 붙게 한다 */
+.page { min-height: calc(100dvh - var(--header-h)); display: flex; flex-direction: column; }
+.main { flex: 1; padding: 56px var(--gutter) 64px; }
+.code { margin: 0; color: var(--ink-3); }
+.title { margin: 24px 0 0; max-width: 900px; font-size: 64px; line-height: 1.2; font-weight: 300; letter-spacing: -0.035em; word-break: keep-all; }
+.text { margin: 24px 0 0; max-width: 640px; font-size: 17px; line-height: 1.75; color: var(--ink-2); word-break: keep-all; }
+.links { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--ink); }
+
+@media (max-width: 720px) {
+  .main { padding-top: 32px; }
+  .title { margin-top: 16px; font-size: 34px; line-height: 1.28; letter-spacing: -0.03em; }
+  .text { font-size: 16px; }
+  .btn { height: 44px; }
+}

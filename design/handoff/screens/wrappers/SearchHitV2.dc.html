@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>검색 · 결과 있음 (v2)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#E3ECE4}
+</style>
+</helmet>
+<dc-import name="HomeV2" search="open" q="페이지" hint-size="100%,900px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+// 홈(HomeV2) 위에 검색 창을 열고 "페이지"를 입력한 모습: 결과가 있는 상태.
+// 검색 창의 내용과 동작은 SearchV2에서, 뒤 화면은 HomeV2에서 고친다.
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

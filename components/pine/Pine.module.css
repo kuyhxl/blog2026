@@ -1,0 +1,22 @@
+/* 소나무의 색. 원본은 각 화면 파일의 .pine .p1~.k2 */
+.p1 { fill: var(--pine-1); }
+.p2 { fill: var(--pine-2); }
+.p3 { fill: var(--pine-3); }
+.k1 { fill: var(--bark-1); }
+.k2 { fill: var(--bark-2); }
+
+/* 홈·글 목록·글 본문: 헤더 바로 아래 오른쪽 끝. 바탕 바로 위, 글과 버튼 아래에 깔린다(body가 isolation으로 층을 가둔다).
+   한 칸 = 4px, 1200px 이하 3px, 900px 이하 2px */
+.page { position: absolute; z-index: -1; right: 0; top: 76px; width: 256px; height: 192px; pointer-events: none; }
+@media (max-width: 1200px) {
+  .page { width: 192px; height: 144px; }
+}
+@media (max-width: 900px) {
+  .page { top: 70px; width: 128px; height: 96px; }
+}
+@media (max-width: 720px) {
+  .page { top: 60px; }
+}
+
+/* Beauty of CS: 제목 줄 오른쪽 끝에 한 칸 = 2px로 작게 두고, 줄 아래로 내려가는 부분은 가린다 */
+.bar { position: absolute; right: 0; top: 3px; width: 128px; height: 96px; pointer-events: none; }

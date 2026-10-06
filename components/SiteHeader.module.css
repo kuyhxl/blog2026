@@ -1,0 +1,58 @@
+/* 공통 헤더. 원본은 각 화면 파일의 <header>와 .nk 규칙. 720px 이하는 모바일 시안(…V2M) 모양 */
+.header {
+  height: var(--header-h);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.left { display: flex; align-items: center; gap: 32px; min-width: 0; }
+.home { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; }
+.mark { width: 10px; height: 10px; flex: none; background: var(--ink); }
+
+/* 메뉴: [키] 이름. 현재 화면은 이름에 밑줄 */
+.nav { display: flex; align-items: center; gap: 8px; }
+.nk { height: 32px; padding: 0 8px; display: flex; align-items: center; gap: 6px; white-space: nowrap; color: var(--ink-3); }
+.nk .k { color: var(--ink-3); }
+.nk.cur { color: var(--ink); }
+.nk.cur .l { text-decoration: underline; text-underline-offset: 6px; }
+@media (hover: hover) {
+  .nk:hover { color: var(--ink); }
+}
+/* 단축키를 누른 순간 */
+.nk.hit { color: var(--bg); background: var(--ink); }
+.nk.hit .k { color: var(--bg); }
+
+.tools { display: flex; align-items: center; gap: 8px; }
+.search { height: 40px; padding: 0 10px 0 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line-2); }
+.searchIcon { width: 14px; height: 14px; flex: none; stroke-width: 1.25; }
+.search .kbd { font-size: 11px; color: var(--ink-3); border: 1px solid var(--line-2); padding: 3px 5px; }
+.theme { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line-2); }
+:global(.dark) .th { transform: scaleX(-1); }
+
+/* 모바일: 사이트 이름 글자와 [키] 표시를 빼고, 누르는 자리는 모두 44px */
+@media (max-width: 720px) {
+  .header { padding: 0 8px 0 4px; }
+  .left { gap: 0; }
+  .home { width: 44px; height: 44px; justify-content: center; gap: 0; }
+  .mark { width: 12px; height: 12px; }
+  .nav { gap: 0; }
+  .nk { height: 44px; padding: 0 9px; }
+  .nk .k { display: none; }
+  .tools { gap: 6px; }
+  .search { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .searchIcon { width: 16px; height: 16px; stroke-width: 1.1; }
+  .search .kbd { display: none; }
+  .theme { width: 44px; height: 44px; }
+  /* 화면에서는 감추고 화면 낭독기에는 이름으로 읽힌다 */
+  .name, .searchLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

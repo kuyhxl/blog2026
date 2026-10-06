@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>검색 (v2 모바일 다크)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#162119}
+</style>
+</helmet>
+<dc-import name="HomeV2M" theme="dark" search="open" q="페이지" hint-size="100%,844px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+// 모바일 검색(SearchHitV2M)의 다크 테마. 검색 창은 SearchV2에서, 뒤 화면은 HomeV2M에서 고친다.
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

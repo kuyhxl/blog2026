@@ -1,0 +1,93 @@
+/* 검색 창. 원본은 SearchV2(데스크톱 창과 640px 이하의 전체 화면) */
+.dim { color: var(--ink-3); }
+.veil { position: fixed; inset: 0; z-index: 60; padding: 88px 48px 48px; display: flex; justify-content: center; align-items: flex-start; background: color-mix(in srgb, var(--bg) 92%, transparent); animation: fi .18s linear both; }
+.win { width: 100%; max-width: 720px; max-height: min(100%, 680px); display: flex; flex-direction: column; border: 1px solid var(--ink); background: var(--panel); box-shadow: 10px 10px 0 var(--line); animation: wi .32s var(--ease) both; }
+@keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wi { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.top { flex: none; height: 36px; padding: 0 4px 0 14px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--ink); background: var(--sunken); white-space: nowrap; }
+.stripes { flex: 1 1 auto; height: 13px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px); }
+.iconBtn { width: 28px; height: 28px; display: grid; place-items: center; }
+
+/* 입력칸: 테두리를 두르지 않고, 줄 아래의 굵은 선으로 포커스를 알린다 */
+.field { flex: none; height: 64px; padding: 0 14px 0 0; display: flex; align-items: center; border-bottom: 1px solid var(--ink); }
+.field:focus-within { box-shadow: inset 0 -2px 0 var(--ink); }
+.lens { flex: none; width: 52px; height: 100%; display: grid; place-items: center; cursor: text; }
+.lens svg { width: 18px; height: 18px; stroke-width: 1; }
+.input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; font: inherit; font-size: 22px; font-weight: 300; letter-spacing: -0.02em; color: var(--ink); background: none; border: 0; border-radius: 0; }
+.input:focus-visible { outline: none; }
+.input::placeholder { color: var(--ink-3); opacity: 1; }
+.clearText { flex: none; height: 28px; margin-right: 10px; padding: 0 8px; font-size: 11px; color: var(--ink-3); }
+.clearIcon, .closeText { display: none; }
+.esc { flex: none; padding: 3px 5px; font-size: 11px; color: var(--ink-3); border: 1px solid var(--line-2); }
+
+.scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.listHead { height: 36px; padding: 0 14px 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.list { margin: 0; padding: 0; list-style: none; }
+
+/* 고른 행(키보드로 옮기거나 마우스를 올린 행): 옅은 띠가 깔리고, 맨 앞 네모가 채워지고, Enter 표시가 나온다 */
+.row { border-bottom: 1px solid var(--line); }
+.rowLink { padding: 15px 12px 16px 18px; display: grid; grid-template-columns: 24px 104px minmax(0, 1fr) 34px; align-items: start; }
+.sq { width: 8px; height: 8px; margin-top: 9px; border: 1px solid var(--ink-3); }
+.date { padding-top: 7px; font-family: var(--mono); font-size: 12.5px; line-height: 1; }
+.body { min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.title { font-size: 18px; line-height: 1.4; letter-spacing: -0.015em; word-break: keep-all; }
+.snip { font-size: 14px; line-height: 1.6; color: var(--ink-2); word-break: keep-all; }
+.tags { margin-top: 2px; display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { padding: 4px 6px; font-size: 11.5px; line-height: 1; color: var(--ink-2); border: 1px solid var(--line-2); }
+.tag.tagHit { color: var(--ink); border-color: var(--ink); }
+.ret { justify-self: end; margin-top: 3px; padding: 3px 5px; font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink-2); border: 1px solid var(--line-2); visibility: hidden; }
+.row.on { background: var(--hover); }
+.row.on .sq { background: var(--ink); border-color: var(--ink); }
+.row.on .ret { visibility: visible; }
+/* 일치한 글자 */
+.win mark { padding: 0 1px; font-weight: 500; color: var(--ink); background: var(--sunken); box-shadow: inset 0 -1px 0 var(--ink); }
+
+.note { margin: 0; padding: 24px 18px; font-size: 14px; color: var(--ink-2); }
+.none { padding: 36px 18px 40px; }
+.noneTitle { margin: 0; font-size: 20px; line-height: 1.5; letter-spacing: -0.015em; word-break: keep-all; }
+.noneText { margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: var(--ink-2); word-break: keep-all; }
+.noneActions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+.solidBtn { height: 36px; padding: 0 14px; display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--ink); }
+.topicsHead { margin-top: 32px; height: 30px; display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+.topicsHead .mono { font-size: 11px; }
+.topics { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.topic { padding: 7px 9px; font-size: 12.5px; line-height: 1; border: 1px solid var(--line-2); }
+
+.foot { flex: none; height: 40px; padding: 0 14px 0 18px; display: flex; align-items: center; gap: 18px; border-top: 1px solid var(--line-2); color: var(--ink-3); white-space: nowrap; }
+.foot .mono { font-size: 11px; }
+.keys { display: flex; align-items: center; gap: 5px; }
+.key { padding: 3px 5px; font-family: var(--mono); font-size: 11px; line-height: 1; border: 1px solid var(--line-2); }
+.grow { flex: 1 1 auto; }
+.footNote { font-size: 12px; }
+
+@media (hover: hover) {
+  .iconBtn:hover, .clearText:hover, .clearIcon:hover, .closeText:hover, .topic:hover { background: var(--hover); }
+  .solidBtn:hover { background: var(--ink); color: var(--bg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .veil, .win { animation: none; }
+}
+
+/* 640px 이하: 화면을 가득 채운다 */
+@media (max-width: 640px) {
+  .veil { padding: 0; display: block; background: var(--bg); }
+  .win { max-width: none; max-height: none; height: 100%; border: 0; box-shadow: none; background: var(--bg); animation: none; }
+  .top, .esc, .clearText, .foot, .ret { display: none; }
+  .field { height: 56px; padding: 0 6px 0 0; }
+  .lens { width: 48px; }
+  .lens svg { width: 16px; height: 16px; stroke-width: 1.1; }
+  .input { font-size: 17px; font-weight: 400; letter-spacing: -0.01em; }
+  .clearIcon { flex: none; width: 44px; height: 44px; display: grid; place-items: center; color: var(--ink-3); }
+  .closeText { flex: none; height: 44px; padding: 0 10px; display: flex; align-items: center; }
+  .listHead { padding: 0 16px; }
+  .rowLink { padding: 15px 16px 17px; grid-template-columns: 18px minmax(0, 1fr); align-items: center; row-gap: 9px; }
+  .sq { margin-top: 0; background: var(--ink); border-color: var(--ink); }
+  .date { padding-top: 0; font-size: 12px; }
+  .body { grid-column: 1 / -1; gap: 9px; }
+  .title { line-height: 1.42; }
+  .snip { line-height: 1.65; }
+  .tags { margin-top: 1px; }
+  .tag { padding: 5px 7px; font-size: 12px; }
+  .none { padding: 32px 16px 40px; }
+}

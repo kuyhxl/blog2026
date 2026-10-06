@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>글 목록 · Blog (v2 모바일 다크)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#162119}
+</style>
+</helmet>
+<dc-import name="MainV2M" theme="dark" hint-size="100%,3520px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":3520}}'>
+// 모바일 글 목록(MainV2M)을 다크 테마로 불러오기만 하는 화면이다. 내용과 동작은 MainV2M에서 고친다.
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

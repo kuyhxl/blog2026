@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>글 목록 · Blog (v2)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E3ECE4}
+body:has(.bx.dark){background:#162119}
+/* 토큰: 라이트. --bg 바탕, --panel 창·패널 같은 박스의 면(바탕보다 밝다), --sunken 창의 제목 줄(바탕보다 어둡다) */
+.bx{--bg:#E3ECE4;--panel:#F3F7F2;--sunken:#D3DFD5;--ink:#141A16;--ink-2:#38423B;--ink-3:#525D55;--line:rgba(20,26,22,.2);--line-2:rgba(20,26,22,.4);--dot:rgba(20,26,22,.3);--hover:rgba(20,26,22,.06);--veil:rgba(227,236,228,.92);--pine-1:#7DAA6B;--pine-2:#4D8553;--pine-3:#2E5B3E;--bark-1:#6B5142;--bark-2:#43322A;--fx:rgb(74,128,92);--ease:cubic-bezier(.22,1,.36,1);--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+/* 토큰: 다크. 같은 이름에 밤의 값을 넣는다. 소나무도 밤의 색으로 바뀐다 */
+.bx.dark{--bg:#162119;--panel:#1F2D23;--sunken:#0E1711;--ink:#E3ECE4;--ink-2:#B7C3BA;--ink-3:#9AA79D;--line:rgba(227,236,228,.17);--line-2:rgba(227,236,228,.34);--dot:rgba(227,236,228,.22);--hover:rgba(227,236,228,.07);--veil:rgba(22,33,25,.92);--pine-1:#4E7767;--pine-2:#35584B;--pine-3:#243E36;--bark-1:#4F463E;--bark-2:#3B322C;--fx:rgb(149,205,166);color-scheme:dark}
+.bx:focus,.bx:focus-visible{outline:none}
+.bx *,.bx *::before,.bx *::after{box-sizing:border-box}
+.bx a{color:inherit;text-decoration:none}
+.bx button{font:inherit;color:inherit;background:none;border:0;border-radius:0;padding:0;margin:0;cursor:pointer}
+.bx :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.bx .mono{font-family:var(--mono);font-size:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase}
+
+/* 메뉴: [키] 이름. 현재 화면은 이름에 밑줄 */
+.bx .nk{color:var(--ink-3)}
+.bx .nk.cur{color:var(--ink)}
+.bx .nk.cur .l{text-decoration:underline;text-underline-offset:6px}
+.bx .nk .k{color:var(--ink-3)}
+
+/* 호버: 옅은 띠와 글자색만 바뀐다. 움직이거나 커지지 않는다 */
+@media (hover:hover){
+.bx .nk:hover{color:var(--ink)}
+.lk:hover{text-decoration:underline;text-underline-offset:4px}
+.ghost:hover{background:var(--hover)}
+.solid:hover{background:var(--ink);color:var(--bg)}
+.row-h:hover{background:var(--hover)}
+.t:hover .arr{opacity:1}
+.chk:hover .chk-i{border-color:var(--ink)}
+.chk:hover .chk-l{color:var(--ink)!important}
+}
+.t:focus-visible .arr{opacity:1}
+.bx .arr{margin-left:10px;vertical-align:1px;opacity:0;transition:opacity .15s linear}
+/* 단축키를 누른 순간 */
+.bx .nk.hit{color:var(--bg);background:var(--ink)}
+.bx .nk.hit .k{color:var(--bg)}
+
+/* 소나무: 색을 변수로 준 사각형으로 그린 픽셀 아트(64×48칸). 줄기가 화면 오른쪽 끝에서 들어온다. 한 칸 = 4px.
+   바탕 바로 위, 글과 버튼 아래에 깔린다. 좁은 화면에서 글자와 만나도 글자가 위에 온다 */
+.bx{isolation:isolate}
+.pine{position:absolute;z-index:-1;right:0;top:76px;width:256px;height:192px;pointer-events:none}
+.pine .p1{fill:var(--pine-1)}
+.pine .p2{fill:var(--pine-2)}
+.pine .p3{fill:var(--pine-3)}
+.pine .k1{fill:var(--bark-1)}
+.pine .k2{fill:var(--bark-2)}
+/* 좁은 화면에서는 칸을 3px, 2px로 줄인다 */
+@media (max-width:1200px){.pine{width:192px;height:144px}}
+@media (max-width:900px){.pine{top:70px;width:128px;height:96px}}
+.bx.dark .th{transform:scaleX(-1)}
+
+/* 커서 효과: 화면 위에 덧그리는 층이라 누르는 것을 받지 않는다. 기본 커서는 그대로 둔다.
+   네모는 채움 없이 테두리 1px, 모서리는 둥글리지 않는다. 색은 --fx(다크에서는 더 밝은 녹색).
+   잔상은 찍힌 자리에서 작아지며, 누름 네모는 퍼지며 옅어진다. 크기·시간은 아래 스크립트의 FX_ 값 */
+.bx{position:relative}
+.fx{position:absolute;left:0;top:0;width:100%;height:100%;z-index:80;contain:strict;pointer-events:none}
+.fx i,.fx-c{position:absolute;left:0;top:0;width:4px;height:4px;border:1px solid var(--fx);opacity:0;pointer-events:none}
+/* 커서 바로 아래의 6px 네모: 화면에 고정되어 커서를 따라다닌다. 마우스가 들어와 있을 때만 보인다 */
+.fx-c{position:fixed;z-index:81;width:6px;height:6px;margin:-3px 0 0 -3px;opacity:.8;visibility:hidden}
+/* "동작 줄이기"를 켠 사용자에게는 그리지 않는다 */
+@media (prefers-reduced-motion:reduce){.fx,.fx-c{display:none}}
+
+.chk-i{appearance:none;-webkit-appearance:none;flex:none;width:14px;height:14px;margin:0;border:1px solid var(--ink-3);border-radius:0;background:var(--panel);display:grid;place-content:center;cursor:pointer}
+.chk-i:checked{border-color:var(--ink)}
+.chk-i:checked::after{content:"";width:8px;height:8px;background:var(--ink)}
+
+/* 글 행: 펼친 행은 띠가 남는다. 방금 누른 행(.anim)만 움직인다 */
+.row.open .row-h{background:var(--hover)}
+.xp{display:grid;grid-template-rows:0fr;visibility:hidden}
+.xp-in{min-height:0;overflow:hidden}
+.xp-c{opacity:0}
+.row.open .xp{grid-template-rows:1fr;visibility:visible}
+.row.open .xp-c{opacity:1}
+.row.anim .xp{transition:grid-template-rows .7s var(--ease),visibility 0s linear .7s}
+.row.anim.open .xp{transition:grid-template-rows .7s var(--ease),visibility 0s linear}
+.row.anim .xp-c{transition:opacity .18s linear}
+.row.anim.open .xp-c{transition:opacity .4s linear .08s}
+.pm .v{transform-origin:7px 7px}
+.row.open .pm .v{transform:rotate(90deg)}
+.row.anim .pm .v{transition:transform .6s var(--ease)}
+/* 필터나 정렬이 바뀌면 목록이 한 번 옅게 다시 나타난다 */
+@keyframes la{from{opacity:.3}to{opacity:1}}
+@keyframes lb{from{opacity:.3}to{opacity:1}}
+.rows.a{animation:la .24s ease-out}
+.rows.b{animation:lb .24s ease-out}
+
+/* 브레인 맵: 점과 선의 자리는 스크립트가 매 프레임 옮기고, 강조는 클래스로 바꾼다 */
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes wi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fig-l{animation:fi .4s ease-out both}
+.veil{animation:fi .18s linear both}
+.win{animation:wi .32s var(--ease) both}
+.gl{stroke:var(--ink);stroke-width:1;stroke-opacity:.32;transition:stroke-opacity .2s linear}
+.gl.faint{stroke-opacity:.1}
+.gl.hot{stroke-opacity:1;stroke-width:1.25}
+.gl.lg.hot{stroke-width:1.5}
+.gn{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;transition:opacity .2s linear}
+.gn .sq{width:6px;height:6px;background:var(--ink);outline:1px solid transparent;outline-offset:2px;transition:width .18s ease-out,height .18s ease-out}
+.gn.near .sq{width:8px;height:8px}
+.gn.hot .sq{width:10px;height:10px;outline-color:var(--ink)}
+.gn.far{opacity:.3}
+.gn.dim{opacity:.16}
+.gn.dim.hot{opacity:1}
+.fig.grab,.fig.grab .gn{cursor:grabbing}
+.gn.lg{width:auto;height:24px;margin:-12px 0 0 -12px;display:flex;align-items:center}
+.gn.lg .hit{width:24px;height:24px;flex:none;display:grid;place-items:center}
+.gn.lg .sq{width:8px;height:8px;outline-offset:3px}
+.gn.lg.near .sq{width:10px;height:10px}
+.gn.lg.hot .sq{width:12px;height:12px}
+.gn.lg .lb{padding:2px 4px;font-size:12px;line-height:1.2;white-space:nowrap;color:var(--ink-2);background:var(--panel)}
+.gn.lg.near .lb{color:var(--ink)}
+.gn.lg.hot .lb{color:var(--ink);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){
+.row.anim .xp,.row.anim .xp-c,.row.anim .pm .v,.gl,.gn,.gn .sq,.bx .arr{transition:none!important}
+.rows.a,.rows.b,.fig-l,.veil,.win{animation:none}
+}
+</style>
+</helmet>
+<div class="bx {{themeCls}}" ref="{{setRoot}}" tabIndex="-1" onKeyDown="{{onKey}}" style="position: relative">
+
+  <header style="height: 64px; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line)">
+    <div style="display: flex; align-items: center; gap: 32px">
+      <a href="{{to.home}}" style="display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em">
+        <span aria-hidden="true" style="width: 10px; height: 10px; background: var(--ink)"></span>
+        <span>[사이트 이름]</span>
+      </a>
+      <nav aria-label="주 메뉴" style="display: flex; align-items: center; gap: 8px">
+        <a class="mono nk cur {{hitB}}" href="{{to.main}}" data-key="b" aria-current="page" aria-keyshortcuts="B" style="height: 32px; padding: 0 8px; display: flex; align-items: center; gap: 6px">
+          <span class="k" aria-hidden="true">[B]</span>
+          <span class="l">Blog</span>
+        </a>
+        <a class="mono nk {{hitC}}" href="{{to.map}}" data-key="c" aria-keyshortcuts="C" style="height: 32px; padding: 0 8px; display: flex; align-items: center; gap: 6px">
+          <span class="k" aria-hidden="true">[C]</span>
+          <span class="l">Beauty of CS</span>
+        </a>
+      </nav>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <button class="ghost" type="button" ref="{{setSearchBtn}}" aria-haspopup="dialog" aria-expanded="{{searchOpen}}" aria-keyshortcuts="Meta+K Control+K" onClick="{{openSearch}}" style="height: 40px; padding: 0 10px 0 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line-2)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><circle cx="6" cy="6" r="4.25"></circle><path d="M9.2 9.2 13 13"></path></svg>
+        <span class="mono">Search</span>
+        <span class="mono" style="font-size: 11px; color: var(--ink-3); border: 1px solid var(--line-2); padding: 3px 5px">⌘K</span>
+      </button>
+      <button class="ghost" type="button" aria-label="테마 전환" aria-pressed="{{dark}}" onClick="{{toggleTheme}}" style="width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line-2)">
+        <svg class="th" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"></circle><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <svg class="pine" viewBox="0 0 64 48" shape-rendering="crispEdges" aria-hidden="true">
+    <!-- pine:start -->
+    <g class="k1"><rect x="40" y="21" width="2" height="1"></rect><rect x="42" y="22" width="4" height="1"></rect><rect x="47" y="23" width="1" height="1"></rect><rect x="47" y="24" width="3" height="1"></rect><rect x="49" y="25" width="2" height="1"></rect><rect x="50" y="26" width="2" height="1"></rect><rect x="51" y="27" width="2" height="1"></rect><rect x="52" y="28" width="2" height="1"></rect><rect x="54" y="29" width="1" height="1"></rect><rect x="53" y="30" width="2" height="1"></rect><rect x="53" y="31" width="3" height="1"></rect><rect x="54" y="32" width="2" height="1"></rect><rect x="55" y="33" width="2" height="1"></rect><rect x="55" y="34" width="3" height="1"></rect><rect x="56" y="35" width="4" height="1"></rect><rect x="57" y="36" width="7" height="1"></rect><rect x="59" y="37" width="5" height="1"></rect></g>
+    <g class="k2"><rect x="32" y="8" width="2" height="1"></rect><rect x="33" y="9" width="2" height="1"></rect><rect x="39" y="9" width="2" height="1"></rect><rect x="35" y="10" width="5" height="1"></rect><rect x="37" y="11" width="3" height="1"></rect><rect x="39" y="12" width="1" height="1"></rect><rect x="51" y="12" width="2" height="1"></rect><rect x="40" y="13" width="1" height="1"></rect><rect x="51" y="13" width="1" height="1"></rect><rect x="40" y="14" width="2" height="1"></rect><rect x="50" y="14" width="1" height="1"></rect><rect x="41" y="15" width="2" height="2"></rect><rect x="49" y="15" width="2" height="1"></rect><rect x="49" y="16" width="1" height="2"></rect><rect x="42" y="17" width="1" height="1"></rect><rect x="24" y="20" width="4" height="1"></rect><rect x="42" y="20" width="2" height="2"></rect><rect x="46" y="20" width="2" height="2"></rect><rect x="23" y="21" width="17" height="1"></rect><rect x="32" y="22" width="10" height="1"></rect><rect x="46" y="22" width="1" height="1"></rect><rect x="30" y="23" width="4" height="1"></rect><rect x="40" y="23" width="7" height="1"></rect><rect x="29" y="24" width="3" height="1"></rect><rect x="43" y="24" width="4" height="1"></rect><rect x="55" y="24" width="2" height="1"></rect><rect x="28" y="25" width="3" height="1"></rect><rect x="45" y="25" width="4" height="1"></rect><rect x="55" y="25" width="1" height="1"></rect><rect x="27" y="26" width="2" height="1"></rect><rect x="47" y="26" width="3" height="1"></rect><rect x="54" y="26" width="2" height="1"></rect><rect x="16" y="27" width="1" height="1"></rect><rect x="26" y="27" width="2" height="1"></rect><rect x="46" y="27" width="5" height="1"></rect><rect x="54" y="27" width="1" height="2"></rect><rect x="15" y="28" width="7" height="1"></rect><rect x="25" y="28" width="2" height="1"></rect><rect x="44" y="28" width="3" height="1"></rect><rect x="49" y="28" width="3" height="1"></rect><rect x="20" y="29" width="6" height="1"></rect><rect x="43" y="29" width="2" height="1"></rect><rect x="50" y="29" width="4" height="1"></rect><rect x="23" y="30" width="2" height="1"></rect><rect x="51" y="30" width="2" height="2"></rect><rect x="22" y="31" width="2" height="1"></rect><rect x="51" y="32" width="3" height="1"></rect><rect x="13" y="33" width="3" height="1"></rect><rect x="52" y="33" width="3" height="2"></rect><rect x="10" y="34" width="5" height="1"></rect><rect x="53" y="35" width="3" height="1"></rect><rect x="54" y="36" width="3" height="1"></rect><rect x="54" y="37" width="5" height="1"></rect><rect x="14" y="38" width="2" height="1"></rect><rect x="55" y="38" width="9" height="1"></rect><rect x="12" y="39" width="3" height="1"></rect><rect x="57" y="39" width="7" height="1"></rect><rect x="10" y="40" width="5" height="1"></rect><rect x="59" y="40" width="5" height="1"></rect><rect x="9" y="41" width="2" height="1"></rect><rect x="14" y="41" width="1" height="1"></rect></g>
+    <g class="p3"><rect x="32" y="6" width="2" height="1"></rect><rect x="31" y="7" width="2" height="1"></rect><rect x="34" y="7" width="2" height="1"></rect><rect x="39" y="7" width="3" height="1"></rect><rect x="27" y="8" width="5" height="1"></rect><rect x="34" y="8" width="10" height="1"></rect><rect x="46" y="8" width="1" height="1"></rect><rect x="29" y="9" width="2" height="1"></rect><rect x="36" y="9" width="3" height="1"></rect><rect x="42" y="9" width="4" height="1"></rect><rect x="48" y="9" width="3" height="1"></rect><rect x="51" y="10" width="8" height="1"></rect><rect x="51" y="11" width="10" height="1"></rect><rect x="36" y="15" width="3" height="1"></rect><rect x="29" y="16" width="7" height="1"></rect><rect x="24" y="17" width="11" height="1"></rect><rect x="43" y="19" width="5" height="1"></rect><rect x="48" y="20" width="3" height="1"></rect><rect x="54" y="21" width="1" height="1"></rect><rect x="54" y="22" width="5" height="1"></rect><rect x="16" y="23" width="6" height="1"></rect><rect x="55" y="23" width="7" height="1"></rect><rect x="13" y="24" width="8" height="1"></rect><rect x="14" y="27" width="2" height="1"></rect><rect x="6" y="29" width="8" height="1"></rect><rect x="45" y="32" width="1" height="1"></rect><rect x="43" y="33" width="2" height="1"></rect><rect x="37" y="34" width="6" height="1"></rect><rect x="9" y="35" width="1" height="1"></rect><rect x="25" y="35" width="3" height="1"></rect><rect x="30" y="35" width="12" height="1"></rect><rect x="18" y="36" width="6" height="1"></rect><rect x="4" y="37" width="5" height="1"></rect><rect x="15" y="37" width="10" height="1"></rect><rect x="21" y="42" width="2" height="1"></rect><rect x="1" y="43" width="1" height="1"></rect><rect x="2" y="44" width="6" height="1"></rect><rect x="16" y="44" width="5" height="1"></rect><rect x="2" y="45" width="8" height="1"></rect><rect x="13" y="45" width="8" height="1"></rect></g>
+    <g class="p2"><rect x="32" y="4" width="10" height="1"></rect><rect x="31" y="5" width="12" height="1"></rect><rect x="30" y="6" width="2" height="1"></rect><rect x="34" y="6" width="10" height="1"></rect><rect x="50" y="6" width="5" height="1"></rect><rect x="27" y="7" width="4" height="1"></rect><rect x="36" y="7" width="3" height="1"></rect><rect x="42" y="7" width="15" height="1"></rect><rect x="44" y="8" width="2" height="1"></rect><rect x="48" y="8" width="11" height="1"></rect><rect x="51" y="9" width="9" height="1"></rect><rect x="59" y="10" width="2" height="1"></rect><rect x="36" y="13" width="3" height="1"></rect><rect x="29" y="14" width="11" height="1"></rect><rect x="25" y="15" width="11" height="1"></rect><rect x="24" y="16" width="5" height="1"></rect><rect x="44" y="17" width="4" height="1"></rect><rect x="43" y="18" width="6" height="1"></rect><rect x="42" y="19" width="1" height="1"></rect><rect x="48" y="19" width="8" height="1"></rect><rect x="54" y="20" width="5" height="1"></rect><rect x="16" y="21" width="4" height="1"></rect><rect x="55" y="21" width="5" height="1"></rect><rect x="13" y="22" width="10" height="1"></rect><rect x="59" y="22" width="3" height="1"></rect><rect x="12" y="23" width="4" height="1"></rect><rect x="14" y="26" width="2" height="1"></rect><rect x="6" y="27" width="8" height="1"></rect><rect x="5" y="28" width="9" height="1"></rect><rect x="43" y="31" width="5" height="1"></rect><rect x="37" y="32" width="8" height="1"></rect><rect x="25" y="33" width="3" height="1"></rect><rect x="31" y="33" width="12" height="1"></rect><rect x="9" y="34" width="1" height="1"></rect><rect x="18" y="34" width="19" height="1"></rect><rect x="3" y="35" width="6" height="1"></rect><rect x="15" y="35" width="10" height="1"></rect><rect x="2" y="36" width="7" height="1"></rect><rect x="13" y="36" width="5" height="1"></rect><rect x="24" y="36" width="1" height="1"></rect><rect x="21" y="41" width="2" height="1"></rect><rect x="0" y="42" width="8" height="1"></rect><rect x="16" y="42" width="5" height="1"></rect><rect x="2" y="43" width="8" height="1"></rect><rect x="13" y="43" width="8" height="1"></rect><rect x="8" y="44" width="3" height="1"></rect><rect x="12" y="44" width="4" height="1"></rect><rect x="21" y="45" width="1" height="1"></rect></g>
+    <g class="p1"><rect x="34" y="0" width="1" height="1"></rect><rect x="38" y="0" width="1" height="1"></rect><rect x="35" y="1" width="5" height="1"></rect><rect x="42" y="1" width="1" height="1"></rect><rect x="30" y="2" width="1" height="1"></rect><rect x="32" y="2" width="10" height="1"></rect><rect x="53" y="2" width="1" height="1"></rect><rect x="31" y="3" width="12" height="1"></rect><rect x="51" y="3" width="4" height="1"></rect><rect x="30" y="4" width="2" height="1"></rect><rect x="42" y="4" width="2" height="1"></rect><rect x="50" y="4" width="6" height="1"></rect><rect x="29" y="5" width="2" height="1"></rect><rect x="43" y="5" width="4" height="1"></rect><rect x="49" y="5" width="8" height="1"></rect><rect x="27" y="6" width="3" height="1"></rect><rect x="44" y="6" width="4" height="1"></rect><rect x="49" y="6" width="1" height="1"></rect><rect x="55" y="6" width="4" height="1"></rect><rect x="57" y="7" width="2" height="1"></rect><rect x="59" y="8" width="1" height="1"></rect><rect x="60" y="9" width="1" height="1"></rect><rect x="28" y="11" width="1" height="1"></rect><rect x="36" y="11" width="1" height="1"></rect><rect x="29" y="12" width="2" height="1"></rect><rect x="32" y="12" width="7" height="1"></rect><rect x="27" y="13" width="9" height="1"></rect><rect x="39" y="13" width="1" height="1"></rect><rect x="25" y="14" width="4" height="1"></rect><rect x="24" y="15" width="1" height="1"></rect><rect x="45" y="15" width="1" height="1"></rect><rect x="44" y="16" width="5" height="1"></rect><rect x="56" y="16" width="1" height="1"></rect><rect x="43" y="17" width="1" height="1"></rect><rect x="48" y="17" width="1" height="1"></rect><rect x="53" y="17" width="3" height="1"></rect><rect x="18" y="18" width="1" height="1"></rect><rect x="42" y="18" width="1" height="1"></rect><rect x="49" y="18" width="10" height="1"></rect><rect x="16" y="19" width="4" height="1"></rect><rect x="56" y="19" width="4" height="1"></rect><rect x="15" y="20" width="6" height="1"></rect><rect x="59" y="20" width="1" height="1"></rect><rect x="13" y="21" width="3" height="1"></rect><rect x="20" y="21" width="3" height="1"></rect><rect x="60" y="21" width="2" height="1"></rect><rect x="12" y="22" width="1" height="1"></rect><rect x="8" y="24" width="1" height="1"></rect><rect x="10" y="24" width="1" height="1"></rect><rect x="8" y="25" width="8" height="1"></rect><rect x="6" y="26" width="8" height="1"></rect><rect x="5" y="27" width="1" height="1"></rect><rect x="40" y="29" width="1" height="1"></rect><rect x="34" y="30" width="1" height="1"></rect><rect x="37" y="30" width="11" height="1"></rect><rect x="20" y="31" width="1" height="1"></rect><rect x="25" y="31" width="1" height="1"></rect><rect x="33" y="31" width="2" height="1"></rect><rect x="36" y="31" width="7" height="1"></rect><rect x="7" y="32" width="1" height="1"></rect><rect x="18" y="32" width="6" height="1"></rect><rect x="25" y="32" width="3" height="1"></rect><rect x="31" y="32" width="6" height="1"></rect><rect x="5" y="33" width="5" height="1"></rect><rect x="16" y="33" width="9" height="1"></rect><rect x="28" y="33" width="1" height="1"></rect><rect x="30" y="33" width="1" height="1"></rect><rect x="3" y="34" width="6" height="1"></rect><rect x="15" y="34" width="3" height="1"></rect><rect x="2" y="35" width="1" height="1"></rect><rect x="13" y="35" width="2" height="1"></rect><rect x="4" y="39" width="1" height="1"></rect><rect x="19" y="39" width="1" height="1"></rect><rect x="2" y="40" width="6" height="1"></rect><rect x="16" y="40" width="7" height="1"></rect><rect x="0" y="41" width="9" height="1"></rect><rect x="15" y="41" width="6" height="1"></rect><rect x="8" y="42" width="2" height="1"></rect><rect x="13" y="42" width="3" height="1"></rect><rect x="10" y="43" width="1" height="1"></rect><rect x="12" y="43" width="1" height="1"></rect><rect x="21" y="44" width="1" height="1"></rect></g>
+    <!-- pine:end -->
+  </svg>
+
+  <div style="padding: 56px 48px 44px">
+    <h1 style="margin: 0; display: flex; align-items: flex-start; gap: 10px; font-size: 120px; line-height: 0.95; font-weight: 300; letter-spacing: -0.045em">
+      <span>Blog</span>
+      <span aria-live="polite" style="margin-top: 14px; font-family: var(--mono); font-size: 15px; line-height: 1; font-weight: 400; letter-spacing: 0">({{count}})</span>
+    </h1>
+  </div>
+
+  <div style="padding: 0 48px; display: grid; grid-template-columns: 272px minmax(0, 1fr); column-gap: 64px; align-items: start">
+
+    <aside style="position: sticky; top: 24px; display: flex; flex-direction: column; max-height: calc(100vh - 48px)">
+      <div style="flex: none; height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink)">
+        <span class="mono">/Filters</span>
+        <sc-if value="{{hasFilter}}" hint-placeholder-val="{{ false }}">
+          <button class="mono lk" type="button" onClick="{{clearFilters}}" style="color: var(--ink-3)">Reset ×</button>
+        </sc-if>
+      </div>
+      <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 0 2px; display: flex; flex-direction: column">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+          <fieldset style="margin: 0; padding: 0 0 6px; border: 0; min-width: 0">
+            <legend class="mono" style="padding: 14px 0 6px; font-size: 11px; color: var(--ink-3)">{{g.label}}</legend>
+            <div style="display: grid; grid-template-columns: {{g.cols}}; column-gap: 24px">
+              <sc-for list="{{g.items}}" as="f" hint-placeholder-count="3">
+                <label class="chk" style="min-width: 0; height: 26px; display: flex; align-items: center; gap: 9px; cursor: pointer">
+                  <input class="chk-i" type="checkbox" checked="{{f.on}}" onChange="{{f.toggle}}">
+                  <span class="chk-l" style="flex: 1 1 auto; min-width: 0; font-size: 14px; line-height: 1; white-space: nowrap; color: {{f.color}}; font-weight: {{f.weight}}">{{f.name}}</span>
+                  <span style="font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--ink-3)">{{f.count}}</span>
+                </label>
+              </sc-for>
+            </div>
+          </fieldset>
+        </sc-for>
+      </div>
+
+      <figure aria-label="글 연결 그래프" style="flex: none; margin: 14px 0 0; border: 1px solid var(--ink); background: var(--panel)">
+        <div style="height: 28px; padding: 0 3px 0 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken)">
+          <span class="mono" style="font-size: 11px; white-space: nowrap">[ FIG. 01 ]</span>
+          <span aria-hidden="true" style="flex: 1 1 auto; height: 9px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px)"></span>
+          <button class="ghost" type="button" ref="{{setOpenBtn}}" aria-label="그래프 크게 보기" onClick="{{openGraph}}" style="width: 22px; height: 22px; display: grid; place-items: center">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M7 1h4v4M5 11H1V7M11 1 7 5M1 11l4-4"></path></svg>
+          </button>
+        </div>
+        <div class="fig {{figCls}}" ref="{{setFigS}}" onPointerMove="{{figMove}}" onPointerUp="{{figUp}}" onPointerCancel="{{figUp}}" onMouseLeave="{{leave}}" style="position: relative; height: 200px; overflow: hidden; background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 12px 12px; background-position: 3px 6px">
+          <div class="fig-l" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
+            <svg aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; fill: none">
+              <sc-for list="{{edges}}" as="e" hint-placeholder-count="0">
+                <line class="gl {{e.cls}}" x1="0" y1="0" x2="0" y2="0"></line>
+              </sc-for>
+            </svg>
+            <sc-for list="{{nodes}}" as="n" hint-placeholder-count="0">
+              <a class="gn {{n.cls}}" href="{{to.post}}" tabIndex="-1" draggable="false" aria-label="{{n.title}}" onPointerDown="{{n.down}}" onMouseEnter="{{n.enter}}" onMouseLeave="{{leave}}" onClick="{{nodeClick}}" style="transform: translate({{n.x0}}px, {{n.y0}}px)">
+                <span class="sq"></span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+        <figcaption style="height: 28px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden">
+          <sc-if value="{{hasActive}}" hint-placeholder-val="{{ false }}">
+            <span style="font-family: var(--mono); font-size: 11px; color: var(--ink-3)">{{activeDate}}</span>
+            <span style="min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis">{{activeTitle}}</span>
+          </sc-if>
+          <sc-if value="{{noActive}}" hint-placeholder-val="{{ true }}">
+            <span class="mono" style="font-size: 11px; color: var(--ink-3)">{{graphStat}}</span>
+          </sc-if>
+        </figcaption>
+      </figure>
+    </aside>
+
+    <section aria-label="글 목록" style="min-width: 0">
+      <div style="height: 36px; display: flex; align-items: center; border-bottom: 1px solid var(--ink)">
+        <span style="width: 24px; flex: none"></span>
+        <button class="mono lk" type="button" onClick="{{sortDate}}" style="width: 128px; flex: none; text-align: left; color: {{dateColor}}">/Date {{dateArrow}}</button>
+        <button class="mono lk" type="button" onClick="{{sortName}}" style="flex: none; text-align: left; color: {{nameColor}}">/Name {{nameArrow}}</button>
+        <span style="flex: 1 1 auto"></span>
+        <span class="mono" style="color: var(--ink-3)">{{shownLabel}}</span>
+      </div>
+
+      <div class="rows {{rowsCls}}">
+        <sc-for list="{{rows}}" as="p" hint-placeholder-count="8">
+          <article class="row {{p.cls}}" onMouseEnter="{{p.enter}}" onMouseLeave="{{leave}}" style="border-bottom: 1px solid var(--line)">
+            <div class="row-h" style="display: flex; align-items: center; min-height: 60px">
+              <span aria-hidden="true" style="width: 8px; height: 8px; flex: none; margin-right: 16px; background: var(--ink)"></span>
+              <time style="width: 128px; flex: none; font-family: var(--mono); font-size: 12.5px; line-height: 1">{{p.date}}</time>
+              <a class="t" href="{{to.post}}" style="flex: 1 1 auto; min-width: 0; padding: 14px 24px 14px 0; font-size: 24px; line-height: 1.3; letter-spacing: -0.02em; word-break: keep-all">{{p.title}}⁠<svg class="arr" width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M1 6h15M11 1l5 5-5 5"></path></svg></a>
+              <button class="pm" type="button" aria-expanded="{{p.open}}" aria-controls="{{p.panel}}" aria-label="{{p.toggleLabel}}" onClick="{{p.toggle}}" style="width: 44px; height: 44px; flex: none; display: grid; place-items: center">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2 7h10"></path><path class="v" d="M7 2v10"></path></svg>
+              </button>
+            </div>
+            <div class="xp" id="{{p.panel}}">
+              <div class="xp-in">
+                <div class="xp-c" style="display: grid; grid-template-columns: 128px minmax(0, 1fr); row-gap: 18px; padding: 12px 44px 32px 24px">
+                  <span class="mono" style="padding-top: 8px; color: var(--ink-3)">Summary</span>
+                  <p style="margin: 0; max-width: 640px; font-size: 16px; line-height: 1.75; color: var(--ink-2); word-break: keep-all">{{p.summary}}</p>
+                  <span class="mono" style="padding-top: 7px; color: var(--ink-3)">Tags</span>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                    <sc-for list="{{p.tags}}" as="tg" hint-placeholder-count="2">
+                      <span style="padding: 6px 8px; font-size: 12.5px; line-height: 1; border: 1px solid var(--line-2)">{{tg}}</span>
+                    </sc-for>
+                  </div>
+                  <span></span>
+                  <a class="mono solid" href="{{to.post}}" style="justify-self: start; height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--ink)">
+                    <span>Read</span>
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{noRows}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 0; padding: 40px 0 40px 24px; font-size: 16px; color: var(--ink-2)">고른 조건에 맞는 글이 없습니다.</p>
+      </sc-if>
+    </section>
+  </div>
+
+  <footer style="margin-top: 120px; padding: 28px 48px 40px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line)">
+    <span style="display: flex; align-items: center; gap: 8px; color: var(--ink-3)">
+      <span class="mono">© 2026</span>
+      <span style="font-size: 13px; line-height: 1">[사이트 이름]</span>
+    </span>
+    <nav aria-label="바깥 링크" style="display: flex; align-items: center; gap: 24px">
+      <a class="mono lk" href="#">GitHub ↗</a>
+      <a class="mono lk" href="#">RSS</a>
+      <a class="mono lk" href="#">Email</a>
+    </nav>
+  </footer>
+
+  <sc-if value="{{graphOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="veil" onClick="{{closeGraph}}" style="position: fixed; inset: 0; z-index: 50; padding: 72px 48px 48px; display: flex; justify-content: center; align-items: flex-start; background: var(--veil)">
+      <figure class="win" role="dialog" aria-modal="true" aria-label="글 연결 그래프" onClick="{{stop}}" style="width: 100%; max-width: 1120px; margin: 0; border: 1px solid var(--ink); background: var(--panel); box-shadow: 10px 10px 0 var(--line)">
+        <div style="height: 36px; padding: 0 4px 0 14px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--ink); background: var(--sunken)">
+          <span class="mono" style="white-space: nowrap">[ FIG. 01 ]</span>
+          <span class="mono" style="white-space: nowrap; color: var(--ink-3)">Post graph</span>
+          <span aria-hidden="true" style="flex: 1 1 auto; height: 13px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px)"></span>
+          <button class="ghost" type="button" ref="{{setCloseBtn}}" aria-label="그래프 닫기" onClick="{{closeGraph}}" style="width: 28px; height: 28px; display: grid; place-items: center">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"></path></svg>
+          </button>
+        </div>
+        <div class="fig {{figCls}}" ref="{{setFigL}}" onPointerMove="{{figMove}}" onPointerUp="{{figUp}}" onPointerCancel="{{figUp}}" onMouseLeave="{{leave}}" style="position: relative; height: 600px; overflow: hidden; background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 16px 16px; background-position: 7px 4px">
+          <div class="fig-l" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
+            <svg aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; fill: none">
+              <sc-for list="{{edges}}" as="e" hint-placeholder-count="0">
+                <line class="gl lg {{e.cls}}" x1="0" y1="0" x2="0" y2="0"></line>
+              </sc-for>
+            </svg>
+            <sc-for list="{{nodes}}" as="n" hint-placeholder-count="0">
+              <a class="gn lg {{n.cls}}" href="{{to.post}}" draggable="false" onPointerDown="{{n.down}}" onMouseEnter="{{n.enter}}" onMouseLeave="{{leave}}" onClick="{{nodeClick}}">
+                <span class="hit"><span class="sq"></span></span>
+                <span class="lb">{{n.short}}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+        <figcaption style="height: 40px; padding: 0 14px; display: flex; align-items: center; gap: 20px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden">
+          <span class="mono" style="color: var(--ink-3)">{{graphStat}}</span>
+          <sc-if value="{{hasActive}}" hint-placeholder-val="{{ false }}">
+            <span style="display: flex; align-items: center; gap: 10px; min-width: 0">
+              <span aria-hidden="true" style="width: 8px; height: 8px; flex: none; background: var(--ink)"></span>
+              <span style="font-family: var(--mono); font-size: 12px; color: var(--ink-3)">{{activeDate}}</span>
+              <span style="min-width: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis">{{activeTitle}}</span>
+            </span>
+          </sc-if>
+          <span style="flex: 1 1 auto"></span>
+          <span style="font-size: 12px; color: var(--ink-3)">점은 글, 선은 글 사이의 링크. 점을 끌어 옮길 수 있습니다</span>
+        </figcaption>
+      </figure>
+    </div>
+  </sc-if>
+
+  <div style="position: absolute; left: 0; top: 0; width: 0; height: 0; overflow: hidden">
+    <dc-import name="SearchV2" open="{{searchOpen}}" on-close="{{closeSearch}}" post-href="{{to.post}}" main-href="{{to.main}}" hint-size="0px,0px"></dc-import>
+  </div>
+
+  <div class="fx" ref="{{setFx}}" aria-hidden="true">
+    <sc-for list="{{fxPool}}" as="f" hint-placeholder-count="0"><i></i></sc-for>
+  </div>
+  <i class="fx-c" ref="{{setFxDot}}" aria-hidden="true"></i>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":2440}}'>
+// 이 버전(v2)의 화면 파일. 다크 화면은 같은 파일을 theme="dark"로 불러오는 얇은 파일이고, 이름 뒤에 Dark가 붙는다.
+// 검색 창은 SearchV2를 불러 쓴다
+const FILES = { home: 'HomeV2', main: 'MainV2', post: 'PostV2', map: 'BeautyOfCSV2' };
+// 예시 데이터: 글 제목과 요약은 화면 확인용 샘플이다. x, y는 연결 그래프에서의 위치(0~1).
+const KIND = { cs: 'CS 개념', ts: '트러블슈팅', til: 'TIL' };
+const TOPICS = ['운영체제', '컴퓨터 구조', '자료구조', '네트워크', '데이터베이스', '동시성', 'Spring', 'MySQL', 'Java', 'JPA', 'Docker', '도구'];
+const POSTS = [
+  { id: 'explain-type', date: '2026.10.01', kind: 'til', topics: ['MySQL', '데이터베이스'], x: 0.856, y: 0.425, short: 'EXPLAIN type', title: 'EXPLAIN의 type 컬럼 읽는 법', summary: 'ALL, index, range, ref, eq_ref, const가 각각 어떤 접근 방식인지와, 실행 계획에서 가장 먼저 볼 지점을 적어 둔다.' },
+  { id: 'context-switch', date: '2026.09.29', kind: 'cs', topics: ['운영체제'], x: 0.277, y: 0.21, short: '문맥 교환', title: '문맥 교환이 비싼 이유', summary: '레지스터를 저장하고 복원하는 직접 비용보다 캐시와 TLB가 식는 간접 비용이 더 크다는 점을 정리한다.' },
+  { id: 'stock-concurrency', date: '2026.09.27', kind: 'ts', topics: ['Spring', 'JPA', '동시성'], x: 0.497, y: 0.816, short: '재고 차감 동시성', title: '재고 차감 동시성 문제: synchronized에서 비관적 락까지', summary: '동시에 들어온 주문이 재고를 음수로 만든 문제를 synchronized, 낙관적 락, 비관적 락 순서로 고쳐 본 기록.' },
+  { id: 'page-replacement', date: '2026.09.25', kind: 'cs', topics: ['운영체제'], x: 0.403, y: 0.496, short: '페이지 교체 알고리즘', title: '페이지 교체 알고리즘: FIFO, LRU, Clock', summary: '물리 메모리가 가득 찼을 때 어떤 페이지를 내보낼지 고르는 세 가지 방법과, Clock이 LRU를 흉내 내는 방식.' },
+  { id: 'mysql-deadlock', date: '2026.09.22', kind: 'ts', topics: ['MySQL', '동시성'], x: 0.586, y: 0.767, short: 'MySQL 데드락 로그', title: 'MySQL 데드락 로그를 읽고 원인을 찾은 과정', summary: 'SHOW ENGINE INNODB STATUS의 데드락 구간을 읽는 순서와, 락을 잡는 순서를 맞춰 해결한 과정.' },
+  { id: 'mmu-tlb', date: '2026.09.19', kind: 'cs', topics: ['컴퓨터 구조'], x: 0.368, y: 0.153, short: 'MMU와 TLB', title: 'MMU와 TLB: 주소 변환을 하드웨어가 돕는 방식', summary: '매번 페이지 테이블을 걷지 않도록 변환 결과를 기억하는 TLB의 구조와 미스 처리 과정을 따라간다.' },
+  { id: 'java-record', date: '2026.09.17', kind: 'til', topics: ['Java'], x: 0.255, y: 0.722, short: 'record equals/hashCode', title: 'Java record의 equals와 hashCode', summary: 'record가 모든 필드로 equals와 hashCode를 만들어 준다는 점과, 배열 필드에서 생기는 함정.' },
+  { id: 'paging', date: '2026.09.14', kind: 'cs', topics: ['운영체제'], x: 0.345, y: 0.356, short: '페이징과 페이지 테이블', title: '페이징과 페이지 테이블: 가상 주소가 물리 주소로 바뀌기까지', summary: '가상 주소가 VPN과 오프셋으로 나뉘어 페이지 테이블을 거치는 과정, 그리고 다단계 테이블과 TLB가 필요한 이유를 정리한다.' },
+  { id: 'transactional-proxy', date: '2026.09.11', kind: 'ts', topics: ['Spring'], x: 0.642, y: 0.56, short: '@Transactional 프록시', title: '@Transactional이 적용되지 않던 이유: 프록시와 내부 호출', summary: '같은 클래스 안에서 호출한 메서드에 트랜잭션이 걸리지 않는 이유를 스프링 AOP 프록시 구조로 설명한다.' },
+  { id: 'mvcc', date: '2026.09.09', kind: 'cs', topics: ['데이터베이스'], x: 0.444, y: 0.666, short: 'MVCC', title: 'MVCC: 락 없이 읽기를 처리하는 방법', summary: '읽는 쪽이 쓰는 쪽을 기다리지 않도록 버전을 여러 개 유지하는 방식과 InnoDB의 undo 로그.' },
+  { id: 'git-rebase-onto', date: '2026.09.06', kind: 'til', topics: ['도구'], x: 0.149, y: 0.699, short: 'rebase --onto', title: 'git rebase --onto로 브랜치 옮기기', summary: '잘못된 브랜치에서 딴 작업 브랜치를 커밋 범위만 골라 다른 베이스로 옮기는 방법.' },
+  { id: 'isolation-level', date: '2026.09.04', kind: 'cs', topics: ['데이터베이스'], x: 0.537, y: 0.596, short: '격리 수준', title: '트랜잭션 격리 수준과 이상 현상', summary: 'Dirty Read, Non-Repeatable Read, Phantom Read가 각 격리 수준에서 어떻게 막히는지 표로 정리한다.' },
+  { id: 'jpa-n-plus-one', date: '2026.09.01', kind: 'ts', topics: ['JPA', 'Spring'], x: 0.742, y: 0.65, short: 'JPA N+1', title: 'JPA N+1 문제를 fetch join과 batch size로 줄이기', summary: '연관 엔티티를 조회할 때 쿼리가 N번 더 나가는 원인과, 상황에 따라 고를 수 있는 두 가지 해결 방법.' },
+  { id: 'bptree-index', date: '2026.08.30', kind: 'cs', topics: ['데이터베이스'], x: 0.747, y: 0.442, short: 'B+트리 인덱스', title: 'B+트리 인덱스가 쿼리를 빠르게 만드는 방식', summary: '리프 노드가 연결된 B+트리 구조가 범위 검색에 유리한 이유와 클러스터형 인덱스의 의미.' },
+  { id: 'slow-query-explain', date: '2026.08.27', kind: 'ts', topics: ['MySQL', '데이터베이스'], x: 0.83, y: 0.615, short: '느린 쿼리와 실행 계획', title: '인덱스를 탔는데도 느린 쿼리: 실행 계획 다시 읽기', summary: '인덱스를 쓰는데도 느렸던 쿼리를 커버링 인덱스로 바꾸며 확인한 실행 계획의 차이.' },
+  { id: 'btree', date: '2026.08.24', kind: 'cs', topics: ['자료구조'], x: 0.572, y: 0.382, short: 'B-트리와 B+트리', title: 'B-트리와 B+트리는 왜 디스크에 맞는 구조인가', summary: '노드 하나를 디스크 블록 하나에 맞춰 트리의 높이를 낮추고 디스크 접근 횟수를 줄이는 원리.' },
+  { id: 'curl-tls', date: '2026.08.21', kind: 'til', topics: ['네트워크'], x: 0.572, y: 0.061, short: 'curl -v TLS', title: 'curl -v로 TLS 핸드셰이크 살펴보기', summary: 'curl -v 출력에서 ClientHello부터 인증서 검증까지 각 줄이 무엇을 뜻하는지 읽어 본다.' },
+  { id: 'deadlock-conditions', date: '2026.08.16', kind: 'cs', topics: ['운영체제', '동시성'], x: 0.664, y: 0.876, short: '교착 상태 발생 조건', title: '교착 상태의 네 가지 발생 조건', summary: '상호 배제, 점유와 대기, 비선점, 순환 대기가 모두 성립해야 교착 상태가 된다는 점과 각 조건을 깨는 방법.' },
+  { id: 'docker-localhost', date: '2026.08.13', kind: 'ts', topics: ['Docker', '네트워크'], x: 0.757, y: 0.13, short: 'Docker localhost', title: 'Docker 컨테이너에서 localhost로 DB에 접속되지 않을 때', summary: '컨테이너 안의 localhost는 컨테이너 자신이라는 점과, 서비스 이름으로 접속하도록 고친 과정.' },
+  { id: 'mutex-semaphore', date: '2026.08.11', kind: 'cs', topics: ['운영체제', '동시성'], x: 0.574, y: 0.939, short: '뮤텍스와 세마포어', title: '뮤텍스와 세마포어', summary: '하나만 들어갈 수 있는 락과 여러 개를 세는 카운터의 차이를 임계 구역 문제에서 출발해 정리한다.' },
+  { id: 'optional-orelse', date: '2026.08.08', kind: 'til', topics: ['Java'], x: 0.071, y: 0.583, short: 'Optional.orElse', title: 'Optional.orElse와 orElseGet의 차이', summary: 'orElse의 인자는 값이 있어도 항상 평가된다는 점과, 비용이 큰 기본값에는 orElseGet을 써야 하는 이유.' },
+  { id: 'hikari-pool', date: '2026.08.06', kind: 'ts', topics: ['Spring'], x: 0.7, y: 0.29, short: 'HikariCP 풀 고갈', title: 'HikariCP 커넥션 풀이 고갈됐을 때 확인한 것들', summary: 'Connection is not available 오류가 났을 때 풀 크기, 트랜잭션 범위, 느린 쿼리를 순서대로 확인한 기록.' },
+  { id: 'tcp-connection', date: '2026.08.03', kind: 'cs', topics: ['네트워크'], x: 0.664, y: 0.097, short: 'TCP 연결 관리', title: 'TCP 연결 관리: 3-way handshake와 4-way handshake', summary: '연결을 맺을 때 세 번, 끊을 때 네 번 패킷을 주고받는 이유와 TIME_WAIT 상태가 있는 이유.' },
+  { id: 'gradle-cycle', date: '2026.07.29', kind: 'ts', topics: ['도구'], x: 0.038, y: 0.376, short: 'Gradle 순환 의존성', title: 'Gradle 멀티 모듈에서 순환 의존성 끊기', summary: '두 모듈이 서로를 참조하게 된 원인을 찾고, 공통 인터페이스를 별도 모듈로 분리해 푼 과정.' },
+  { id: 'cache-locality', date: '2026.07.27', kind: 'cs', topics: ['컴퓨터 구조'], x: 0.449, y: 0.295, short: '캐시와 지역성', title: '캐시 메모리와 지역성의 원리', summary: 'CPU와 메모리의 속도 차이를 메우는 캐시가 왜 효과가 있는지 시간 지역성과 공간 지역성으로 설명한다.' },
+  { id: 'docker-layer-cache', date: '2026.07.23', kind: 'til', topics: ['Docker'], x: 0.848, y: 0.191, short: 'Docker 레이어 캐시', title: 'Docker 레이어 캐시가 깨지는 순서', summary: 'Dockerfile의 한 줄이 바뀌면 그 아래 레이어가 모두 다시 빌드된다는 점과, COPY 순서를 바꿔 빌드 시간을 줄인 방법.' },
+  { id: 'hash-table', date: '2026.07.20', kind: 'cs', topics: ['자료구조'], x: 0.269, y: 0.496, short: '해시 테이블', title: '해시 테이블과 충돌 해결', summary: '키를 해시해 배열 인덱스로 쓰는 구조와, 체이닝과 개방 주소법이 충돌을 다루는 방식.' },
+  { id: 'stack', date: '2026.07.14', kind: 'cs', topics: ['자료구조'], x: 0.189, y: 0.266, short: '스택과 호출 스택', title: '스택과 호출 스택', summary: '후입선출 구조인 스택이 함수 호출과 복귀에서 어떻게 쓰이는지 스택 프레임으로 살펴본다.' },
+];
+// [언급한 글, 언급된 글]
+const LINKS = [
+  ['paging', 'hash-table'], ['paging', 'cache-locality'], ['paging', 'mmu-tlb'], ['paging', 'page-replacement'],
+  ['mmu-tlb', 'paging'], ['mmu-tlb', 'cache-locality'], ['page-replacement', 'paging'], ['page-replacement', 'cache-locality'],
+  ['context-switch', 'paging'], ['context-switch', 'mmu-tlb'], ['context-switch', 'stack'],
+  ['stock-concurrency', 'mutex-semaphore'], ['stock-concurrency', 'isolation-level'], ['stock-concurrency', 'mvcc'], ['stock-concurrency', 'mysql-deadlock'],
+  ['mysql-deadlock', 'deadlock-conditions'], ['mysql-deadlock', 'isolation-level'], ['java-record', 'hash-table'], ['transactional-proxy', 'isolation-level'],
+  ['mvcc', 'isolation-level'], ['jpa-n-plus-one', 'transactional-proxy'], ['jpa-n-plus-one', 'slow-query-explain'], ['bptree-index', 'btree'],
+  ['slow-query-explain', 'bptree-index'], ['explain-type', 'slow-query-explain'], ['explain-type', 'bptree-index'], ['btree', 'cache-locality'],
+  ['curl-tls', 'tcp-connection'], ['deadlock-conditions', 'mutex-semaphore'], ['docker-localhost', 'tcp-connection'], ['hikari-pool', 'tcp-connection'],
+  ['hikari-pool', 'transactional-proxy'], ['docker-layer-cache', 'docker-localhost'],
+];
+
+// ── 브레인 맵의 움직임 ─────────────────────────────────────────────────────
+// 계산은 작은 창의 안쪽 크기(270×200) 좌표에서 하고, 그릴 때 각 창의 크기에 맞춘다.
+const SW = 270, SH = 200, PAD = 12;
+const K_HOME = 0.012;  // 제자리로 돌아가려는 힘
+const K_LINK = 0.009;  // 연결된 점끼리 원래 거리를 지키려는 힘 (끌면 이웃이 따라온다)
+const K_PUSH = 0.25;   // 겹치지 않게 서로 밀어내는 힘
+const DAMP = 0.76;     // 프레임마다 남는 속도
+const AMP = 4;         // 가만히 있을 때 떠다니는 폭(px)
+const HERE = 'b';      // 이 화면의 단축키
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+// 글자를 입력하는 자리에서는 단축키를 받지 않는다
+const typing = (t) => !!t && (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || (t.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset)$/.test(t.type)));
+
+// ── 커서 효과 (세 화면 공통) ───────────────────────────────────────────────
+// 덧그리는 층(.fx)에 미리 놓아 둔 테두리 네모를 돌려 쓴다. 자리와 크기 변화만 스크립트가 정한다
+const FX_CELL = 14; // 잔상이 찍히는 간격이자 자리를 맞추는 격자(px)
+// 잔상: 20px로 찍힌 뒤 4px까지 일정한 속도로 작아지며 0.8초 동안 사라진다. 찍힌 순간이 가장 진하다(55%).
+// 그래서 커서 바로 뒤의 네모가 가장 크고 진하고, 꼬리로 갈수록 작고 옅다
+const FX_TRAIL = { from: 20, to: 4, ms: 800, alpha: 0.55, ease: 'linear' };
+// 누름: 4px에서 24px까지 퍼지며 0.65초 동안 사라진다. 처음에 빠르게 커지고 끝으로 갈수록 느려진다
+const FX_PRESS = { from: 4, to: 24, ms: 650, alpha: 0.8, ease: 'cubic-bezier(.215,.61,.355,1)' };
+const FX_TRAILS = 120, FX_PRESSES = 6; // 한꺼번에 떠 있을 수 있는 네모 수(잔상, 누름)
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // order: 펼친 행을 펼친 순서대로. 맨 뒤가 그래프에서 표시되는 글이다
+    // theme: 테마 버튼으로 고른 값. null이면 이 화면에 주어진 theme 값을 따른다
+    this.state = { sort: 'date', dir: 'desc', open: { paging: true }, order: ['paging'], anim: null, rev: 0, hover: null, via: null, drag: false, key: null, types: {}, topics: {}, graphOpen: false, theme: null, searchOpen: false };
+    this.toggleTheme = () => this.setState((st) => ({ theme: this.isDark(st) ? 'light' : 'dark' }));
+    // 검색 창: 열 때는 검색 창이 입력칸으로 포커스를 가져가고, 닫으면 Search 버튼으로 돌려준다
+    this.setSearchBtn = (el) => { this.searchBtn = el; };
+    this.openSearch = () => this.setState({ searchOpen: true });
+    this.closeSearch = () => {
+      this.setState({ searchOpen: false });
+      setTimeout(() => { if (this.searchBtn) this.searchBtn.focus({ preventScroll: true }); }, 0);
+    };
+    // 방향을 뺀 연결과 이웃 목록
+    const seen = {};
+    this.pairs = [];
+    this.adj = {};
+    LINKS.forEach(([a, b]) => {
+      const k = a < b ? a + '|' + b : b + '|' + a;
+      if (seen[k]) return;
+      seen[k] = true;
+      this.pairs.push([a, b]);
+      (this.adj[a] = this.adj[a] || {})[b] = true;
+      (this.adj[b] = this.adj[b] || {})[a] = true;
+    });
+    this.byId = {};
+    POSTS.forEach((p) => { this.byId[p.id] = p; });
+
+    // 점: 작은 창에 여백 없이 차도록 맞춘 자리가 제자리(hx, hy)다
+    const xs = POSTS.map((p) => p.x), ys = POSTS.map((p) => p.y);
+    const x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    this.simOf = {};
+    this.sim = POSTS.map((p, i) => {
+      const x = (0.07 + ((p.x - x0) / (x1 - x0)) * 0.86) * SW, y = (0.09 + ((p.y - y0) / (y1 - y0)) * 0.82) * SH;
+      const n = { id: p.id, x, y, vx: 0, vy: 0, ax: 0, ay: 0, hx: x, hy: y, x0: x.toFixed(1), y0: y.toFixed(1), p1: i * 2.399963, p2: i * 1.731 + 0.6, w1: 0.00052 + (i % 5) * 0.00007, w2: 0.00041 + (i % 7) * 0.00005 };
+      this.simOf[p.id] = n;
+      return n;
+    });
+    this.links = this.pairs.map(([a, b]) => {
+      const A = this.simOf[a], B = this.simOf[b];
+      return { a: A, b: B, len: Math.hypot(B.hx - A.hx, B.hy - A.hy) };
+    });
+    // 서로 밀어내기 시작하는 거리: 처음 배치에서는 아무도 밀리지 않게 잡는다
+    this.reach = 14;
+    for (let i = 0; i < this.sim.length; i++) for (let j = i + 1; j < this.sim.length; j++) {
+      this.reach = Math.min(this.reach, Math.hypot(this.sim[i].hx - this.sim[j].hx, this.sim[i].hy - this.sim[j].hy) * 0.92);
+    }
+    this.amp = 0;
+    this.held = null;
+    this.figS = null;
+    this.figL = null;
+
+    this.setRoot = (el) => { this.rootEl = el; };
+    this.setFigS = (el) => { this.figS = el ? { el, large: false } : null; };
+    this.setFigL = (el) => { this.figL = el ? { el, large: true } : null; };
+    this.setOpenBtn = (el) => { this.openBtn = el; };
+    this.setCloseBtn = (el) => { if (el) el.focus({ preventScroll: true }); };
+
+    // 커서 효과: 덧그리는 층, 커서 아래 네모, 층에 놓아 둘 네모 수만큼의 목록
+    this.fxPool = Array.from({ length: FX_TRAILS + FX_PRESSES }, (_, i) => i);
+    this.fxAnim = [];
+    this.setFx = (el) => { this.fxEl = el; };
+    this.setFxDot = (el) => { this.fxDot = el; };
+    this.fxMove = (e) => this.fxTrail(e);
+    this.fxDown = (e) => this.fxTap(e);
+    this.fxLeave = () => this.fxHide();
+
+    // 행과 점의 손잡이. via는 어디에 마우스를 올렸는지: 행이면 그 점만 강조하고, 점이면 나머지를 흐리게 한다
+    this.rowEnters = {};
+    this.enters = {};
+    this.downs = {};
+    this.toggles = {};
+    POSTS.forEach((p) => {
+      this.rowEnters[p.id] = () => { if (!this.held && this.state.hover !== p.id) this.setState({ hover: p.id, via: 'row' }); };
+      this.enters[p.id] = () => { if (!this.held && (this.state.hover !== p.id || this.state.via !== 'node')) this.setState({ hover: p.id, via: 'node' }); };
+      this.downs[p.id] = (e) => this.grab(p.id, e);
+      this.toggles[p.id] = () => this.setState((st) => {
+        const next = Object.assign({}, st.open);
+        next[p.id] = !next[p.id];
+        const order = st.order.filter((id) => id !== p.id);
+        if (next[p.id]) order.push(p.id);
+        return { open: next, order, anim: p.id };
+      });
+    });
+    this.leave = () => { if (!this.held && this.state.hover) this.setState({ hover: null }); };
+
+    this.figMove = (e) => {
+      const h = this.held;
+      if (!h || e.pointerId !== h.pid) return;
+      if (!h.moved) {
+        if (Math.abs(e.clientX - h.sx) + Math.abs(e.clientY - h.sy) < 4) return;
+        h.moved = true;
+        this.setState({ drag: true, hover: h.n.id, via: 'node' });
+      }
+      const r = h.f.el.getBoundingClientRect(), m = h.f.m;
+      h.n.x = clamp((e.clientX - r.left - m.ox) / m.kx + h.dx, PAD, SW - PAD);
+      h.n.y = clamp((e.clientY - r.top - m.oy) / m.ky + h.dy, PAD, SH - PAD);
+    };
+    this.figUp = (e) => {
+      const h = this.held;
+      if (!h || (e && e.pointerId !== h.pid)) return;
+      this.held = null;
+      if (!h.moved) return;
+      // 놓은 자리가 새 제자리가 된다. 이 점에 걸린 선의 길이도 거기에 맞춘다
+      h.n.hx = h.n.x;
+      h.n.hy = h.n.y;
+      this.links.forEach((l) => { if (l.a === h.n || l.b === h.n) l.len = Math.hypot(l.b.hx - l.a.hx, l.b.hy - l.a.hy); });
+      this.dropped = true;
+      setTimeout(() => { this.dropped = false; }, 0);
+      this.setState({ drag: false });
+    };
+    // 끌다가 놓은 직후의 클릭은 글로 이동하지 않는다
+    this.nodeClick = (e) => { if (this.dropped) e.preventDefault(); };
+
+    this.onKey = (e) => {
+      if (e.defaultPrevented || this.editing()) return;
+      // 검색: ⌘K 또는 Ctrl+K. 글자를 입력하는 자리에서도 받는다
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK')) {
+        e.preventDefault();
+        if (this.state.searchOpen) this.closeSearch(); else this.openSearch();
+        return;
+      }
+      if (this.state.searchOpen) {
+        if (e.key === 'Escape') { e.preventDefault(); this.closeSearch(); }
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+      if (e.key === 'Escape') {
+        if (this.state.graphOpen) { e.preventDefault(); this.closeGraph(); }
+        return;
+      }
+      if (e.shiftKey || e.repeat || this.state.graphOpen) return;
+      // 한글 입력 상태에서도 같은 자리의 키로 동작하게 한다
+      const ch = e.key && e.key.length === 1 ? e.key.toLowerCase() : '';
+      const k = /^[a-z]$/.test(ch) ? ch : e.code === 'KeyB' ? 'b' : e.code === 'KeyC' ? 'c' : '';
+      if (k !== 'b' && k !== 'c') return;
+      e.preventDefault();
+      this.go(k);
+    };
+
+    this.closeGraph = () => {
+      this.setState({ graphOpen: false, hover: null });
+      setTimeout(() => { if (this.openBtn) this.openBtn.focus({ preventScroll: true }); }, 0);
+    };
+
+    this.tick = (now) => {
+      this.raf = requestAnimationFrame(this.tick);
+      // 천천히 떠다니기만 하는 동안에는 두 프레임에 한 번만 계산한다
+      this.odd = !this.odd;
+      if (this.odd && !this.held && !(this.speed > 0.2)) return;
+      const dt = clamp((now - (this.last || now)) / 16.667, 0.25, 3);
+      this.last = now;
+      this.place(this.step(now, dt));
+    };
+  }
+
+  componentDidMount() {
+    this.reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+    this.place(true);
+    this.raf = requestAnimationFrame(this.tick);
+    // 단축키를 바로 받을 수 있게, 이 문서에 포커스가 와 있는데 받는 요소가 없으면 화면 전체가 받는다.
+    // 다른 문서의 포커스를 가져오지는 않는다
+    this.onFocus = () => { if (this.rootEl && !this.editing() && document.activeElement === document.body) this.rootEl.focus({ preventScroll: true }); };
+    window.addEventListener('focus', this.onFocus);
+    if (document.hasFocus()) this.onFocus();
+    // 커서 효과: 화면 어디에서 움직이고 누르든 받는다. 받기만 하고 기본 동작은 건드리지 않는다
+    window.addEventListener('pointermove', this.fxMove, { capture: true, passive: true });
+    window.addEventListener('pointerdown', this.fxDown, { capture: true, passive: true });
+    document.documentElement.addEventListener('pointerleave', this.fxLeave);
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    clearTimeout(this.navT);
+    window.removeEventListener('focus', this.onFocus);
+    window.removeEventListener('pointermove', this.fxMove, { capture: true });
+    window.removeEventListener('pointerdown', this.fxDown, { capture: true });
+    document.documentElement.removeEventListener('pointerleave', this.fxLeave);
+  }
+
+  // ── 커서 효과 ──
+  // 그려도 되는가: 캔버스에서 편집하는 중이거나 "동작 줄이기"가 켜져 있으면 그리지 않는다
+  fxOn() {
+    return !!this.fxEl && !this.editing() && !(this.reduce && this.reduce.matches);
+  }
+
+  // 커서 아래 네모를 치우고, 잔상을 이어 가던 자리도 잊는다(마우스가 화면을 벗어났을 때)
+  fxHide() {
+    this.fxAt = null;
+    if (this.fxDot) this.fxDot.style.visibility = 'hidden';
+  }
+
+  // 층의 왼쪽 위가 문서의 어디인지. 네모는 문서에 찍히므로 스크롤하면 글과 함께 움직인다
+  fxOrigin(e) {
+    const r = this.fxEl.getBoundingClientRect();
+    this.fxOx = r.left + (e.pageX - e.clientX);
+    this.fxOy = r.top + (e.pageY - e.clientY);
+  }
+
+  // i번째 네모를 (x, y)에 중심을 두고 from → to 크기로 바꾸면서 지운다. 테두리 굵기는 1px 그대로다
+  fxStamp(i, x, y, k) {
+    const el = this.fxEl.children[i];
+    if (!el || !el.animate) return;
+    const old = this.fxAnim[i];
+    if (old) { old[0].cancel(); old[1].cancel(); }
+    const a = k.from / 2, b = k.to / 2;
+    this.fxAnim[i] = [
+      el.animate([
+        { left: x - a + 'px', top: y - a + 'px', width: k.from + 'px', height: k.from + 'px' },
+        { left: x - b + 'px', top: y - b + 'px', width: k.to + 'px', height: k.to + 'px' },
+      ], { duration: k.ms, easing: k.ease }),
+      el.animate([{ opacity: k.alpha }, { opacity: 0 }], { duration: k.ms }),
+    ];
+  }
+
+  // 가장 가까운 격자점에 잔상 하나. 바로 앞에 찍은 자리와 같으면 건너뛴다
+  fxPut(x, y) {
+    const gx = Math.round(x / FX_CELL) * FX_CELL, gy = Math.round(y / FX_CELL) * FX_CELL;
+    if (gx === this.fxGx && gy === this.fxGy) return;
+    this.fxGx = gx;
+    this.fxGy = gy;
+    this.fxN = ((this.fxN || 0) + 1) % FX_TRAILS;
+    this.fxStamp(this.fxN, gx, gy, FX_TRAIL);
+  }
+
+  // 마우스가 움직일 때: 커서 아래 네모를 옮기고, 지나간 길을 14px마다 끊어 잔상을 찍는다.
+  // 터치와 펜은 스크롤과 겹치므로 잔상을 남기지 않는다
+  fxTrail(e) {
+    if (e.pointerType !== 'mouse' || !this.fxOn()) { this.fxHide(); return; }
+    const x = e.clientX, y = e.clientY, d = this.fxDot;
+    if (d) { d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.visibility = 'visible'; }
+    const last = this.fxAt; // 마지막으로 잔상을 찍은 자리(화면 좌표, 격자에 맞추기 전)
+    if (!last) { this.fxOrigin(e); this.fxAt = { x, y }; return; }
+    const dx = x - last.x, dy = y - last.y, dist = Math.hypot(dx, dy);
+    if (dist < FX_CELL) return;
+    // 화면 좌표를 층 안의 좌표로 옮길 때 더하는 값(지금의 스크롤 − 층의 자리)
+    const sx = e.pageX - x - this.fxOx, sy = e.pageY - y - this.fxOy;
+    // 한 번에 아주 멀리 건너뛰었으면 사이를 잇지 않고 그 자리에만 찍는다
+    if (dist > FX_CELL * 40) { this.fxAt = { x, y }; this.fxPut(x + sx, y + sy); return; }
+    const n = Math.floor(dist / FX_CELL), ux = (dx / dist) * FX_CELL, uy = (dy / dist) * FX_CELL;
+    for (let i = 1; i <= n; i++) this.fxPut(last.x + ux * i + sx, last.y + uy * i + sy);
+    this.fxAt = { x: last.x + ux * n, y: last.y + uy * n };
+  }
+
+  // 누를 때(마우스 왼쪽 버튼, 터치, 펜): 격자에 맞추지 않고 누른 자리 그대로에서 네모 하나가 퍼진다
+  fxTap(e) {
+    if (!this.fxOn() || !e.isPrimary || e.button > 0) return;
+    if (e.pointerType !== 'mouse') this.fxHide();
+    this.fxOrigin(e);
+    this.fxK = ((this.fxK || 0) + 1) % FX_PRESSES;
+    this.fxStamp(FX_TRAILS + this.fxK, Math.round(e.pageX - this.fxOx), Math.round(e.pageY - this.fxOy), FX_PRESS);
+  }
+
+  isDark(st) {
+    return st.theme ? st.theme === 'dark' : this.props.theme === 'dark';
+  }
+
+  // 캔버스에서 편집하는 동안에는 단축키와 움직임을 멈춘다
+  editing() {
+    const b = document.body;
+    return b.hasAttribute('data-dc-editor-on') && b.getAttribute('data-dc-editor-tool') !== 'interact';
+  }
+
+  // 단축키: 메뉴를 한 번 반전시킨 뒤 그 링크를 누른 것과 똑같이 이동한다
+  go(k) {
+    if (this.navT) return;
+    this.setState({ key: k });
+    this.navT = setTimeout(() => {
+      this.navT = null;
+      this.setState({ key: null });
+      if (k === HERE) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+      const a = this.rootEl && this.rootEl.querySelector('a[data-key="' + k + '"]');
+      if (a) a.click();
+    }, 140);
+  }
+
+  grab(id, e) {
+    if (e.button) return;
+    const el = e.currentTarget, box = el.closest('.fig');
+    const f = this.figL && this.figL.el === box ? this.figL : this.figS;
+    if (!f || !f.m) return;
+    const n = this.simOf[id], r = f.el.getBoundingClientRect();
+    // 잡은 자리와 점 중심의 차이를 기억해 두어, 잡는 순간 점이 튀지 않게 한다
+    this.held = { n, f, pid: e.pointerId, sx: e.clientX, sy: e.clientY, moved: false, dx: n.x - (e.clientX - r.left - f.m.ox) / f.m.kx, dy: n.y - (e.clientY - r.top - f.m.oy) / f.m.ky };
+    if (el.setPointerCapture) el.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }
+
+  // 한 프레임만큼 힘을 계산해 점을 옮긴다. 움직인 점이 있으면 true
+  step(now, dt) {
+    const N = this.sim, held = this.held ? this.held.n : null;
+    const calm = (this.reduce && this.reduce.matches) || this.editing();
+    this.amp += ((calm ? 0 : AMP) - this.amp) * Math.min(1, 0.03 * dt);
+    const amp = this.amp;
+    for (let i = 0; i < N.length; i++) {
+      const n = N[i];
+      const tx = n.hx + amp * (Math.sin(now * n.w1 + n.p1) + 0.45 * Math.sin(now * n.w2 * 1.9 + n.p2));
+      const ty = n.hy + amp * (Math.cos(now * n.w2 + n.p2) + 0.45 * Math.sin(now * n.w1 * 1.7 + n.p1 * 1.3));
+      n.ax = (tx - n.x) * K_HOME;
+      n.ay = (ty - n.y) * K_HOME;
+    }
+    for (let i = 0; i < this.links.length; i++) {
+      const l = this.links[i], dx = l.b.x - l.a.x, dy = l.b.y - l.a.y, d = Math.hypot(dx, dy) || 0.001, f = (K_LINK * (d - l.len)) / d;
+      l.a.ax += dx * f; l.a.ay += dy * f;
+      l.b.ax -= dx * f; l.b.ay -= dy * f;
+    }
+    const R = this.reach;
+    for (let i = 0; i < N.length; i++) for (let j = i + 1; j < N.length; j++) {
+      const a = N[i], b = N[j], dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy;
+      if (d2 >= R * R) continue;
+      const d = Math.sqrt(d2) || 0.001, f = (K_PUSH * (1 - d / R)) / d;
+      a.ax -= dx * f; a.ay -= dy * f;
+      b.ax += dx * f; b.ay += dy * f;
+    }
+    const keep = Math.pow(DAMP, dt);
+    let far = 0;
+    for (let i = 0; i < N.length; i++) {
+      const n = N[i];
+      if (n === held) { n.vx = 0; n.vy = 0; continue; }
+      n.vx = (n.vx + n.ax * dt) * keep;
+      n.vy = (n.vy + n.ay * dt) * keep;
+      const x = clamp(n.x + n.vx * dt, PAD, SW - PAD), y = clamp(n.y + n.vy * dt, PAD, SH - PAD);
+      far = Math.max(far, Math.abs(x - n.x) + Math.abs(y - n.y));
+      n.x = x;
+      n.y = y;
+    }
+    this.speed = far / dt; // 가장 빨리 움직인 점의 프레임당 이동 거리
+    return !!held || far > 0.003;
+  }
+
+  // 계산한 자리를 두 창(작은 창, 크게 본 창)의 점과 선에 옮겨 적는다
+  place(moved) {
+    const figs = [this.figS, this.figL];
+    // 크기는 먼저 한꺼번에 읽는다. 읽기와 쓰기를 섞으면 프레임마다 배치 계산을 다시 하게 된다
+    for (let k = 0; k < figs.length; k++) if (figs[k]) { figs[k].cw = figs[k].el.clientWidth; figs[k].ch = figs[k].el.clientHeight; }
+    for (let k = 0; k < figs.length; k++) {
+      const f = figs[k];
+      if (!f) continue;
+      const fresh = !f.nodes || !f.nodes.length || !f.nodes[0].isConnected;
+      const w = f.cw, h = f.ch;
+      if (!w || !h || (!moved && !fresh && w === f.w && h === f.h)) continue;
+      if (fresh) { f.nodes = f.el.querySelectorAll('.gn'); f.lines = f.el.querySelectorAll('.gl'); }
+      f.w = w;
+      f.h = h;
+      // 큰 창은 오른쪽에 이름표가 들어갈 자리를 남긴다
+      const kx = f.large ? Math.max(60, w - 208) / (SW - 2 * PAD) : w / SW, ky = f.large ? Math.max(60, h - 56) / (SH - 2 * PAD) : h / SH;
+      const m = f.m = { kx, ky, ox: f.large ? 28 - PAD * kx : 0, oy: f.large ? 28 - PAD * ky : 0 };
+      for (let i = 0; i < this.sim.length; i++) {
+        const n = this.sim[i], el = f.nodes[i];
+        if (el) el.style.transform = 'translate(' + (m.ox + n.x * kx).toFixed(2) + 'px,' + (m.oy + n.y * ky).toFixed(2) + 'px)';
+      }
+      for (let i = 0; i < this.links.length; i++) {
+        const l = this.links[i], el = f.lines[i];
+        if (!el) continue;
+        el.setAttribute('x1', (m.ox + l.a.x * kx).toFixed(2));
+        el.setAttribute('y1', (m.oy + l.a.y * ky).toFixed(2));
+        el.setAttribute('x2', (m.ox + l.b.x * kx).toFixed(2));
+        el.setAttribute('y2', (m.oy + l.b.y * ky).toFixed(2));
+      }
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const typeOn = Object.keys(s.types).filter((k) => s.types[k]);
+    const topicOn = Object.keys(s.topics).filter((k) => s.topics[k]);
+    const hasFilter = typeOn.length + topicOn.length > 0;
+    const match = (p) => (!typeOn.length || !!s.types[p.kind]) && (!topicOn.length || p.topics.some((t) => s.topics[t]));
+    const ok = {};
+    POSTS.forEach((p) => { ok[p.id] = match(p); });
+    const visible = POSTS.filter((p) => ok[p.id]);
+    const sorted = visible.slice().sort((a, b) => {
+      const c = s.sort === 'date' ? a.date.localeCompare(b.date) : a.title.localeCompare(b.title, 'ko');
+      return s.dir === 'asc' ? c : -c;
+    });
+    let openId = null;
+    for (let i = s.order.length - 1; i >= 0 && !openId; i--) if (ok[s.order[i]]) openId = s.order[i];
+    const active = s.hover || openId;
+    const act = active ? this.byId[active] : null;
+    const near = active ? this.adj[active] || {} : {};
+
+    const rows = sorted.map((p) => {
+      const open = !!s.open[p.id];
+      return {
+        date: p.date, title: p.title, summary: p.summary, open,
+        tags: [KIND[p.kind]].concat(p.topics),
+        cls: (open ? 'open' : '') + (s.anim === p.id ? ' anim' : ''),
+        panel: 'xp-' + p.id,
+        toggleLabel: (open ? '접기: ' : '펼치기: ') + p.title,
+        enter: this.rowEnters[p.id],
+        toggle: this.toggles[p.id],
+      };
+    });
+
+    // 필터와 정렬은 목록을 통째로 바꾼다: 행 펼침 애니메이션은 끄고 목록을 한 번 다시 드러낸다
+    const relist = (patch) => (st) => Object.assign({ anim: null, rev: st.rev + 1 }, patch(st));
+    const item = (name, key, bag, n) => ({
+      name, count: n, on: !!s[bag][key],
+      color: s[bag][key] ? 'var(--ink)' : 'var(--ink-2)',
+      weight: s[bag][key] ? 500 : 400,
+      toggle: () => this.setState(relist((st) => {
+        const next = Object.assign({}, st[bag]);
+        next[key] = !next[key];
+        return bag === 'types' ? { types: next } : { topics: next };
+      })),
+    });
+    const groups = [
+      { label: 'Type', cols: 'minmax(0, 1fr)', items: Object.keys(KIND).map((k) => item(KIND[k], k, 'types', POSTS.filter((p) => p.kind === k).length)) },
+      { label: 'Topic', cols: 'minmax(0, 1fr) minmax(0, 1fr)', items: TOPICS.map((t) => item(t, t, 'topics', POSTS.filter((p) => p.topics.indexOf(t) >= 0).length)) },
+    ];
+
+    // 그래프: 보고 있는 점(hot)과 그 이웃(near). 점에 직접 마우스를 올렸을 때만 그 밖의 점과 선을 흐리게 한다(far, faint).
+    // 필터에 걸리지 않은 글은 dim
+    const fade = !!s.hover && s.via === 'node';
+    const nodes = POSTS.map((p) => {
+      const n = this.simOf[p.id];
+      const st = p.id === active ? 'hot' : near[p.id] ? 'near' : fade ? 'far' : '';
+      return { title: p.title, short: p.short, cls: st + (ok[p.id] ? '' : ' dim'), x0: n.x0, y0: n.y0, down: this.downs[p.id], enter: this.enters[p.id] };
+    });
+    const edges = this.pairs.map(([a, b]) => ({ cls: active && (a === active || b === active) ? 'hot' : fade || !(ok[a] && ok[b]) ? 'faint' : '' }));
+
+    // 테마: 링크와 단축키는 지금 보고 있는 테마의 화면으로 이어진다
+    const dark = this.isDark(s);
+    const file = (k) => FILES[k] + (dark ? 'Dark' : '') + '.dc.html';
+
+    const N = POSTS.length;
+    return {
+      dark, themeCls: dark ? 'dark' : '', toggleTheme: this.toggleTheme,
+      to: { home: file('home'), main: file('main'), post: file('post'), map: file('map') },
+      searchOpen: s.searchOpen, openSearch: this.openSearch, closeSearch: this.closeSearch, setSearchBtn: this.setSearchBtn,
+      rows, groups, nodes, edges, hasFilter,
+      count: visible.length,
+      noRows: rows.length === 0,
+      rowsCls: s.rev ? (s.rev % 2 ? 'a' : 'b') : '',
+      shownLabel: hasFilter ? visible.length + ' / ' + N : '',
+      dateColor: s.sort === 'date' ? 'var(--ink)' : 'var(--ink-3)',
+      nameColor: s.sort === 'name' ? 'var(--ink)' : 'var(--ink-3)',
+      dateArrow: s.sort === 'date' ? (s.dir === 'desc' ? '↓' : '↑') : '',
+      nameArrow: s.sort === 'name' ? (s.dir === 'desc' ? '↓' : '↑') : '',
+      sortDate: () => this.setState(relist((st) => (st.sort === 'date' ? { dir: st.dir === 'desc' ? 'asc' : 'desc' } : { sort: 'date', dir: 'desc' }))),
+      sortName: () => this.setState(relist((st) => (st.sort === 'name' ? { dir: st.dir === 'desc' ? 'asc' : 'desc' } : { sort: 'name', dir: 'asc' }))),
+      clearFilters: () => this.setState(relist(() => ({ types: {}, topics: {} }))),
+      leave: this.leave,
+      hasActive: !!act, noActive: !act,
+      activeDate: act ? act.date : '', activeTitle: act ? act.title : '',
+      graphStat: (hasFilter ? visible.length + ' / ' + N : N) + ' nodes · ' + this.pairs.length + ' links',
+      graphOpen: s.graphOpen,
+      openGraph: () => this.setState({ graphOpen: true }),
+      closeGraph: this.closeGraph,
+      stop: (e) => e.stopPropagation(),
+      figCls: s.drag ? 'grab' : '',
+      figMove: this.figMove, figUp: this.figUp, nodeClick: this.nodeClick,
+      setRoot: this.setRoot, setFigS: this.setFigS, setFigL: this.setFigL, setOpenBtn: this.setOpenBtn, setCloseBtn: this.setCloseBtn,
+      fxPool: this.fxPool, setFx: this.setFx, setFxDot: this.setFxDot,
+      onKey: this.onKey,
+      hitB: s.key === 'b' ? 'hit' : '',
+      hitC: s.key === 'c' ? 'hit' : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

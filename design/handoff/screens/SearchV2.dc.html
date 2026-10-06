@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>검색 창 (v2 부품)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+/* 이 파일만 따로 열었을 때 쓰는 토큰(v2와 같은 값). 화면에 불러 쓰면 그 화면(.bx)의 토큰을 물려받으므로 테마도 화면을 따른다 */
+.sx.solo{--bg:#E3ECE4;--panel:#F3F7F2;--sunken:#D3DFD5;--ink:#141A16;--ink-2:#38423B;--ink-3:#525D55;--line:rgba(20,26,22,.2);--line-2:rgba(20,26,22,.4);--hover:rgba(20,26,22,.06);--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.sx.solo.dark{--bg:#162119;--panel:#1F2D23;--sunken:#0E1711;--ink:#E3ECE4;--ink-2:#B7C3BA;--ink-3:#9AA79D;--line:rgba(227,236,228,.17);--line-2:rgba(227,236,228,.34);--hover:rgba(227,236,228,.07);color-scheme:dark}
+.sx{-webkit-font-smoothing:antialiased}
+.sx *,.sx *::before,.sx *::after{box-sizing:border-box}
+.sx a{color:inherit;text-decoration:none}
+.sx button{font:inherit;color:inherit;background:none;border:0;border-radius:0;padding:0;margin:0;cursor:pointer}
+.sx :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.sx .mono{font-family:var(--mono);font-size:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase}
+
+/* 검색이 열려 있는 동안 뒤 화면은 스크롤되지 않는다 */
+body:has(.sx-on){overflow:hidden}
+
+/* 입력칸: 테두리를 두르지 않고, 줄 아래의 굵은 선으로 포커스를 알린다 */
+.sx .sx-in:focus-visible{outline:none}
+.sx .sx-in::placeholder{color:var(--ink-3);opacity:1}
+.sx-field:focus-within{box-shadow:inset 0 -2px 0 var(--ink)}
+
+/* 고른 행(키보드로 옮기거나 마우스를 올린 행): 옅은 띠가 깔리고, 맨 앞 네모가 채워지고, Enter 표시가 나온다 */
+.sx-sq{border:1px solid var(--ink-3)}
+.sx-ret{visibility:hidden}
+.sx-row.on{background:var(--hover)}
+.sx-row.on .sx-sq{background:var(--ink);border-color:var(--ink)}
+.sx-row.on .sx-ret{visibility:visible}
+/* 일치한 글자 */
+.sx mark{padding:0 1px;font-weight:500;color:var(--ink);background:var(--sunken);box-shadow:inset 0 -1px 0 var(--ink)}
+
+@media (hover:hover){
+.sx-g:hover{background:var(--hover)}
+.sx-b:hover{background:var(--ink);color:var(--bg)}
+}
+/* 창이 열릴 때: 버튼이나 단축키로 열었을 때만 움직인다 */
+@keyframes sx-fi{from{opacity:0}to{opacity:1}}
+@keyframes sx-wi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sx-veil.anim,.sx-full.anim{animation:sx-fi .18s linear both}
+.sx-veil.anim .sx-win{animation:sx-wi .32s cubic-bezier(.22,1,.36,1) both}
+@media (prefers-reduced-motion:reduce){.sx-veil.anim,.sx-full.anim,.sx-veil.anim .sx-win{animation:none}}
+.sx-vh{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+</style>
+</helmet>
+<div class="sx {{rootCls}}" style="font-family: var(--sans); color: var(--ink)">
+
+  <sc-if value="{{solo}}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position: fixed; inset: 0; background: var(--bg)"></div>
+  </sc-if>
+
+  <sc-if value="{{desk}}" hint-placeholder-val="{{ false }}">
+    <div class="sx-veil sx-on {{animCls}}" onPointerDown="{{veilDown}}" onClick="{{veilClick}}" style="position: fixed; inset: 0; z-index: 60; padding: 88px 48px 48px; display: flex; justify-content: center; align-items: flex-start; background: color-mix(in srgb, var(--bg) 92%, transparent)">
+      <div class="sx-win" role="dialog" aria-modal="true" aria-label="검색" ref="{{setWin}}" onKeyDown="{{onKey}}" onPointerDown="{{winPtr}}" onMouseDown="{{winDown}}" style="width: 100%; max-width: 720px; max-height: min(100%, 680px); display: flex; flex-direction: column; border: 1px solid var(--ink); background: var(--panel); box-shadow: 10px 10px 0 var(--line)">
+
+        <div style="flex: none; height: 36px; padding: 0 4px 0 14px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--ink); background: var(--sunken)">
+          <span class="mono" style="white-space: nowrap">[ Search ]</span>
+          <span aria-hidden="true" style="flex: 1 1 auto; height: 13px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px)"></span>
+          <button class="sx-g" type="button" aria-label="검색 닫기" onClick="{{close}}" style="width: 28px; height: 28px; display: grid; place-items: center">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"></path></svg>
+          </button>
+        </div>
+
+        <div class="sx-field" style="flex: none; height: 64px; padding: 0 14px 0 0; display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--ink)">
+          <label for="sx-q" style="flex: none; width: 52px; height: 100%; display: grid; place-items: center; cursor: text">
+            <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><circle cx="6" cy="6" r="4.25"></circle><path d="M9.2 9.2 13 13"></path></svg>
+            <span class="sx-vh">검색어</span>
+          </label>
+          <input class="sx-in" id="sx-q" ref="{{setInput}}" type="text" role="combobox" aria-expanded="{{hasRows}}" aria-controls="sx-list" aria-activedescendant="{{activeId}}" aria-autocomplete="list" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="제목, 요약, 태그에서 찾기" value="{{q}}" onChange="{{onInput}}" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; font: inherit; font-size: 22px; font-weight: 300; letter-spacing: -0.02em; color: var(--ink); background: none; border: 0; border-radius: 0">
+          <sc-if value="{{hasQ}}" hint-placeholder-val="{{ false }}">
+            <button class="mono sx-g" type="button" onClick="{{clear}}" style="flex: none; height: 28px; margin-right: 10px; padding: 0 8px; font-size: 11px; color: var(--ink-3)">Clear</button>
+          </sc-if>
+          <span class="mono" aria-hidden="true" style="flex: none; font-size: 11px; color: var(--ink-3); border: 1px solid var(--line-2); padding: 3px 5px">Esc</span>
+        </div>
+
+        <div ref="{{setScroll}}" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain">
+          <div style="height: 36px; padding: 0 14px 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line)">
+            <span class="mono" style="color: var(--ink-3)">{{listLabel}}</span>
+            <span class="mono" aria-live="polite" style="color: var(--ink-3)">{{listCount}}</span>
+          </div>
+
+          <sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
+            <ul id="sx-list" role="listbox" aria-label="{{listAria}}" style="margin: 0; padding: 0; list-style: none">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+                <li class="sx-row {{r.cls}}" id="{{r.id}}" role="option" aria-selected="{{r.on}}" onMouseMove="{{r.hover}}" style="border-bottom: 1px solid var(--line)">
+                  <a href="{{postHref}}" tabIndex="-1" style="display: grid; grid-template-columns: 24px 104px minmax(0, 1fr) 34px; align-items: start; padding: 15px 12px 16px 18px">
+                    <span class="sx-sq" aria-hidden="true" style="margin-top: 9px; width: 8px; height: 8px"></span>
+                    <time style="padding-top: 7px; font-family: var(--mono); font-size: 12.5px; line-height: 1">{{r.date}}</time>
+                    <span style="min-width: 0; display: flex; flex-direction: column; gap: 7px">
+                      <span style="font-size: 18px; line-height: 1.4; letter-spacing: -0.015em; word-break: keep-all"><sc-for list="{{r.title}}" as="s" hint-placeholder-count="1"><sc-if value="{{s.hit}}" hint-placeholder-val="{{ false }}"><mark>{{s.t}}</mark></sc-if><sc-if value="{{s.plain}}" hint-placeholder-val="{{ true }}">{{s.t}}</sc-if></sc-for></span>
+                      <sc-if value="{{r.hasSnip}}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size: 14px; line-height: 1.6; color: var(--ink-2); word-break: keep-all"><sc-for list="{{r.snip}}" as="s" hint-placeholder-count="1"><sc-if value="{{s.hit}}" hint-placeholder-val="{{ false }}"><mark>{{s.t}}</mark></sc-if><sc-if value="{{s.plain}}" hint-placeholder-val="{{ true }}">{{s.t}}</sc-if></sc-for></span>
+                      </sc-if>
+                      <span style="margin-top: 2px; display: flex; flex-wrap: wrap; gap: 5px">
+                        <sc-for list="{{r.tags}}" as="tg" hint-placeholder-count="2">
+                          <span style="padding: 4px 6px; font-size: 11.5px; line-height: 1; color: {{tg.fg}}; border: 1px solid {{tg.bd}}">{{tg.t}}</span>
+                        </sc-for>
+                      </span>
+                    </span>
+                    <span class="sx-ret" aria-hidden="true" style="justify-self: end; margin-top: 3px; font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink-2); border: 1px solid var(--line-2); padding: 3px 5px">↵</span>
+                  </a>
+                </li>
+              </sc-for>
+            </ul>
+          </sc-if>
+
+          <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 36px 18px 40px">
+              <p style="margin: 0; font-size: 20px; line-height: 1.5; letter-spacing: -0.015em; word-break: keep-all">‘{{q}}’에 맞는 글이 없습니다.</p>
+              <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: var(--ink-2); word-break: keep-all">제목, 요약, 태그에서 찾습니다. 낱말을 줄이거나 다른 말로 바꿔 보세요.</p>
+              <div style="margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px">
+                <button class="mono sx-b" type="button" onClick="{{clear}}" style="height: 36px; padding: 0 14px; border: 1px solid var(--ink)">Clear</button>
+                <a class="mono sx-b" href="{{mainHref}}" style="height: 36px; padding: 0 14px; display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--ink)">
+                  <span>All posts</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              <div style="margin-top: 32px; height: 30px; display: flex; align-items: center; border-bottom: 1px solid var(--line)">
+                <span class="mono" style="font-size: 11px; color: var(--ink-3)">/Topics</span>
+              </div>
+              <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px">
+                <sc-for list="{{topics}}" as="tp" hint-placeholder-count="6">
+                  <button class="sx-g" type="button" onClick="{{tp.pick}}" style="padding: 7px 9px; font-size: 12.5px; line-height: 1; border: 1px solid var(--line-2)">{{tp.name}}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div aria-hidden="true" style="flex: none; height: 40px; padding: 0 14px 0 18px; display: flex; align-items: center; gap: 18px; border-top: 1px solid var(--line-2); color: var(--ink-3); white-space: nowrap">
+          <span style="display: flex; align-items: center; gap: 5px">
+            <span style="font-family: var(--mono); font-size: 11px; line-height: 1; border: 1px solid var(--line-2); padding: 3px 5px">↑</span>
+            <span style="font-family: var(--mono); font-size: 11px; line-height: 1; border: 1px solid var(--line-2); padding: 3px 5px">↓</span>
+            <span class="mono" style="margin-left: 3px; font-size: 11px">Move</span>
+          </span>
+          <span style="display: flex; align-items: center; gap: 8px">
+            <span style="font-family: var(--mono); font-size: 11px; line-height: 1; border: 1px solid var(--line-2); padding: 3px 5px">↵</span>
+            <span class="mono" style="font-size: 11px">Open</span>
+          </span>
+          <span style="display: flex; align-items: center; gap: 8px">
+            <span class="mono" style="font-size: 11px; border: 1px solid var(--line-2); padding: 3px 5px">Esc</span>
+            <span class="mono" style="font-size: 11px">Close</span>
+          </span>
+          <span style="flex: 1 1 auto"></span>
+          <span style="font-size: 12px">제목 · 요약 · 태그에서 찾습니다</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{mob}}" hint-placeholder-val="{{ false }}">
+    <div class="sx-full sx-on {{animCls}}" role="dialog" aria-modal="true" aria-label="검색" ref="{{setWin}}" onKeyDown="{{onKey}}" style="position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: var(--bg)">
+      <div style="flex: 1 1 auto; min-height: 0; width: 100%; max-width: 390px; margin: 0 auto; display: flex; flex-direction: column">
+
+        <div class="sx-field" style="flex: none; height: 56px; padding: 0 6px 0 0; display: flex; align-items: center; border-bottom: 1px solid var(--ink)">
+          <label for="sx-q" style="flex: none; width: 48px; height: 100%; display: grid; place-items: center">
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true"><circle cx="6" cy="6" r="4.25"></circle><path d="M9.2 9.2 13 13"></path></svg>
+            <span class="sx-vh">검색어</span>
+          </label>
+          <input class="sx-in" id="sx-q" ref="{{setInput}}" type="text" role="combobox" aria-expanded="{{hasRows}}" aria-controls="sx-list" aria-activedescendant="{{activeId}}" aria-autocomplete="list" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" placeholder="제목, 요약, 태그에서 찾기" value="{{q}}" onChange="{{onInput}}" style="flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; font: inherit; font-size: 17px; letter-spacing: -0.01em; color: var(--ink); background: none; border: 0; border-radius: 0">
+          <sc-if value="{{hasQ}}" hint-placeholder-val="{{ false }}">
+            <button class="sx-g" type="button" aria-label="검색어 지우기" onClick="{{clear}}" style="flex: none; width: 44px; height: 44px; display: grid; place-items: center; color: var(--ink-3)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="13"></rect><path d="M6.5 6.5l5 5M11.5 6.5l-5 5"></path></svg>
+            </button>
+          </sc-if>
+          <button class="mono sx-g" type="button" onClick="{{close}}" style="flex: none; height: 44px; padding: 0 10px">Close</button>
+        </div>
+
+        <div ref="{{setScroll}}" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain">
+          <div style="height: 36px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line)">
+            <span class="mono" style="color: var(--ink-3)">{{listLabel}}</span>
+            <span class="mono" aria-live="polite" style="color: var(--ink-3)">{{listCount}}</span>
+          </div>
+
+          <sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
+            <ul id="sx-list" role="listbox" aria-label="{{listAria}}" style="margin: 0; padding: 0; list-style: none">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+                <li class="sx-row {{r.mcls}}" id="{{r.id}}" role="option" aria-selected="{{r.on}}" style="border-bottom: 1px solid var(--line)">
+                  <a href="{{postHref}}" tabIndex="-1" style="display: flex; flex-direction: column; gap: 9px; padding: 15px 16px 17px">
+                    <span style="display: flex; align-items: center; gap: 10px">
+                      <span aria-hidden="true" style="width: 8px; height: 8px; flex: none; background: var(--ink)"></span>
+                      <time style="font-family: var(--mono); font-size: 12px; line-height: 1">{{r.date}}</time>
+                    </span>
+                    <span style="font-size: 18px; line-height: 1.42; letter-spacing: -0.015em; word-break: keep-all"><sc-for list="{{r.title}}" as="s" hint-placeholder-count="1"><sc-if value="{{s.hit}}" hint-placeholder-val="{{ false }}"><mark>{{s.t}}</mark></sc-if><sc-if value="{{s.plain}}" hint-placeholder-val="{{ true }}">{{s.t}}</sc-if></sc-for></span>
+                    <sc-if value="{{r.hasSnip}}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size: 14px; line-height: 1.65; color: var(--ink-2); word-break: keep-all"><sc-for list="{{r.snip}}" as="s" hint-placeholder-count="1"><sc-if value="{{s.hit}}" hint-placeholder-val="{{ false }}"><mark>{{s.t}}</mark></sc-if><sc-if value="{{s.plain}}" hint-placeholder-val="{{ true }}">{{s.t}}</sc-if></sc-for></span>
+                    </sc-if>
+                    <span style="margin-top: 1px; display: flex; flex-wrap: wrap; gap: 5px">
+                      <sc-for list="{{r.tags}}" as="tg" hint-placeholder-count="2">
+                        <span style="padding: 5px 7px; font-size: 12px; line-height: 1; color: {{tg.fg}}; border: 1px solid {{tg.bd}}">{{tg.t}}</span>
+                      </sc-for>
+                    </span>
+                  </a>
+                </li>
+              </sc-for>
+            </ul>
+          </sc-if>
+
+          <sc-if value="{{none}}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 32px 16px 40px">
+              <p style="margin: 0; font-size: 19px; line-height: 1.5; letter-spacing: -0.015em; word-break: keep-all; overflow-wrap: anywhere">‘{{q}}’에 맞는 글이 없습니다.</p>
+              <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: var(--ink-2); word-break: keep-all">제목, 요약, 태그에서 찾습니다. 낱말을 줄이거나 다른 말로 바꿔 보세요.</p>
+              <div style="margin-top: 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+                <button class="mono sx-b" type="button" onClick="{{clear}}" style="height: 44px; border: 1px solid var(--ink)">Clear</button>
+                <a class="mono sx-b" href="{{mainHref}}" style="height: 44px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--ink)">
+                  <span>All posts</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+              <div style="margin-top: 32px; height: 30px; display: flex; align-items: center; border-bottom: 1px solid var(--line)">
+                <span class="mono" style="font-size: 11px; color: var(--ink-3)">/Topics</span>
+              </div>
+              <div style="margin-top: 8px; display: flex; flex-wrap: wrap; column-gap: 6px">
+                <sc-for list="{{topics}}" as="tp" hint-placeholder-count="6">
+                  <button type="button" onClick="{{tp.pick}}" style="height: 44px; display: flex; align-items: center">
+                    <span style="padding: 9px 10px; font-size: 13px; line-height: 1; border: 1px solid var(--line-2)">{{tp.name}}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"q":{"editor":"text","default":""},"open":{"editor":null},"onClose":{"editor":null},"postHref":{"editor":null},"mainHref":{"editor":null},"$preview":{"width":880,"height":760}}'>
+// 검색 창. 화면 파일이 <dc-import name="SearchV2">로 불러 쓰고, 열고 닫는 것은 불러 쓴 화면이 정한다(open, onClose).
+// 이 파일만 따로 열면 창이 열린 채로 보인다. device가 mobile이거나 화면이 좁으면 화면을 가득 채우는 모양으로 바뀐다.
+// 예시 데이터: 글 목록 화면과 같은 샘플 글. 실제로는 본문까지 찾지만, 이 시안에서는 제목·요약·태그에서 찾고 요약을 "일치한 문장"으로 보여 준다
+const KIND = { cs: 'CS 개념', ts: '트러블슈팅', til: 'TIL' };
+const TOPICS = ['운영체제', '컴퓨터 구조', '자료구조', '네트워크', '데이터베이스', '동시성', 'Spring', 'MySQL', 'Java', 'JPA', 'Docker', '도구'];
+const POSTS = [
+  { id: 'explain-type', date: '2026.10.01', kind: 'til', topics: ['MySQL', '데이터베이스'], title: 'EXPLAIN의 type 컬럼 읽는 법', summary: 'ALL, index, range, ref, eq_ref, const가 각각 어떤 접근 방식인지와, 실행 계획에서 가장 먼저 볼 지점을 적어 둔다.' },
+  { id: 'context-switch', date: '2026.09.29', kind: 'cs', topics: ['운영체제'], title: '문맥 교환이 비싼 이유', summary: '레지스터를 저장하고 복원하는 직접 비용보다 캐시와 TLB가 식는 간접 비용이 더 크다는 점을 정리한다.' },
+  { id: 'stock-concurrency', date: '2026.09.27', kind: 'ts', topics: ['Spring', 'JPA', '동시성'], title: '재고 차감 동시성 문제: synchronized에서 비관적 락까지', summary: '동시에 들어온 주문이 재고를 음수로 만든 문제를 synchronized, 낙관적 락, 비관적 락 순서로 고쳐 본 기록.' },
+  { id: 'page-replacement', date: '2026.09.25', kind: 'cs', topics: ['운영체제'], title: '페이지 교체 알고리즘: FIFO, LRU, Clock', summary: '물리 메모리가 가득 찼을 때 어떤 페이지를 내보낼지 고르는 세 가지 방법과, Clock이 LRU를 흉내 내는 방식.' },
+  { id: 'mysql-deadlock', date: '2026.09.22', kind: 'ts', topics: ['MySQL', '동시성'], title: 'MySQL 데드락 로그를 읽고 원인을 찾은 과정', summary: 'SHOW ENGINE INNODB STATUS의 데드락 구간을 읽는 순서와, 락을 잡는 순서를 맞춰 해결한 과정.' },
+  { id: 'mmu-tlb', date: '2026.09.19', kind: 'cs', topics: ['컴퓨터 구조'], title: 'MMU와 TLB: 주소 변환을 하드웨어가 돕는 방식', summary: '매번 페이지 테이블을 걷지 않도록 변환 결과를 기억하는 TLB의 구조와 미스 처리 과정을 따라간다.' },
+  { id: 'java-record', date: '2026.09.17', kind: 'til', topics: ['Java'], title: 'Java record의 equals와 hashCode', summary: 'record가 모든 필드로 equals와 hashCode를 만들어 준다는 점과, 배열 필드에서 생기는 함정.' },
+  { id: 'paging', date: '2026.09.14', kind: 'cs', topics: ['운영체제'], title: '페이징과 페이지 테이블: 가상 주소가 물리 주소로 바뀌기까지', summary: '가상 주소가 VPN과 오프셋으로 나뉘어 페이지 테이블을 거치는 과정, 그리고 다단계 테이블과 TLB가 필요한 이유를 정리한다.' },
+  { id: 'transactional-proxy', date: '2026.09.11', kind: 'ts', topics: ['Spring'], title: '@Transactional이 적용되지 않던 이유: 프록시와 내부 호출', summary: '같은 클래스 안에서 호출한 메서드에 트랜잭션이 걸리지 않는 이유를 스프링 AOP 프록시 구조로 설명한다.' },
+  { id: 'mvcc', date: '2026.09.09', kind: 'cs', topics: ['데이터베이스'], title: 'MVCC: 락 없이 읽기를 처리하는 방법', summary: '읽는 쪽이 쓰는 쪽을 기다리지 않도록 버전을 여러 개 유지하는 방식과 InnoDB의 undo 로그.' },
+  { id: 'git-rebase-onto', date: '2026.09.06', kind: 'til', topics: ['도구'], title: 'git rebase --onto로 브랜치 옮기기', summary: '잘못된 브랜치에서 딴 작업 브랜치를 커밋 범위만 골라 다른 베이스로 옮기는 방법.' },
+  { id: 'isolation-level', date: '2026.09.04', kind: 'cs', topics: ['데이터베이스'], title: '트랜잭션 격리 수준과 이상 현상', summary: 'Dirty Read, Non-Repeatable Read, Phantom Read가 각 격리 수준에서 어떻게 막히는지 표로 정리한다.' },
+  { id: 'jpa-n-plus-one', date: '2026.09.01', kind: 'ts', topics: ['JPA', 'Spring'], title: 'JPA N+1 문제를 fetch join과 batch size로 줄이기', summary: '연관 엔티티를 조회할 때 쿼리가 N번 더 나가는 원인과, 상황에 따라 고를 수 있는 두 가지 해결 방법.' },
+  { id: 'bptree-index', date: '2026.08.30', kind: 'cs', topics: ['데이터베이스'], title: 'B+트리 인덱스가 쿼리를 빠르게 만드는 방식', summary: '리프 노드가 연결된 B+트리 구조가 범위 검색에 유리한 이유와 클러스터형 인덱스의 의미.' },
+  { id: 'slow-query-explain', date: '2026.08.27', kind: 'ts', topics: ['MySQL', '데이터베이스'], title: '인덱스를 탔는데도 느린 쿼리: 실행 계획 다시 읽기', summary: '인덱스를 쓰는데도 느렸던 쿼리를 커버링 인덱스로 바꾸며 확인한 실행 계획의 차이.' },
+  { id: 'btree', date: '2026.08.24', kind: 'cs', topics: ['자료구조'], title: 'B-트리와 B+트리는 왜 디스크에 맞는 구조인가', summary: '노드 하나를 디스크 블록 하나에 맞춰 트리의 높이를 낮추고 디스크 접근 횟수를 줄이는 원리.' },
+  { id: 'curl-tls', date: '2026.08.21', kind: 'til', topics: ['네트워크'], title: 'curl -v로 TLS 핸드셰이크 살펴보기', summary: 'curl -v 출력에서 ClientHello부터 인증서 검증까지 각 줄이 무엇을 뜻하는지 읽어 본다.' },
+  { id: 'deadlock-conditions', date: '2026.08.16', kind: 'cs', topics: ['운영체제', '동시성'], title: '교착 상태의 네 가지 발생 조건', summary: '상호 배제, 점유와 대기, 비선점, 순환 대기가 모두 성립해야 교착 상태가 된다는 점과 각 조건을 깨는 방법.' },
+  { id: 'docker-localhost', date: '2026.08.13', kind: 'ts', topics: ['Docker', '네트워크'], title: 'Docker 컨테이너에서 localhost로 DB에 접속되지 않을 때', summary: '컨테이너 안의 localhost는 컨테이너 자신이라는 점과, 서비스 이름으로 접속하도록 고친 과정.' },
+  { id: 'mutex-semaphore', date: '2026.08.11', kind: 'cs', topics: ['운영체제', '동시성'], title: '뮤텍스와 세마포어', summary: '하나만 들어갈 수 있는 락과 여러 개를 세는 카운터의 차이를 임계 구역 문제에서 출발해 정리한다.' },
+  { id: 'optional-orelse', date: '2026.08.08', kind: 'til', topics: ['Java'], title: 'Optional.orElse와 orElseGet의 차이', summary: 'orElse의 인자는 값이 있어도 항상 평가된다는 점과, 비용이 큰 기본값에는 orElseGet을 써야 하는 이유.' },
+  { id: 'hikari-pool', date: '2026.08.06', kind: 'ts', topics: ['Spring'], title: 'HikariCP 커넥션 풀이 고갈됐을 때 확인한 것들', summary: 'Connection is not available 오류가 났을 때 풀 크기, 트랜잭션 범위, 느린 쿼리를 순서대로 확인한 기록.' },
+  { id: 'tcp-connection', date: '2026.08.03', kind: 'cs', topics: ['네트워크'], title: 'TCP 연결 관리: 3-way handshake와 4-way handshake', summary: '연결을 맺을 때 세 번, 끊을 때 네 번 패킷을 주고받는 이유와 TIME_WAIT 상태가 있는 이유.' },
+  { id: 'gradle-cycle', date: '2026.07.29', kind: 'ts', topics: ['도구'], title: 'Gradle 멀티 모듈에서 순환 의존성 끊기', summary: '두 모듈이 서로를 참조하게 된 원인을 찾고, 공통 인터페이스를 별도 모듈로 분리해 푼 과정.' },
+  { id: 'cache-locality', date: '2026.07.27', kind: 'cs', topics: ['컴퓨터 구조'], title: '캐시 메모리와 지역성의 원리', summary: 'CPU와 메모리의 속도 차이를 메우는 캐시가 왜 효과가 있는지 시간 지역성과 공간 지역성으로 설명한다.' },
+  { id: 'docker-layer-cache', date: '2026.07.23', kind: 'til', topics: ['Docker'], title: 'Docker 레이어 캐시가 깨지는 순서', summary: 'Dockerfile의 한 줄이 바뀌면 그 아래 레이어가 모두 다시 빌드된다는 점과, COPY 순서를 바꿔 빌드 시간을 줄인 방법.' },
+  { id: 'hash-table', date: '2026.07.20', kind: 'cs', topics: ['자료구조'], title: '해시 테이블과 충돌 해결', summary: '키를 해시해 배열 인덱스로 쓰는 구조와, 체이닝과 개방 주소법이 충돌을 다루는 방식.' },
+  { id: 'stack', date: '2026.07.14', kind: 'cs', topics: ['자료구조'], title: '스택과 호출 스택', summary: '후입선출 구조인 스택이 함수 호출과 복귀에서 어떻게 쓰이는지 스택 프레임으로 살펴본다.' },
+];
+const RECENT = 5;  // 입력하기 전에 보여 주는 최근 글 수
+const SNIP = 76;   // 일치한 문장에서 잘라 보여 주는 글자 수
+const NARROW = '(max-width: 640px)'; // 이보다 좁은 화면에서는 화면을 가득 채운다
+
+const lower = (s) => s.toLowerCase();
+// 글에서 낱말들이 나오는 자리 [시작, 끝]. 겹치거나 맞닿으면 하나로 합친다
+function spans(text, terms) {
+  const low = lower(text), found = [];
+  terms.forEach((t) => {
+    for (let i = low.indexOf(t); i >= 0; i = low.indexOf(t, i + t.length)) found.push([i, i + t.length]);
+  });
+  found.sort((a, b) => a[0] - b[0]);
+  const out = [];
+  found.forEach((r) => {
+    const last = out[out.length - 1];
+    if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]);
+    else out.push([r[0], r[1]]);
+  });
+  return out;
+}
+// 글을 조각으로 나눈다. hit인 조각이 일치한 글자다
+function pieces(text, terms) {
+  const out = [];
+  let at = 0;
+  (terms.length ? spans(text, terms) : []).forEach((r) => {
+    if (r[0] > at) out.push({ t: text.slice(at, r[0]), hit: false, plain: true });
+    out.push({ t: text.slice(r[0], r[1]), hit: true, plain: false });
+    at = r[1];
+  });
+  if (at < text.length) out.push({ t: text.slice(at), hit: false, plain: true });
+  return out;
+}
+// 긴 문장은 처음 일치한 곳 둘레만 잘라낸다. 낱말 가운데에서 끊지 않는다
+function snippet(text, terms) {
+  if (text.length <= SNIP) return text;
+  const sp = spans(text, terms);
+  let a = sp.length ? Math.max(0, sp[0][0] - 22) : 0;
+  if (a > 0) {
+    const s = text.indexOf(' ', a);
+    a = s >= 0 && s < sp[0][0] ? s + 1 : sp[0][0];
+  }
+  let b = Math.min(text.length, a + SNIP);
+  if (b < text.length) {
+    const s = text.lastIndexOf(' ', b);
+    if (s > a + SNIP * 0.6) b = s;
+  }
+  return (a > 0 ? '… ' : '') + text.slice(a, b) + (b < text.length ? ' …' : '');
+}
+// 낱말(띄어쓰기로 나눈 것)이 제목·요약·태그 어딘가에 모두 들어 있는 글. 제목, 태그, 요약 순으로 앞에 놓고 같으면 최신 글이 먼저다
+function search(q) {
+  const terms = lower(q).split(/\s+/).filter(Boolean);
+  if (!terms.length) return null;
+  const hits = [];
+  POSTS.forEach((p) => {
+    const T = lower(p.title), S = lower(p.summary), G = lower([KIND[p.kind]].concat(p.topics).join(' '));
+    let score = 0;
+    for (let i = 0; i < terms.length; i++) {
+      const t = terms[i], inT = T.indexOf(t) >= 0, inG = G.indexOf(t) >= 0, inS = S.indexOf(t) >= 0;
+      if (!inT && !inG && !inS) return;
+      score += (inT ? 4 : 0) + (inG ? 2 : 0) + (inS ? 1 : 0);
+    }
+    hits.push({ p, score });
+  });
+  hits.sort((a, b) => b.score - a.score || b.p.date.localeCompare(a.p.date));
+  return { terms, posts: hits.map((h) => h.p) };
+}
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // q: 검색어. at: 고른 행. kbd: 화살표 키로 행을 옮긴 적이 있는지. narrow: 좁은 화면인지
+    this.state = { q: props.q || '', at: 0, kbd: false, narrow: false };
+    this.wasOpen = false;
+    this.setWin = (el) => { this.winEl = el; };
+    this.setScroll = (el) => { this.scrollEl = el; };
+    this.setInput = (el) => { this.inputEl = el; if (el) this.grab(); };
+    // 바깥(가림막)을 누르면 닫힌다. 창 안에서 누르기 시작해 바깥에서 뗀 것은 치지 않는다
+    this.veilDown = (e) => { this.onVeil = e.target === e.currentTarget; };
+    this.veilClick = (e) => { if (this.onVeil && e.target === e.currentTarget) this.close(); this.onVeil = false; };
+    // 창 안의 빈 곳을 마우스로 눌러도 입력칸이 포커스를 잃지 않게 한다
+    this.winPtr = (e) => { this.ptr = e.pointerType; };
+    this.winDown = (e) => {
+      if (this.ptr !== 'mouse' || (e.target.closest && e.target.closest('input, button, a, label'))) return;
+      e.preventDefault();
+      if (this.inputEl && document.activeElement !== this.inputEl && !this.editing()) this.inputEl.focus({ preventScroll: true });
+    };
+    this.onInput = (e) => { this.toTop = true; this.setState({ q: e.target.value, at: 0 }); };
+    this.clear = () => { this.setQ(''); };
+    this.close = () => {
+      if (typeof this.props.onClose === 'function') this.props.onClose();
+      else this.setQ('');
+    };
+    this.onKey = (e) => {
+      const k = e.key, native = e.nativeEvent || {};
+      // 한글을 조합하는 중에 누른 키는 입력기가 쓴다
+      const composing = !!native.isComposing || e.keyCode === 229;
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (k === 'k' || k === 'K' || e.code === 'KeyK')) {
+        e.preventDefault();
+        this.close();
+      } else if (k === 'Escape') {
+        if (!composing) { e.preventDefault(); this.close(); }
+      } else if (k === 'ArrowDown' || k === 'ArrowUp') {
+        if (!composing) { e.preventDefault(); this.move(k === 'ArrowDown' ? 1 : -1); }
+      } else if (k === 'Enter') {
+        // 입력칸에서 누른 Enter만 고른 글을 연다. 버튼 위에서는 그 버튼이 눌린다
+        if (!composing && e.target === this.inputEl) { e.preventDefault(); this.enter(); }
+      } else if (k === 'Tab') {
+        this.trap(e);
+      }
+      // 뒤 화면의 단축키(B, C)가 같이 눌리지 않게 한다
+      e.stopPropagation();
+    };
+  }
+
+  componentDidMount() {
+    this.mq = window.matchMedia ? window.matchMedia(NARROW) : null;
+    if (this.mq) {
+      this.onMq = () => { if (this.mq.matches !== this.state.narrow) this.setState({ narrow: this.mq.matches }); };
+      if (this.mq.addEventListener) this.mq.addEventListener('change', this.onMq);
+      this.onMq();
+    }
+    this.onWinFocus = () => this.grab();
+    window.addEventListener('focus', this.onWinFocus);
+    this.wasOpen = this.isOpen();
+    this.grab();
+  }
+
+  componentDidUpdate() {
+    const open = this.isOpen();
+    // 열릴 때마다 빈 검색어에서 다시 시작한다
+    if (open && !this.wasOpen && (this.state.q || this.state.at || this.state.kbd)) this.setState({ q: '', at: 0, kbd: false });
+    this.wasOpen = open;
+    if (!open) return;
+    const box = this.scrollEl;
+    if (!box) return;
+    if (this.toTop) { this.toTop = false; box.scrollTop = 0; }
+    if (this.reveal) {
+      // 키보드로 옮긴 행이 목록 밖에 있으면 목록만 스크롤한다(화면 전체는 움직이지 않는다)
+      this.reveal = false;
+      const el = box.querySelector('[role="option"][aria-selected="true"]');
+      if (el) {
+        const b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+        if (r.top < b.top) box.scrollTop -= b.top - r.top;
+        else if (r.bottom > b.bottom) box.scrollTop += r.bottom - b.bottom;
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.mq && this.mq.removeEventListener) this.mq.removeEventListener('change', this.onMq);
+    window.removeEventListener('focus', this.onWinFocus);
+  }
+
+  // 불러 쓴 화면이 open을 주지 않으면(이 파일만 연 경우) 늘 열려 있다
+  isOpen() {
+    return this.props.open === undefined || this.props.open === null ? true : !!this.props.open;
+  }
+
+  // 캔버스에서 편집하는 동안에는 포커스를 가져오지 않는다
+  editing() {
+    const b = document.body;
+    return b.hasAttribute('data-dc-editor-on') && b.getAttribute('data-dc-editor-tool') !== 'interact';
+  }
+
+  // 열려 있는 동안에는 입력칸이 포커스를 갖는다. 다른 문서가 포커스를 갖고 있으면 가져오지 않는다
+  grab() {
+    if (!this.isOpen() || !this.inputEl || this.editing() || !document.hasFocus()) return;
+    if (this.winEl && this.winEl.contains(document.activeElement)) return;
+    this.inputEl.focus({ preventScroll: true });
+  }
+
+  setQ(q) {
+    this.toTop = true;
+    this.setState({ q, at: 0 });
+    if (this.inputEl && !this.editing()) this.inputEl.focus({ preventScroll: true });
+  }
+
+  move(d) {
+    const n = this.count || 0;
+    if (!n) return;
+    this.reveal = true;
+    this.setState((st) => ({ at: (Math.min(st.at, n - 1) + d + n) % n, kbd: true }));
+  }
+
+  // Enter: 고른 글을 연다. 화면을 가득 채운 모양(휴대폰)에서는 화살표 키로 고른 적이 없으면 자판만 내린다
+  enter() {
+    if (this.isMobile() && !this.state.kbd) { if (this.inputEl) this.inputEl.blur(); return; }
+    const a = this.winEl && this.winEl.querySelector('[role="option"][aria-selected="true"] a');
+    if (a) a.click();
+  }
+
+  // Tab은 창 안에서만 돈다
+  trap(e) {
+    if (!this.winEl) return;
+    const all = Array.prototype.slice.call(this.winEl.querySelectorAll('input, button, a[href]')).filter((el) => el.tabIndex >= 0);
+    if (!all.length) return;
+    const first = all[0], last = all[all.length - 1], cur = document.activeElement;
+    if (e.shiftKey && (cur === first || !this.winEl.contains(cur))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && cur === last) { e.preventDefault(); first.focus(); }
+  }
+
+  isMobile() {
+    return this.props.device === 'mobile' || this.state.narrow;
+  }
+
+  renderVals() {
+    const s = this.state, open = this.isOpen();
+    const solo = typeof this.props.onClose !== 'function';
+    const mobile = this.isMobile();
+    // 닫혀 있다가 열릴 때만 움직임을 준다. 처음부터 열려 있는 화면에서는 가만히 있다
+    const anim = open && this.seenClosed;
+    if (!open) this.seenClosed = true;
+
+    const found = search(s.q);
+    const terms = found ? found.terms : [];
+    const list = found ? found.posts : POSTS.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, RECENT);
+    this.count = list.length;
+    const at = Math.min(s.at, Math.max(0, list.length - 1));
+    const rows = list.map((p, i) => {
+      const on = i === at;
+      const snip = found ? snippet(p.summary, terms) : '';
+      return {
+        id: 'sx-o-' + p.id, on,
+        cls: on ? 'on' : '',
+        // 화면을 가득 채운 모양에서는 화살표 키를 쓴 뒤에만 고른 행을 표시한다
+        mcls: on && s.kbd ? 'on' : '',
+        date: p.date,
+        title: pieces(p.title, terms),
+        snip: pieces(snip, terms), hasSnip: !!snip,
+        tags: [KIND[p.kind]].concat(p.topics).map((t) => {
+          const hit = terms.some((w) => lower(t).indexOf(w) >= 0);
+          return { t, fg: hit ? 'var(--ink)' : 'var(--ink-2)', bd: hit ? 'var(--ink)' : 'var(--line-2)' };
+        }),
+        hover: () => { if (this.state.at !== i) this.setState({ at: i }); },
+      };
+    });
+    const hasRows = rows.length > 0;
+
+    return {
+      solo: solo && open,
+      desk: open && !mobile, mob: open && mobile,
+      rootCls: (solo ? 'solo' : '') + (solo && this.props.theme === 'dark' ? ' dark' : ''),
+      animCls: anim ? 'anim' : '',
+      q: s.q, hasQ: s.q.length > 0,
+      rows, hasRows, none: !!found && !hasRows,
+      activeId: hasRows ? rows[at].id : undefined,
+      listLabel: found ? '/Results' : '/Recent',
+      listCount: found ? list.length + ' / ' + POSTS.length : '(' + list.length + ')',
+      listAria: found ? '검색 결과' : '최근 글',
+      topics: TOPICS.map((t) => ({ name: t, pick: () => this.setQ(t) })),
+      postHref: this.props.postHref || 'PostV2.dc.html',
+      mainHref: this.props.mainHref || 'MainV2.dc.html',
+      onInput: this.onInput, clear: this.clear, close: this.close, onKey: this.onKey,
+      veilDown: this.veilDown, veilClick: this.veilClick, winPtr: this.winPtr, winDown: this.winDown,
+      setWin: this.setWin, setScroll: this.setScroll, setInput: this.setInput,
+    };
+  }
+}
+</script>
+</body>
+</html>

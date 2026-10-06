@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>홈 (v2)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E3ECE4}
+body:has(.bx.dark){background:#162119}
+/* 토큰: 라이트. --bg 바탕, --panel 창·패널 같은 박스의 면(바탕보다 밝다), --sunken 창의 제목 줄(바탕보다 어둡다) */
+.bx{--bg:#E3ECE4;--panel:#F3F7F2;--sunken:#D3DFD5;--ink:#141A16;--ink-2:#38423B;--ink-3:#525D55;--line:rgba(20,26,22,.2);--line-2:rgba(20,26,22,.4);--dot:rgba(20,26,22,.3);--hover:rgba(20,26,22,.06);--veil:rgba(227,236,228,.92);--pine-1:#7DAA6B;--pine-2:#4D8553;--pine-3:#2E5B3E;--bark-1:#6B5142;--bark-2:#43322A;--fx:rgb(74,128,92);--ease:cubic-bezier(.22,1,.36,1);--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+/* 토큰: 다크. 같은 이름에 밤의 값을 넣는다. 소나무도 밤의 색으로 바뀐다 */
+.bx.dark{--bg:#162119;--panel:#1F2D23;--sunken:#0E1711;--ink:#E3ECE4;--ink-2:#B7C3BA;--ink-3:#9AA79D;--line:rgba(227,236,228,.17);--line-2:rgba(227,236,228,.34);--dot:rgba(227,236,228,.22);--hover:rgba(227,236,228,.07);--veil:rgba(22,33,25,.92);--pine-1:#4E7767;--pine-2:#35584B;--pine-3:#243E36;--bark-1:#4F463E;--bark-2:#3B322C;--fx:rgb(149,205,166);color-scheme:dark}
+.bx:focus,.bx:focus-visible{outline:none}
+.bx *,.bx *::before,.bx *::after{box-sizing:border-box}
+.bx a{color:inherit;text-decoration:none}
+.bx button{font:inherit;color:inherit;background:none;border:0;border-radius:0;padding:0;margin:0;cursor:pointer}
+.bx :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.bx .mono{font-family:var(--mono);font-size:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase}
+
+/* 메뉴: [키] 이름. 현재 화면은 이름에 밑줄 (홈에서는 둘 다 현재 화면이 아니다) */
+.bx .nk{color:var(--ink-3)}
+.bx .nk.cur{color:var(--ink)}
+.bx .nk.cur .l{text-decoration:underline;text-underline-offset:6px}
+.bx .nk .k{color:var(--ink-3)}
+
+/* 호버: 옅은 띠와 글자색만 바뀐다. 움직이거나 커지지 않는다 */
+@media (hover:hover){
+.bx .nk:hover{color:var(--ink)}
+.lk:hover{text-decoration:underline;text-underline-offset:4px}
+.ghost:hover{background:var(--hover)}
+.solid:hover{background:var(--ink);color:var(--bg)}
+.fill:hover{background:var(--ink-2)!important}
+.row-h:hover{background:var(--hover)}
+.t:hover .arr{opacity:1}
+}
+.t:focus-visible .arr{opacity:1}
+.bx .arr{margin-left:10px;vertical-align:1px;opacity:0;transition:opacity .15s linear}
+/* 단축키를 누른 순간 */
+.bx .nk.hit{color:var(--bg);background:var(--ink)}
+.bx .nk.hit .k{color:var(--bg)}
+
+/* 소나무: 색을 변수로 준 사각형으로 그린 픽셀 아트(64×48칸). 줄기가 화면 오른쪽 끝에서 들어온다. 한 칸 = 4px.
+   바탕 바로 위, 글과 버튼 아래에 깔린다. 좁은 화면에서 글자와 만나도 글자가 위에 온다 */
+.bx{isolation:isolate}
+.pine{position:absolute;z-index:-1;right:0;top:76px;width:256px;height:192px;pointer-events:none}
+.pine .p1{fill:var(--pine-1)}
+.pine .p2{fill:var(--pine-2)}
+.pine .p3{fill:var(--pine-3)}
+.pine .k1{fill:var(--bark-1)}
+.pine .k2{fill:var(--bark-2)}
+/* 좁은 화면에서는 칸을 3px, 2px로 줄인다 */
+@media (max-width:1200px){.pine{width:192px;height:144px}}
+@media (max-width:900px){.pine{top:70px;width:128px;height:96px}}
+.bx.dark .th{transform:scaleX(-1)}
+
+/* 커서 효과: 화면 위에 덧그리는 층이라 누르는 것을 받지 않는다. 기본 커서는 그대로 둔다.
+   네모는 채움 없이 테두리 1px, 모서리는 둥글리지 않는다. 색은 --fx(다크에서는 더 밝은 녹색).
+   잔상은 찍힌 자리에서 작아지며, 누름 네모는 퍼지며 옅어진다. 크기·시간은 아래 스크립트의 FX_ 값 */
+.bx{position:relative}
+.fx{position:absolute;left:0;top:0;width:100%;height:100%;z-index:80;contain:strict;pointer-events:none}
+.fx i,.fx-c{position:absolute;left:0;top:0;width:4px;height:4px;border:1px solid var(--fx);opacity:0;pointer-events:none}
+/* 커서 바로 아래의 6px 네모: 화면에 고정되어 커서를 따라다닌다. 마우스가 들어와 있을 때만 보인다 */
+.fx-c{position:fixed;z-index:81;width:6px;height:6px;margin:-3px 0 0 -3px;opacity:.8;visibility:hidden}
+/* "동작 줄이기"를 켠 사용자에게는 그리지 않는다 */
+@media (prefers-reduced-motion:reduce){.fx,.fx-c{display:none}}
+
+/* 글 행: 글 목록 화면과 같은 행. 펼친 행은 띠가 남는다. 방금 누른 행(.anim)만 움직인다 */
+.row.open .row-h{background:var(--hover)}
+.xp{display:grid;grid-template-rows:0fr;visibility:hidden}
+.xp-in{min-height:0;overflow:hidden}
+.xp-c{opacity:0}
+.row.open .xp{grid-template-rows:1fr;visibility:visible}
+.row.open .xp-c{opacity:1}
+.row.anim .xp{transition:grid-template-rows .7s var(--ease),visibility 0s linear .7s}
+.row.anim.open .xp{transition:grid-template-rows .7s var(--ease),visibility 0s linear}
+.row.anim .xp-c{transition:opacity .18s linear}
+.row.anim.open .xp-c{transition:opacity .4s linear .08s}
+.pm .v{transform-origin:7px 7px}
+.row.open .pm .v{transform:rotate(90deg)}
+.row.anim .pm .v{transition:transform .6s var(--ease)}
+@media (prefers-reduced-motion:reduce){
+.row.anim .xp,.row.anim .xp-c,.row.anim .pm .v,.bx .arr{transition:none!important}
+}
+</style>
+</helmet>
+<div class="bx {{themeCls}}" ref="{{setRoot}}" tabIndex="-1" onKeyDown="{{onKey}}" style="position: relative">
+
+  <header style="height: 64px; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line)">
+    <div style="display: flex; align-items: center; gap: 32px">
+      <a href="{{to.home}}" aria-current="page" style="display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em">
+        <span aria-hidden="true" style="width: 10px; height: 10px; background: var(--ink)"></span>
+        <span>[사이트 이름]</span>
+      </a>
+      <nav aria-label="주 메뉴" style="display: flex; align-items: center; gap: 8px">
+        <a class="mono nk {{hitB}}" href="{{to.main}}" data-key="b" aria-keyshortcuts="B" style="height: 32px; padding: 0 8px; display: flex; align-items: center; gap: 6px">
+          <span class="k" aria-hidden="true">[B]</span>
+          <span class="l">Blog</span>
+        </a>
+        <a class="mono nk {{hitC}}" href="{{to.map}}" data-key="c" aria-keyshortcuts="C" style="height: 32px; padding: 0 8px; display: flex; align-items: center; gap: 6px">
+          <span class="k" aria-hidden="true">[C]</span>
+          <span class="l">Beauty of CS</span>
+        </a>
+      </nav>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <button class="ghost" type="button" ref="{{setSearchBtn}}" aria-haspopup="dialog" aria-expanded="{{searchOpen}}" aria-keyshortcuts="Meta+K Control+K" onClick="{{openSearch}}" style="height: 40px; padding: 0 10px 0 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line-2)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><circle cx="6" cy="6" r="4.25"></circle><path d="M9.2 9.2 13 13"></path></svg>
+        <span class="mono">Search</span>
+        <span class="mono" style="font-size: 11px; color: var(--ink-3); border: 1px solid var(--line-2); padding: 3px 5px">⌘K</span>
+      </button>
+      <button class="ghost" type="button" aria-label="테마 전환" aria-pressed="{{dark}}" onClick="{{toggleTheme}}" style="width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line-2)">
+        <svg class="th" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"></circle><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <svg class="pine" viewBox="0 0 64 48" shape-rendering="crispEdges" aria-hidden="true">
+    <!-- pine:start -->
+    <g class="k1"><rect x="40" y="21" width="2" height="1"></rect><rect x="42" y="22" width="4" height="1"></rect><rect x="47" y="23" width="1" height="1"></rect><rect x="47" y="24" width="3" height="1"></rect><rect x="49" y="25" width="2" height="1"></rect><rect x="50" y="26" width="2" height="1"></rect><rect x="51" y="27" width="2" height="1"></rect><rect x="52" y="28" width="2" height="1"></rect><rect x="54" y="29" width="1" height="1"></rect><rect x="53" y="30" width="2" height="1"></rect><rect x="53" y="31" width="3" height="1"></rect><rect x="54" y="32" width="2" height="1"></rect><rect x="55" y="33" width="2" height="1"></rect><rect x="55" y="34" width="3" height="1"></rect><rect x="56" y="35" width="4" height="1"></rect><rect x="57" y="36" width="7" height="1"></rect><rect x="59" y="37" width="5" height="1"></rect></g>
+    <g class="k2"><rect x="32" y="8" width="2" height="1"></rect><rect x="33" y="9" width="2" height="1"></rect><rect x="39" y="9" width="2" height="1"></rect><rect x="35" y="10" width="5" height="1"></rect><rect x="37" y="11" width="3" height="1"></rect><rect x="39" y="12" width="1" height="1"></rect><rect x="51" y="12" width="2" height="1"></rect><rect x="40" y="13" width="1" height="1"></rect><rect x="51" y="13" width="1" height="1"></rect><rect x="40" y="14" width="2" height="1"></rect><rect x="50" y="14" width="1" height="1"></rect><rect x="41" y="15" width="2" height="2"></rect><rect x="49" y="15" width="2" height="1"></rect><rect x="49" y="16" width="1" height="2"></rect><rect x="42" y="17" width="1" height="1"></rect><rect x="24" y="20" width="4" height="1"></rect><rect x="42" y="20" width="2" height="2"></rect><rect x="46" y="20" width="2" height="2"></rect><rect x="23" y="21" width="17" height="1"></rect><rect x="32" y="22" width="10" height="1"></rect><rect x="46" y="22" width="1" height="1"></rect><rect x="30" y="23" width="4" height="1"></rect><rect x="40" y="23" width="7" height="1"></rect><rect x="29" y="24" width="3" height="1"></rect><rect x="43" y="24" width="4" height="1"></rect><rect x="55" y="24" width="2" height="1"></rect><rect x="28" y="25" width="3" height="1"></rect><rect x="45" y="25" width="4" height="1"></rect><rect x="55" y="25" width="1" height="1"></rect><rect x="27" y="26" width="2" height="1"></rect><rect x="47" y="26" width="3" height="1"></rect><rect x="54" y="26" width="2" height="1"></rect><rect x="16" y="27" width="1" height="1"></rect><rect x="26" y="27" width="2" height="1"></rect><rect x="46" y="27" width="5" height="1"></rect><rect x="54" y="27" width="1" height="2"></rect><rect x="15" y="28" width="7" height="1"></rect><rect x="25" y="28" width="2" height="1"></rect><rect x="44" y="28" width="3" height="1"></rect><rect x="49" y="28" width="3" height="1"></rect><rect x="20" y="29" width="6" height="1"></rect><rect x="43" y="29" width="2" height="1"></rect><rect x="50" y="29" width="4" height="1"></rect><rect x="23" y="30" width="2" height="1"></rect><rect x="51" y="30" width="2" height="2"></rect><rect x="22" y="31" width="2" height="1"></rect><rect x="51" y="32" width="3" height="1"></rect><rect x="13" y="33" width="3" height="1"></rect><rect x="52" y="33" width="3" height="2"></rect><rect x="10" y="34" width="5" height="1"></rect><rect x="53" y="35" width="3" height="1"></rect><rect x="54" y="36" width="3" height="1"></rect><rect x="54" y="37" width="5" height="1"></rect><rect x="14" y="38" width="2" height="1"></rect><rect x="55" y="38" width="9" height="1"></rect><rect x="12" y="39" width="3" height="1"></rect><rect x="57" y="39" width="7" height="1"></rect><rect x="10" y="40" width="5" height="1"></rect><rect x="59" y="40" width="5" height="1"></rect><rect x="9" y="41" width="2" height="1"></rect><rect x="14" y="41" width="1" height="1"></rect></g>
+    <g class="p3"><rect x="32" y="6" width="2" height="1"></rect><rect x="31" y="7" width="2" height="1"></rect><rect x="34" y="7" width="2" height="1"></rect><rect x="39" y="7" width="3" height="1"></rect><rect x="27" y="8" width="5" height="1"></rect><rect x="34" y="8" width="10" height="1"></rect><rect x="46" y="8" width="1" height="1"></rect><rect x="29" y="9" width="2" height="1"></rect><rect x="36" y="9" width="3" height="1"></rect><rect x="42" y="9" width="4" height="1"></rect><rect x="48" y="9" width="3" height="1"></rect><rect x="51" y="10" width="8" height="1"></rect><rect x="51" y="11" width="10" height="1"></rect><rect x="36" y="15" width="3" height="1"></rect><rect x="29" y="16" width="7" height="1"></rect><rect x="24" y="17" width="11" height="1"></rect><rect x="43" y="19" width="5" height="1"></rect><rect x="48" y="20" width="3" height="1"></rect><rect x="54" y="21" width="1" height="1"></rect><rect x="54" y="22" width="5" height="1"></rect><rect x="16" y="23" width="6" height="1"></rect><rect x="55" y="23" width="7" height="1"></rect><rect x="13" y="24" width="8" height="1"></rect><rect x="14" y="27" width="2" height="1"></rect><rect x="6" y="29" width="8" height="1"></rect><rect x="45" y="32" width="1" height="1"></rect><rect x="43" y="33" width="2" height="1"></rect><rect x="37" y="34" width="6" height="1"></rect><rect x="9" y="35" width="1" height="1"></rect><rect x="25" y="35" width="3" height="1"></rect><rect x="30" y="35" width="12" height="1"></rect><rect x="18" y="36" width="6" height="1"></rect><rect x="4" y="37" width="5" height="1"></rect><rect x="15" y="37" width="10" height="1"></rect><rect x="21" y="42" width="2" height="1"></rect><rect x="1" y="43" width="1" height="1"></rect><rect x="2" y="44" width="6" height="1"></rect><rect x="16" y="44" width="5" height="1"></rect><rect x="2" y="45" width="8" height="1"></rect><rect x="13" y="45" width="8" height="1"></rect></g>
+    <g class="p2"><rect x="32" y="4" width="10" height="1"></rect><rect x="31" y="5" width="12" height="1"></rect><rect x="30" y="6" width="2" height="1"></rect><rect x="34" y="6" width="10" height="1"></rect><rect x="50" y="6" width="5" height="1"></rect><rect x="27" y="7" width="4" height="1"></rect><rect x="36" y="7" width="3" height="1"></rect><rect x="42" y="7" width="15" height="1"></rect><rect x="44" y="8" width="2" height="1"></rect><rect x="48" y="8" width="11" height="1"></rect><rect x="51" y="9" width="9" height="1"></rect><rect x="59" y="10" width="2" height="1"></rect><rect x="36" y="13" width="3" height="1"></rect><rect x="29" y="14" width="11" height="1"></rect><rect x="25" y="15" width="11" height="1"></rect><rect x="24" y="16" width="5" height="1"></rect><rect x="44" y="17" width="4" height="1"></rect><rect x="43" y="18" width="6" height="1"></rect><rect x="42" y="19" width="1" height="1"></rect><rect x="48" y="19" width="8" height="1"></rect><rect x="54" y="20" width="5" height="1"></rect><rect x="16" y="21" width="4" height="1"></rect><rect x="55" y="21" width="5" height="1"></rect><rect x="13" y="22" width="10" height="1"></rect><rect x="59" y="22" width="3" height="1"></rect><rect x="12" y="23" width="4" height="1"></rect><rect x="14" y="26" width="2" height="1"></rect><rect x="6" y="27" width="8" height="1"></rect><rect x="5" y="28" width="9" height="1"></rect><rect x="43" y="31" width="5" height="1"></rect><rect x="37" y="32" width="8" height="1"></rect><rect x="25" y="33" width="3" height="1"></rect><rect x="31" y="33" width="12" height="1"></rect><rect x="9" y="34" width="1" height="1"></rect><rect x="18" y="34" width="19" height="1"></rect><rect x="3" y="35" width="6" height="1"></rect><rect x="15" y="35" width="10" height="1"></rect><rect x="2" y="36" width="7" height="1"></rect><rect x="13" y="36" width="5" height="1"></rect><rect x="24" y="36" width="1" height="1"></rect><rect x="21" y="41" width="2" height="1"></rect><rect x="0" y="42" width="8" height="1"></rect><rect x="16" y="42" width="5" height="1"></rect><rect x="2" y="43" width="8" height="1"></rect><rect x="13" y="43" width="8" height="1"></rect><rect x="8" y="44" width="3" height="1"></rect><rect x="12" y="44" width="4" height="1"></rect><rect x="21" y="45" width="1" height="1"></rect></g>
+    <g class="p1"><rect x="34" y="0" width="1" height="1"></rect><rect x="38" y="0" width="1" height="1"></rect><rect x="35" y="1" width="5" height="1"></rect><rect x="42" y="1" width="1" height="1"></rect><rect x="30" y="2" width="1" height="1"></rect><rect x="32" y="2" width="10" height="1"></rect><rect x="53" y="2" width="1" height="1"></rect><rect x="31" y="3" width="12" height="1"></rect><rect x="51" y="3" width="4" height="1"></rect><rect x="30" y="4" width="2" height="1"></rect><rect x="42" y="4" width="2" height="1"></rect><rect x="50" y="4" width="6" height="1"></rect><rect x="29" y="5" width="2" height="1"></rect><rect x="43" y="5" width="4" height="1"></rect><rect x="49" y="5" width="8" height="1"></rect><rect x="27" y="6" width="3" height="1"></rect><rect x="44" y="6" width="4" height="1"></rect><rect x="49" y="6" width="1" height="1"></rect><rect x="55" y="6" width="4" height="1"></rect><rect x="57" y="7" width="2" height="1"></rect><rect x="59" y="8" width="1" height="1"></rect><rect x="60" y="9" width="1" height="1"></rect><rect x="28" y="11" width="1" height="1"></rect><rect x="36" y="11" width="1" height="1"></rect><rect x="29" y="12" width="2" height="1"></rect><rect x="32" y="12" width="7" height="1"></rect><rect x="27" y="13" width="9" height="1"></rect><rect x="39" y="13" width="1" height="1"></rect><rect x="25" y="14" width="4" height="1"></rect><rect x="24" y="15" width="1" height="1"></rect><rect x="45" y="15" width="1" height="1"></rect><rect x="44" y="16" width="5" height="1"></rect><rect x="56" y="16" width="1" height="1"></rect><rect x="43" y="17" width="1" height="1"></rect><rect x="48" y="17" width="1" height="1"></rect><rect x="53" y="17" width="3" height="1"></rect><rect x="18" y="18" width="1" height="1"></rect><rect x="42" y="18" width="1" height="1"></rect><rect x="49" y="18" width="10" height="1"></rect><rect x="16" y="19" width="4" height="1"></rect><rect x="56" y="19" width="4" height="1"></rect><rect x="15" y="20" width="6" height="1"></rect><rect x="59" y="20" width="1" height="1"></rect><rect x="13" y="21" width="3" height="1"></rect><rect x="20" y="21" width="3" height="1"></rect><rect x="60" y="21" width="2" height="1"></rect><rect x="12" y="22" width="1" height="1"></rect><rect x="8" y="24" width="1" height="1"></rect><rect x="10" y="24" width="1" height="1"></rect><rect x="8" y="25" width="8" height="1"></rect><rect x="6" y="26" width="8" height="1"></rect><rect x="5" y="27" width="1" height="1"></rect><rect x="40" y="29" width="1" height="1"></rect><rect x="34" y="30" width="1" height="1"></rect><rect x="37" y="30" width="11" height="1"></rect><rect x="20" y="31" width="1" height="1"></rect><rect x="25" y="31" width="1" height="1"></rect><rect x="33" y="31" width="2" height="1"></rect><rect x="36" y="31" width="7" height="1"></rect><rect x="7" y="32" width="1" height="1"></rect><rect x="18" y="32" width="6" height="1"></rect><rect x="25" y="32" width="3" height="1"></rect><rect x="31" y="32" width="6" height="1"></rect><rect x="5" y="33" width="5" height="1"></rect><rect x="16" y="33" width="9" height="1"></rect><rect x="28" y="33" width="1" height="1"></rect><rect x="30" y="33" width="1" height="1"></rect><rect x="3" y="34" width="6" height="1"></rect><rect x="15" y="34" width="3" height="1"></rect><rect x="2" y="35" width="1" height="1"></rect><rect x="13" y="35" width="2" height="1"></rect><rect x="4" y="39" width="1" height="1"></rect><rect x="19" y="39" width="1" height="1"></rect><rect x="2" y="40" width="6" height="1"></rect><rect x="16" y="40" width="7" height="1"></rect><rect x="0" y="41" width="9" height="1"></rect><rect x="15" y="41" width="6" height="1"></rect><rect x="8" y="42" width="2" height="1"></rect><rect x="13" y="42" width="3" height="1"></rect><rect x="10" y="43" width="1" height="1"></rect><rect x="12" y="43" width="1" height="1"></rect><rect x="21" y="44" width="1" height="1"></rect></g>
+    <!-- pine:end -->
+  </svg>
+
+  <div style="padding: 56px 48px 72px">
+    <h1 style="margin: 0; font-size: 120px; line-height: 0.95; font-weight: 300; letter-spacing: -0.045em; word-break: keep-all">[사이트 이름]</h1>
+    <p style="margin: 36px 0 0; max-width: 720px; font-size: 22px; line-height: 1.65; letter-spacing: -0.01em; color: var(--ink-2); word-break: keep-all">[자기소개 한두 문장]</p>
+  </div>
+
+  <div style="padding: 0 48px; display: grid; grid-template-columns: 272px minmax(0, 1fr); column-gap: 64px; row-gap: 96px; align-items: start">
+
+    <aside>
+      <div style="height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink)">
+        <span class="mono">/Latest</span>
+        <span class="mono" style="color: var(--ink-3)">({{latestCount}})</span>
+      </div>
+      <a class="mono solid" href="{{to.main}}" style="margin-top: 18px; height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--ink)">
+        <span>All posts ({{total}})</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </aside>
+
+    <section aria-label="최신 글" style="min-width: 0">
+      <div style="height: 36px; display: flex; align-items: center; border-bottom: 1px solid var(--ink)">
+        <span style="width: 24px; flex: none"></span>
+        <span class="mono" style="width: 128px; flex: none; color: var(--ink-3)">/Date</span>
+        <span class="mono" style="flex: none; color: var(--ink-3)">/Name</span>
+        <span style="flex: 1 1 auto"></span>
+        <span class="mono" style="color: var(--ink-3)">{{latestCount}} / {{total}}</span>
+      </div>
+
+      <sc-for list="{{rows}}" as="p" hint-placeholder-count="5">
+        <article class="row {{p.cls}}" style="border-bottom: 1px solid var(--line)">
+          <div class="row-h" style="display: flex; align-items: center; min-height: 60px">
+            <span aria-hidden="true" style="width: 8px; height: 8px; flex: none; margin-right: 16px; background: var(--ink)"></span>
+            <time style="width: 128px; flex: none; font-family: var(--mono); font-size: 12.5px; line-height: 1">{{p.date}}</time>
+            <a class="t" href="{{to.post}}" style="flex: 1 1 auto; min-width: 0; padding: 14px 24px 14px 0; font-size: 24px; line-height: 1.3; letter-spacing: -0.02em; word-break: keep-all">{{p.title}}⁠<svg class="arr" width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M1 6h15M11 1l5 5-5 5"></path></svg></a>
+            <button class="pm" type="button" aria-expanded="{{p.open}}" aria-controls="{{p.panel}}" aria-label="{{p.toggleLabel}}" onClick="{{p.toggle}}" style="width: 44px; height: 44px; flex: none; display: grid; place-items: center">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2 7h10"></path><path class="v" d="M7 2v10"></path></svg>
+            </button>
+          </div>
+          <div class="xp" id="{{p.panel}}">
+            <div class="xp-in">
+              <div class="xp-c" style="display: grid; grid-template-columns: 128px minmax(0, 1fr); row-gap: 18px; padding: 12px 44px 32px 24px">
+                <span class="mono" style="padding-top: 8px; color: var(--ink-3)">Summary</span>
+                <p style="margin: 0; max-width: 640px; font-size: 16px; line-height: 1.75; color: var(--ink-2); word-break: keep-all">{{p.summary}}</p>
+                <span class="mono" style="padding-top: 7px; color: var(--ink-3)">Tags</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                  <sc-for list="{{p.tags}}" as="tg" hint-placeholder-count="2">
+                    <span style="padding: 6px 8px; font-size: 12.5px; line-height: 1; border: 1px solid var(--line-2)">{{tg}}</span>
+                  </sc-for>
+                </div>
+                <span></span>
+                <a class="mono solid" href="{{to.post}}" style="justify-self: start; height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--ink)">
+                  <span>Read</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </section>
+
+    <aside>
+      <div style="height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink)">
+        <span class="mono">/Beauty of CS</span>
+        <span class="mono" style="color: var(--ink-3)">({{postCount}}/{{nodeCount}})</span>
+      </div>
+      <p style="margin: 16px 0 0; font-size: 14.5px; line-height: 1.75; color: var(--ink-2); word-break: keep-all">컴퓨터 구조, 자료구조, 운영체제, 네트워크, 데이터베이스의 개념을 선수 지식 순서로 이은 지도입니다. 검은 네모가 붙은 개념에는 글이 있습니다.</p>
+      <a class="fill" href="{{to.map}}" style="margin-top: 20px; height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 500; color: var(--bg); background: var(--ink)">
+        <span>Beauty of CS 열기</span>
+        <span aria-hidden="true" style="font-family: var(--mono)">→</span>
+      </a>
+    </aside>
+
+    <figure aria-label="Beauty of CS 지도 미리 보기" style="min-width: 0; margin: 0; border: 1px solid var(--ink); background: var(--panel)">
+      <div style="height: 28px; padding: 0 3px 0 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken)">
+        <span class="mono" style="font-size: 11px; white-space: nowrap">[ FIG. 01 ]</span>
+        <span class="mono" style="font-size: 11px; white-space: nowrap; color: var(--ink-3)">CS map</span>
+        <span aria-hidden="true" style="flex: 1 1 auto; height: 9px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px)"></span>
+        <a class="ghost" href="{{to.map}}" aria-label="Beauty of CS 크게 보기" style="width: 22px; height: 22px; display: grid; place-items: center">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M7 1h4v4M5 11H1V7M11 1 7 5M1 11l4-4"></path></svg>
+        </a>
+      </div>
+      <a href="{{to.map}}" tabIndex="-1" aria-hidden="true" style="display: block; position: relative; height: 320px; overflow: hidden; background-color: var(--bg); background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 14.4px 14.4px; background-position: 24px 28px">
+        <div style="position: absolute; left: 0; top: 0; width: 1192px; height: {{map.mh}}px; transform: translate(24px, 28px) scale(0.9); transform-origin: 0 0">
+          <sc-for list="{{map.zones}}" as="z" hint-placeholder-count="0">
+            <div style="position: absolute; left: {{z.x}}px; top: {{z.y}}px; width: {{z.w}}px; height: {{z.h}}px; border: 1px solid var(--line-2)"></div>
+          </sc-for>
+          <svg style="position: absolute; left: 0; top: 0; width: 1192px; height: {{map.mh}}px; overflow: visible; fill: none; stroke: var(--ink); stroke-width: 1; stroke-linejoin: round">
+            <path d="{{map.crossDash}}" style="stroke-opacity: 0.3; stroke-dasharray: 3 3"></path>
+            <path d="{{map.crossSolid}}" style="stroke-opacity: 0.22"></path>
+            <path d="{{map.crossHeads}}" style="fill: var(--ink); fill-opacity: 0.36; stroke: none"></path>
+            <path d="{{map.intra}}" style="stroke-opacity: 0.66"></path>
+            <path d="{{map.intraHeads}}" style="fill: var(--ink); fill-opacity: 0.76; stroke: none"></path>
+          </svg>
+          <sc-for list="{{map.zones}}" as="z" hint-placeholder-count="0">
+            <div style="position: absolute; left: {{z.lx}}px; top: {{z.ly}}px; height: 18px; padding: 0 8px; display: flex; align-items: center; gap: 8px; white-space: nowrap; background: var(--bg)">
+              <span class="mono" style="font-size: 11px">[ {{z.code}} ]</span>
+              <span style="font-size: 13px; line-height: 1; font-weight: 500">{{z.name}}</span>
+              <span style="font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink-3)">{{z.stat}}</span>
+            </div>
+          </sc-for>
+          <sc-for list="{{map.nodes}}" as="n" hint-placeholder-count="0">
+            <div style="position: absolute; left: {{n.x}}px; top: {{n.y}}px; width: 160px; height: 32px; padding: 0 8px 0 9px; display: flex; align-items: center; gap: 6px; overflow: hidden; font-size: 14px; font-weight: {{n.fw}}; color: {{n.fg}}; background: var(--panel); border: 1px solid {{n.bd}}">
+              <span style="width: 7px; height: 7px; flex: none; background: {{n.mk}}; border: 1px solid {{n.fg}}"></span>
+              <span style="flex: 1 1 auto; min-width: 0; line-height: 18px; white-space: nowrap">{{n.label}}</span>
+              <span style="flex: none; font-family: var(--mono); font-size: 12px; line-height: 1">+</span>
+            </div>
+          </sc-for>
+        </div>
+      </a>
+      <figcaption style="height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden">
+        <span class="mono" style="font-size: 11px; color: var(--ink-3)">{{nodeCount}} nodes · {{linkCount}} links</span>
+        <span style="font-size: 12px; color: var(--ink-3)">지도의 왼쪽 위 일부</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <footer style="margin-top: 120px; padding: 28px 48px 40px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line)">
+    <span style="display: flex; align-items: center; gap: 8px; color: var(--ink-3)">
+      <span class="mono">© 2026</span>
+      <span style="font-size: 13px; line-height: 1">[사이트 이름]</span>
+    </span>
+    <nav aria-label="바깥 링크" style="display: flex; align-items: center; gap: 24px">
+      <a class="mono lk" href="#">GitHub ↗</a>
+      <a class="mono lk" href="#">RSS</a>
+      <a class="mono lk" href="#">Email</a>
+    </nav>
+  </footer>
+
+  <div style="position: absolute; left: 0; top: 0; width: 0; height: 0; overflow: hidden">
+    <dc-import name="SearchV2" open="{{searchOpen}}" q="{{searchQ}}" on-close="{{closeSearch}}" post-href="{{to.post}}" main-href="{{to.main}}" hint-size="0px,0px"></dc-import>
+  </div>
+
+  <div class="fx" ref="{{setFx}}" aria-hidden="true">
+    <sc-for list="{{fxPool}}" as="f" hint-placeholder-count="0"><i></i></sc-for>
+  </div>
+  <i class="fx-c" ref="{{setFxDot}}" aria-hidden="true"></i>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"search":{"editor":"enum","options":["closed","open"],"default":"closed"},"q":{"editor":null},"$preview":{"width":1440,"height":1410}}'>
+// 이 버전(v2)의 화면 파일. 다크 화면은 같은 파일을 theme="dark"로 불러오는 얇은 파일이고, 이름 뒤에 Dark가 붙는다.
+// 검색 창은 SearchV2를 불러 쓴다. search="open"을 주면 검색 창이 열린 채로 시작한다(q는 그때의 검색어)
+const FILES = { home: 'HomeV2', main: 'MainV2', post: 'PostV2', map: 'BeautyOfCSV2' };
+// 예시 데이터: 글 목록 화면의 샘플 글 가운데 최신 다섯 개(제목과 요약은 그대로). TOTAL은 글 목록 화면의 글 수
+const KIND = { cs: 'CS 개념', ts: '트러블슈팅', til: 'TIL' };
+const TOTAL = 28;
+const LATEST = [
+  { id: 'explain-type', date: '2026.10.01', kind: 'til', topics: ['MySQL', '데이터베이스'], title: 'EXPLAIN의 type 컬럼 읽는 법', summary: 'ALL, index, range, ref, eq_ref, const가 각각 어떤 접근 방식인지와, 실행 계획에서 가장 먼저 볼 지점을 적어 둔다.' },
+  { id: 'context-switch', date: '2026.09.29', kind: 'cs', topics: ['운영체제'], title: '문맥 교환이 비싼 이유', summary: '레지스터를 저장하고 복원하는 직접 비용보다 캐시와 TLB가 식는 간접 비용이 더 크다는 점을 정리한다.' },
+  { id: 'stock-concurrency', date: '2026.09.27', kind: 'ts', topics: ['Spring', 'JPA', '동시성'], title: '재고 차감 동시성 문제: synchronized에서 비관적 락까지', summary: '동시에 들어온 주문이 재고를 음수로 만든 문제를 synchronized, 낙관적 락, 비관적 락 순서로 고쳐 본 기록.' },
+  { id: 'page-replacement', date: '2026.09.25', kind: 'cs', topics: ['운영체제'], title: '페이지 교체 알고리즘: FIFO, LRU, Clock', summary: '물리 메모리가 가득 찼을 때 어떤 페이지를 내보낼지 고르는 세 가지 방법과, Clock이 LRU를 흉내 내는 방식.' },
+  { id: 'mysql-deadlock', date: '2026.09.22', kind: 'ts', topics: ['MySQL', '동시성'], title: 'MySQL 데드락 로그를 읽고 원인을 찾은 과정', summary: 'SHOW ENGINE INNODB STATUS의 데드락 구간을 읽는 순서와, 락을 잡는 순서를 맞춰 해결한 과정.' },
+];
+
+// ── Beauty of CS 미리 보기 ─────────────────────────────────────────────────
+// 지도 화면(BeautyOfCSV2)에서 큰 개념을 모두 접어 둔 모습을, 같은 치수와 같은 길 내기 규칙으로 그린다. 창은 그 왼쪽 위만 보여 준다.
+// BIG: 과목별 큰 개념 [id, 제목, 글이 있는가]. LINKS: 큰 개념 사이의 선 [from, to, 1=선수 지식 | 0=연관 개념].
+// NODES, EDGES, POSTED: 지도 전체의 개념 수, 선 수, 글이 있는 개념 수
+// map-data:start
+const BIG = {
+  ca: [['ca-data-repr', '데이터 표현', 0], ['ca-digital-logic', '디지털 논리', 0], ['ca-isa', '명령어 집합 구조', 0], ['ca-processor', '프로세서', 0], ['ca-memory-hierarchy', '메모리 계층', 1], ['ca-storage-io', '저장장치와 입출력', 0], ['ca-parallelism', '병렬 처리', 0]],
+  ds: [['ds-complexity', '복잡도 분석', 0], ['ds-linear', '배열과 연결 리스트', 0], ['ds-stack-queue', '스택과 큐', 1], ['ds-tree', '트리', 1], ['ds-heap', '힙과 우선순위 큐', 0], ['ds-hashing', '해싱', 1], ['ds-graph', '그래프', 0], ['ds-sorting', '정렬과 탐색', 0]],
+  os: [['os-structure', '운영체제 구조', 0], ['os-process', '프로세스와 스레드', 1], ['os-scheduling', 'CPU 스케줄링', 0], ['os-sync', '동기화', 1], ['os-deadlock', '교착 상태', 1], ['os-memory', '메모리 관리', 1], ['os-vm', '가상 메모리', 1], ['os-io', '입출력 시스템', 0], ['os-fs', '파일 시스템', 0]],
+  net: [['net-basics', '네트워크 기초', 0], ['net-app', '애플리케이션 계층', 0], ['net-transport', '전송 계층', 1], ['net-network', '네트워크 계층', 0], ['net-link', '링크 계층', 0], ['net-security', '네트워크 보안', 0]],
+  db: [['db-relational', '관계 모델', 0], ['db-sql', 'SQL', 0], ['db-design', '데이터베이스 설계', 0], ['db-storage', '저장 구조', 0], ['db-index', '인덱스', 1], ['db-query', '질의 처리', 0], ['db-transaction', '트랜잭션', 1], ['db-concurrency', '동시성 제어', 1], ['db-recovery', '회복', 0], ['db-distributed', '분산 데이터베이스', 0]],
+};
+const LINKS = [
+  ['ca-data-repr', 'ca-digital-logic', 1], ['ca-data-repr', 'ca-isa', 1], ['ca-digital-logic', 'ca-processor', 1], ['ca-isa', 'ca-processor', 1], ['ca-processor', 'ca-memory-hierarchy', 1], ['ca-processor', 'ca-storage-io', 1],
+  ['ca-processor', 'ca-parallelism', 1], ['ca-memory-hierarchy', 'ca-parallelism', 1], ['ds-complexity', 'ds-linear', 1], ['ds-linear', 'ds-stack-queue', 1], ['ds-linear', 'ds-hashing', 1], ['ds-linear', 'ds-sorting', 1],
+  ['ds-stack-queue', 'ds-tree', 1], ['ds-tree', 'ds-heap', 1], ['ds-tree', 'ds-graph', 1], ['ds-stack-queue', 'ds-graph', 1], ['ds-heap', 'ds-graph', 1], ['ds-heap', 'ds-sorting', 1],
+  ['os-structure', 'os-process', 1], ['os-process', 'os-scheduling', 1], ['os-process', 'os-sync', 1], ['os-sync', 'os-deadlock', 1], ['os-structure', 'os-memory', 1], ['os-process', 'os-memory', 1],
+  ['os-memory', 'os-vm', 1], ['os-structure', 'os-io', 1], ['os-io', 'os-fs', 1], ['net-basics', 'net-app', 1], ['net-app', 'net-transport', 1], ['net-transport', 'net-network', 1],
+  ['net-network', 'net-link', 1], ['net-transport', 'net-security', 1], ['db-relational', 'db-sql', 1], ['db-relational', 'db-design', 1], ['db-storage', 'db-index', 1], ['db-index', 'db-query', 1],
+  ['db-sql', 'db-query', 1], ['db-sql', 'db-transaction', 1], ['db-transaction', 'db-concurrency', 1], ['db-transaction', 'db-recovery', 1], ['db-storage', 'db-recovery', 1], ['db-concurrency', 'db-distributed', 1],
+  ['db-recovery', 'db-distributed', 1], ['ca-processor', 'os-structure', 1], ['ca-isa', 'os-process', 1], ['ca-isa', 'os-memory', 1], ['ca-memory-hierarchy', 'os-memory', 1], ['ca-memory-hierarchy', 'os-vm', 1],
+  ['ca-parallelism', 'os-sync', 1], ['ca-parallelism', 'os-scheduling', 1], ['ca-storage-io', 'os-io', 1], ['ds-stack-queue', 'ca-isa', 1], ['ca-data-repr', 'net-network', 1], ['ca-data-repr', 'net-link', 1],
+  ['ca-storage-io', 'db-storage', 1], ['ds-stack-queue', 'os-scheduling', 1], ['ds-graph', 'os-deadlock', 1], ['os-process', 'net-transport', 1], ['os-vm', 'db-storage', 1], ['os-sync', 'db-concurrency', 1],
+  ['os-deadlock', 'db-concurrency', 1], ['os-fs', 'db-storage', 1], ['ds-tree', 'db-index', 1], ['ds-hashing', 'db-index', 1], ['ds-hashing', 'db-query', 1], ['ds-sorting', 'db-query', 1],
+  ['ds-graph', 'db-transaction', 1], ['ds-graph', 'net-network', 1], ['ds-tree', 'net-network', 1], ['ds-stack-queue', 'net-basics', 1], ['net-basics', 'db-distributed', 1], ['ca-memory-hierarchy', 'ds-linear', 0],
+  ['ca-storage-io', 'ds-tree', 0], ['ca-data-repr', 'net-app', 0], ['ca-memory-hierarchy', 'db-storage', 0], ['ds-heap', 'os-scheduling', 0], ['ds-linear', 'os-memory', 0], ['ds-stack-queue', 'os-sync', 0],
+  ['ds-hashing', 'os-memory', 0], ['ds-tree', 'os-fs', 0], ['ds-linear', 'os-vm', 0], ['os-process', 'net-app', 0], ['os-sync', 'net-transport', 0], ['os-fs', 'db-recovery', 0],
+  ['os-sync', 'db-transaction', 0], ['ds-hashing', 'net-security', 0], ['ds-tree', 'net-app', 0], ['net-app', 'db-distributed', 0],
+];
+// map-data:end
+const NODES = 183, EDGES = 94, POSTED = 16;
+// 과목 구역과, 구역 안에서 큰 개념이 놓이는 칸 [열, 행]. stat은 글 수/개념 수
+const ZONES = [
+  { id: 'ca', code: 'CA', name: '컴퓨터 구조', stat: '3/36', band: 0, x: 0, w: 584, cols: 3, rows: 3, cells: { 'ca-data-repr': [0, 0], 'ca-digital-logic': [1, 0], 'ca-isa': [0, 1], 'ca-processor': [1, 1], 'ca-storage-io': [2, 1], 'ca-memory-hierarchy': [1, 2], 'ca-parallelism': [2, 2] } },
+  { id: 'ds', code: 'DS', name: '자료구조', stat: '4/36', band: 0, x: 608, w: 584, cols: 3, rows: 3, cells: { 'ds-complexity': [0, 0], 'ds-linear': [1, 0], 'ds-hashing': [2, 0], 'ds-stack-queue': [0, 1], 'ds-tree': [1, 1], 'ds-sorting': [2, 1], 'ds-graph': [1, 2], 'ds-heap': [2, 2] } },
+  { id: 'os', code: 'OS', name: '운영체제', stat: '5/41', band: 1, x: 0, w: 1192, cols: 6, rows: 2, cells: { 'os-fs': [0, 0], 'os-io': [1, 0], 'os-structure': [2, 0], 'os-process': [3, 0], 'os-sync': [4, 0], 'os-deadlock': [5, 0], 'os-vm': [1, 1], 'os-memory': [2, 1], 'os-scheduling': [3, 1] } },
+  { id: 'net', code: 'NET', name: '네트워크', stat: '1/31', band: 2, x: 0, w: 392, cols: 2, rows: 3, cells: { 'net-basics': [0, 0], 'net-app': [1, 0], 'net-security': [0, 1], 'net-transport': [1, 1], 'net-link': [0, 2], 'net-network': [1, 2] } },
+  { id: 'db', code: 'DB', name: '데이터베이스', stat: '3/39', band: 2, x: 416, w: 776, cols: 4, rows: 3, cells: { 'db-relational': [0, 0], 'db-sql': [1, 0], 'db-transaction': [2, 0], 'db-concurrency': [3, 0], 'db-design': [0, 1], 'db-query': [1, 1], 'db-recovery': [2, 1], 'db-distributed': [3, 1], 'db-index': [1, 2], 'db-storage': [2, 2] } },
+];
+// 치수(지도 좌표, px): 큰 개념 상자, 열 사이 통로와 행 사이 간격, 구역 위·아래 여백, 구역 띠 사이 간격, 선이 꺾이는 곳의 반지름
+const W = 160, H = 32, AV = 32, RG = 24, ZT = 40, ZB = 20, BG = 28, R = 6;
+
+// 모든 상자의 자리
+function mapLayout() {
+  const rect = {}, zones = [], hw = [];
+  let bandY = 0;
+  [0, 1, 2].forEach((b) => {
+    const zs = ZONES.filter((z) => z.band === b);
+    const bandH = Math.max.apply(null, zs.map((z) => ZT + z.rows * H + (z.rows - 1) * RG + ZB));
+    zs.forEach((z) => {
+      const pad = (z.w - (z.cols * W + (z.cols - 1) * AV)) / 2, colX = [];
+      for (let c = 0; c < z.cols; c++) colX[c] = z.x + pad + c * (W + AV);
+      Object.keys(z.cells).forEach((id) => {
+        const c = z.cells[id][0], r = z.cells[id][1];
+        rect[id] = { id, x: colX[c], y: bandY + ZT + r * (H + RG), w: W, h: H, zone: z.id, band: b, col: c, row: r, colX: colX[c] };
+      });
+      zones.push({ id: z.id, code: z.code, name: z.name, stat: z.stat, x: z.x, y: bandY, w: z.w, h: bandH, lx: z.x + 12, ly: bandY - 9, colX });
+    });
+    bandY += bandH;
+    if (b < 2) { hw[b] = bandY; bandY += BG; }
+  });
+  // 운영체제 띠를 세로로 지나갈 수 있는 통로
+  const os = zones.filter((z) => z.id === 'os')[0];
+  const through = [os.colX[0] - 18];
+  for (let c = 0; c < 5; c++) through.push(os.colX[c] + W + AV / 2);
+  through.push(os.colX[5] + W + 18);
+  return { rect, zones, hw, through, mh: bandY };
+}
+
+// 점들을 지나는 선. 꺾이는 곳은 둥글게, 끝은 trim만큼 덜 그린다
+function mapPath(points, trim) {
+  const pts = [];
+  points.forEach((p) => {
+    const q = pts[pts.length - 1];
+    if (q && Math.abs(q[0] - p[0]) < 0.5 && Math.abs(q[1] - p[1]) < 0.5) return;
+    if (pts.length > 1) {
+      const o = pts[pts.length - 2];
+      if ((Math.abs(o[0] - q[0]) < 0.5 && Math.abs(q[0] - p[0]) < 0.5) || (Math.abs(o[1] - q[1]) < 0.5 && Math.abs(q[1] - p[1]) < 0.5)) { pts[pts.length - 1] = p; return; }
+    }
+    pts.push(p);
+  });
+  const n = pts.length, a = pts[n - 2], z = pts[n - 1];
+  const len = Math.hypot(z[0] - a[0], z[1] - a[1]) || 1;
+  const ux = (z[0] - a[0]) / len, uy = (z[1] - a[1]) / len;
+  const end = [z[0] - ux * trim, z[1] - uy * trim];
+  let d = 'M' + pts[0][0] + ' ' + pts[0][1];
+  for (let i = 1; i < n - 1; i++) {
+    const p0 = pts[i - 1], p1 = pts[i], p2 = i === n - 2 ? end : pts[i + 1];
+    const d1 = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]), d2 = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+    const r = Math.min(R, d1 / 2, d2 / 2);
+    d += 'L' + (p1[0] - ((p1[0] - p0[0]) / d1) * r).toFixed(1) + ' ' + (p1[1] - ((p1[1] - p0[1]) / d1) * r).toFixed(1);
+    d += 'Q' + p1[0] + ' ' + p1[1] + ' ' + (p1[0] + ((p2[0] - p1[0]) / d2) * r).toFixed(1) + ' ' + (p1[1] + ((p2[1] - p1[1]) / d2) * r).toFixed(1);
+  }
+  d += 'L' + end[0].toFixed(1) + ' ' + end[1].toFixed(1);
+  // 화살촉
+  const bx = z[0] - ux * 7, by = z[1] - uy * 7;
+  const head = 'M' + z[0] + ' ' + z[1] + 'L' + (bx - uy * 3.4).toFixed(1) + ' ' + (by + ux * 3.4).toFixed(1) + 'L' + (bx + uy * 3.4).toFixed(1) + ' ' + (by - ux * 3.4).toFixed(1) + 'Z';
+  return { d, head };
+}
+
+// 같은 구역 안 큰 개념 사이: 이웃한 칸이므로 곧게 잇거나 사이 통로로 한 번 돌아간다
+function routeIntra(L, a, b) {
+  const A = L.rect[a], B = L.rect[b];
+  const dc = B.col - A.col, dr = B.row - A.row;
+  const ay = A.y + H / 2, by = B.y + H / 2;
+  if (dr === 0) return dc > 0 ? [[A.x + W, ay], [B.x, by]] : [[A.x, ay], [B.x + W, by]];
+  if (dc === 0) return dr > 0 ? [[A.x + W / 2, A.y + H], [B.x + W / 2, B.y]] : [[A.x + W / 2, A.y], [B.x + W / 2, B.y + H]];
+  const lane = (dc > 0 ? A.x + W : B.x + W) + AV / 2, s = dr > 0 ? 1 : -1;
+  return [[dc > 0 ? A.x + W : A.x, ay + 7 * s], [lane, ay + 7 * s], [lane, by - 7 * s], [dc > 0 ? B.x : B.x + W, by - 7 * s]];
+}
+
+// 다른 구역 사이: 상자 옆 통로로 나와 띠 사이 가로 통로를 타고 간다
+function routeCross(L, a, b, pre) {
+  const A = L.rect[a], B = L.rect[b];
+  const cx = (n) => n.x + n.w / 2;
+  const side = (n, o) => (cx(o) >= cx(n) ? 1 : -1);
+  // 점선(연관 개념)은 실선과 겹치지 않게 통로 안쪽 줄을 따로 쓴다
+  const lo = pre ? 9 : 13, ho = pre ? 0 : 3, flipPort = pre ? 1 : -1;
+  const lane = (n, s) => (s > 0 ? n.colX + W + lo : n.colX - lo);
+  const port = (n, s, dy) => [s > 0 ? n.x + n.w : n.x, n.y + n.h / 2 + dy * flipPort];
+  const sa = side(A, B), sb = side(B, A);
+  const la = lane(A, sa), lb = lane(B, sb);
+  if (A.band === B.band) {
+    // 같은 띠의 옆 구역: 위쪽 띠는 아래 통로로, 아래쪽 띠는 위 통로로
+    const down = A.band === 0;
+    const hy = (down ? L.hw[0] + 7 : L.hw[1] + 21) + ho;
+    const pa = port(A, sa, (down ? 1 : -1) * 7), pb = port(B, sb, (down ? 1 : -1) * 7);
+    return [pa, [la, pa[1]], [la, hy], [lb, hy], [lb, pb[1]], pb];
+  }
+  const flip = A.band > B.band;
+  const U = flip ? B : A, D = flip ? A : B;
+  const su = flip ? sb : sa, sd = flip ? sa : sb, lu = flip ? lb : la, ld = flip ? la : lb;
+  const pu = port(U, su, 7), pd = port(D, sd, -7);
+  let pts;
+  if (D.band - U.band === 1) {
+    const hy = (U.band === 0 ? L.hw[0] + 21 : L.hw[1] + 7) + ho;
+    pts = [pu, [lu, pu[1]], [lu, hy], [ld, hy], [ld, pd[1]], pd];
+  } else {
+    const ox = L.through.reduce((best, x) => (Math.abs(x - ld) < Math.abs(best - ld) ? x : best), L.through[0]) + (pre ? 0 : 4);
+    pts = [pu, [lu, pu[1]], [lu, L.hw[0] + 14 + ho], [ox, L.hw[0] + 14 + ho], [ox, L.hw[1] + 14 + ho], [ld, L.hw[1] + 14 + ho], [ld, pd[1]], pd];
+  }
+  return flip ? pts.slice().reverse() : pts;
+}
+
+// 미리 보기에 그릴 것: 구역, 상자, 선
+function buildMap() {
+  const L = mapLayout(), zoneOf = {};
+  const nodes = [];
+  Object.keys(BIG).forEach((zid) => {
+    BIG[zid].forEach((b) => {
+      const r = L.rect[b[0]], ink = b[2] ? 'var(--ink)' : 'var(--ink-3)';
+      zoneOf[b[0]] = zid;
+      nodes.push({ x: r.x, y: r.y, label: b[1], fw: b[2] ? 500 : 400, fg: ink, bd: b[2] ? 'var(--ink)' : 'var(--line-2)', mk: b[2] ? 'var(--ink)' : 'transparent' });
+    });
+  });
+  const p = { crossDash: '', crossSolid: '', crossHeads: '', intra: '', intraHeads: '' };
+  LINKS.forEach((e) => {
+    const same = zoneOf[e[0]] === zoneOf[e[1]], pre = !!e[2];
+    const seg = mapPath(same ? routeIntra(L, e[0], e[1]) : routeCross(L, e[0], e[1], pre), pre ? 5 : 0);
+    if (same) { p.intra += seg.d; p.intraHeads += seg.head; }
+    else if (pre) { p.crossSolid += seg.d; p.crossHeads += seg.head; }
+    else p.crossDash += seg.d;
+  });
+  return Object.assign({ zones: L.zones, nodes, mh: L.mh }, p);
+}
+
+// 글자를 입력하는 자리에서는 단축키를 받지 않는다
+const typing = (t) => !!t && (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || (t.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|reset)$/.test(t.type)));
+
+// ── 커서 효과 (모든 화면 공통) ─────────────────────────────────────────────
+// 덧그리는 층(.fx)에 미리 놓아 둔 테두리 네모를 돌려 쓴다. 자리와 크기 변화만 스크립트가 정한다
+const FX_CELL = 14; // 잔상이 찍히는 간격이자 자리를 맞추는 격자(px)
+// 잔상: 20px로 찍힌 뒤 4px까지 일정한 속도로 작아지며 0.8초 동안 사라진다. 찍힌 순간이 가장 진하다(55%).
+// 그래서 커서 바로 뒤의 네모가 가장 크고 진하고, 꼬리로 갈수록 작고 옅다
+const FX_TRAIL = { from: 20, to: 4, ms: 800, alpha: 0.55, ease: 'linear' };
+// 누름: 4px에서 24px까지 퍼지며 0.65초 동안 사라진다. 처음에 빠르게 커지고 끝으로 갈수록 느려진다
+const FX_PRESS = { from: 4, to: 24, ms: 650, alpha: 0.8, ease: 'cubic-bezier(.215,.61,.355,1)' };
+const FX_TRAILS = 120, FX_PRESSES = 6; // 한꺼번에 떠 있을 수 있는 네모 수(잔상, 누름)
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // open: 펼친 행. anim: 방금 누른 행. theme, search: 버튼으로 고른 값. null이면 이 화면에 주어진 값을 따른다
+    this.state = { open: {}, anim: null, key: null, theme: null, search: null };
+    this.toggleTheme = () => this.setState((st) => ({ theme: this.isDark(st) ? 'light' : 'dark' }));
+    this.map = buildMap();
+
+    this.setRoot = (el) => { this.rootEl = el; };
+    this.setSearchBtn = (el) => { this.searchBtn = el; };
+    // 검색 창: 열 때는 검색 창이 입력칸으로 포커스를 가져가고, 닫으면 Search 버튼으로 돌려준다
+    this.openSearch = () => this.setState({ search: true });
+    this.closeSearch = () => {
+      this.setState({ search: false });
+      setTimeout(() => { if (this.searchBtn) this.searchBtn.focus({ preventScroll: true }); }, 0);
+    };
+
+    // 커서 효과: 덧그리는 층, 커서 아래 네모, 층에 놓아 둘 네모 수만큼의 목록
+    this.fxPool = Array.from({ length: FX_TRAILS + FX_PRESSES }, (_, i) => i);
+    this.fxAnim = [];
+    this.setFx = (el) => { this.fxEl = el; };
+    this.setFxDot = (el) => { this.fxDot = el; };
+    this.fxMove = (e) => this.fxTrail(e);
+    this.fxDown = (e) => this.fxTap(e);
+    this.fxLeave = () => this.fxHide();
+
+    this.toggles = {};
+    LATEST.forEach((p) => {
+      this.toggles[p.id] = () => this.setState((st) => {
+        const next = Object.assign({}, st.open);
+        next[p.id] = !next[p.id];
+        return { open: next, anim: p.id };
+      });
+    });
+
+    this.onKey = (e) => {
+      if (e.defaultPrevented || this.editing()) return;
+      // 검색: ⌘K 또는 Ctrl+K. 글자를 입력하는 자리에서도 받는다
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK')) {
+        e.preventDefault();
+        if (this.searching(this.state)) this.closeSearch(); else this.openSearch();
+        return;
+      }
+      if (this.searching(this.state)) {
+        if (e.key === 'Escape') { e.preventDefault(); this.closeSearch(); }
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey || e.repeat || typing(e.target)) return;
+      // 한글 입력 상태에서도 같은 자리의 키로 동작하게 한다
+      const ch = e.key && e.key.length === 1 ? e.key.toLowerCase() : '';
+      const k = /^[a-z]$/.test(ch) ? ch : e.code === 'KeyB' ? 'b' : e.code === 'KeyC' ? 'c' : '';
+      if (k !== 'b' && k !== 'c') return;
+      e.preventDefault();
+      this.go(k);
+    };
+  }
+
+  componentDidMount() {
+    this.reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+    // 단축키를 바로 받을 수 있게, 이 문서에 포커스가 와 있는데 받는 요소가 없으면 화면 전체가 받는다.
+    // 다른 문서의 포커스를 가져오지는 않는다
+    this.onFocus = () => { if (this.rootEl && !this.editing() && document.activeElement === document.body) this.rootEl.focus({ preventScroll: true }); };
+    window.addEventListener('focus', this.onFocus);
+    if (document.hasFocus()) this.onFocus();
+    // 커서 효과: 화면 어디에서 움직이고 누르든 받는다. 받기만 하고 기본 동작은 건드리지 않는다
+    window.addEventListener('pointermove', this.fxMove, { capture: true, passive: true });
+    window.addEventListener('pointerdown', this.fxDown, { capture: true, passive: true });
+    document.documentElement.addEventListener('pointerleave', this.fxLeave);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.navT);
+    window.removeEventListener('focus', this.onFocus);
+    window.removeEventListener('pointermove', this.fxMove, { capture: true });
+    window.removeEventListener('pointerdown', this.fxDown, { capture: true });
+    document.documentElement.removeEventListener('pointerleave', this.fxLeave);
+  }
+
+  // ── 커서 효과 ──
+  // 그려도 되는가: 캔버스에서 편집하는 중이거나 "동작 줄이기"가 켜져 있으면 그리지 않는다
+  fxOn() {
+    return !!this.fxEl && !this.editing() && !(this.reduce && this.reduce.matches);
+  }
+
+  // 커서 아래 네모를 치우고, 잔상을 이어 가던 자리도 잊는다(마우스가 화면을 벗어났을 때)
+  fxHide() {
+    this.fxAt = null;
+    if (this.fxDot) this.fxDot.style.visibility = 'hidden';
+  }
+
+  // 층의 왼쪽 위가 문서의 어디인지. 네모는 문서에 찍히므로 스크롤하면 글과 함께 움직인다
+  fxOrigin(e) {
+    const r = this.fxEl.getBoundingClientRect();
+    this.fxOx = r.left + (e.pageX - e.clientX);
+    this.fxOy = r.top + (e.pageY - e.clientY);
+  }
+
+  // i번째 네모를 (x, y)에 중심을 두고 from → to 크기로 바꾸면서 지운다. 테두리 굵기는 1px 그대로다
+  fxStamp(i, x, y, k) {
+    const el = this.fxEl.children[i];
+    if (!el || !el.animate) return;
+    const old = this.fxAnim[i];
+    if (old) { old[0].cancel(); old[1].cancel(); }
+    const a = k.from / 2, b = k.to / 2;
+    this.fxAnim[i] = [
+      el.animate([
+        { left: x - a + 'px', top: y - a + 'px', width: k.from + 'px', height: k.from + 'px' },
+        { left: x - b + 'px', top: y - b + 'px', width: k.to + 'px', height: k.to + 'px' },
+      ], { duration: k.ms, easing: k.ease }),
+      el.animate([{ opacity: k.alpha }, { opacity: 0 }], { duration: k.ms }),
+    ];
+  }
+
+  // 가장 가까운 격자점에 잔상 하나. 바로 앞에 찍은 자리와 같으면 건너뛴다
+  fxPut(x, y) {
+    const gx = Math.round(x / FX_CELL) * FX_CELL, gy = Math.round(y / FX_CELL) * FX_CELL;
+    if (gx === this.fxGx && gy === this.fxGy) return;
+    this.fxGx = gx;
+    this.fxGy = gy;
+    this.fxN = ((this.fxN || 0) + 1) % FX_TRAILS;
+    this.fxStamp(this.fxN, gx, gy, FX_TRAIL);
+  }
+
+  // 마우스가 움직일 때: 커서 아래 네모를 옮기고, 지나간 길을 14px마다 끊어 잔상을 찍는다.
+  // 터치와 펜은 스크롤과 겹치므로 잔상을 남기지 않는다
+  fxTrail(e) {
+    if (e.pointerType !== 'mouse' || !this.fxOn()) { this.fxHide(); return; }
+    const x = e.clientX, y = e.clientY, d = this.fxDot;
+    if (d) { d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.visibility = 'visible'; }
+    const last = this.fxAt; // 마지막으로 잔상을 찍은 자리(화면 좌표, 격자에 맞추기 전)
+    if (!last) { this.fxOrigin(e); this.fxAt = { x, y }; return; }
+    const dx = x - last.x, dy = y - last.y, dist = Math.hypot(dx, dy);
+    if (dist < FX_CELL) return;
+    // 화면 좌표를 층 안의 좌표로 옮길 때 더하는 값(지금의 스크롤 − 층의 자리)
+    const sx = e.pageX - x - this.fxOx, sy = e.pageY - y - this.fxOy;
+    // 한 번에 아주 멀리 건너뛰었으면 사이를 잇지 않고 그 자리에만 찍는다
+    if (dist > FX_CELL * 40) { this.fxAt = { x, y }; this.fxPut(x + sx, y + sy); return; }
+    const n = Math.floor(dist / FX_CELL), ux = (dx / dist) * FX_CELL, uy = (dy / dist) * FX_CELL;
+    for (let i = 1; i <= n; i++) this.fxPut(last.x + ux * i + sx, last.y + uy * i + sy);
+    this.fxAt = { x: last.x + ux * n, y: last.y + uy * n };
+  }
+
+  // 누를 때(마우스 왼쪽 버튼, 터치, 펜): 격자에 맞추지 않고 누른 자리 그대로에서 네모 하나가 퍼진다
+  fxTap(e) {
+    if (!this.fxOn() || !e.isPrimary || e.button > 0) return;
+    if (e.pointerType !== 'mouse') this.fxHide();
+    this.fxOrigin(e);
+    this.fxK = ((this.fxK || 0) + 1) % FX_PRESSES;
+    this.fxStamp(FX_TRAILS + this.fxK, Math.round(e.pageX - this.fxOx), Math.round(e.pageY - this.fxOy), FX_PRESS);
+  }
+
+  isDark(st) {
+    return st.theme ? st.theme === 'dark' : this.props.theme === 'dark';
+  }
+
+  // 검색 창이 열려 있는가
+  searching(st) {
+    return st.search === null ? this.props.search === 'open' : st.search;
+  }
+
+  // 캔버스에서 편집하는 동안에는 단축키와 움직임을 멈춘다
+  editing() {
+    const b = document.body;
+    return b.hasAttribute('data-dc-editor-on') && b.getAttribute('data-dc-editor-tool') !== 'interact';
+  }
+
+  // 단축키: 메뉴를 한 번 반전시킨 뒤 그 링크를 누른 것과 똑같이 이동한다
+  go(k) {
+    if (this.navT) return;
+    this.setState({ key: k });
+    this.navT = setTimeout(() => {
+      this.navT = null;
+      this.setState({ key: null });
+      const a = this.rootEl && this.rootEl.querySelector('a[data-key="' + k + '"]');
+      if (a) a.click();
+    }, 140);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const rows = LATEST.map((p) => {
+      const open = !!s.open[p.id];
+      return {
+        date: p.date, title: p.title, summary: p.summary, open,
+        tags: [KIND[p.kind]].concat(p.topics),
+        cls: (open ? 'open' : '') + (s.anim === p.id ? ' anim' : ''),
+        panel: 'xp-' + p.id,
+        toggleLabel: (open ? '접기: ' : '펼치기: ') + p.title,
+        toggle: this.toggles[p.id],
+      };
+    });
+
+    // 테마: 링크와 단축키는 지금 보고 있는 테마의 화면으로 이어진다
+    const dark = this.isDark(s);
+    const file = (k) => FILES[k] + (dark ? 'Dark' : '') + '.dc.html';
+
+    return {
+      dark, themeCls: dark ? 'dark' : '', toggleTheme: this.toggleTheme,
+      to: { home: file('home'), main: file('main'), post: file('post'), map: file('map') },
+      rows, latestCount: LATEST.length, total: TOTAL,
+      map: this.map, nodeCount: NODES, linkCount: EDGES, postCount: POSTED,
+      searchOpen: this.searching(s), searchQ: this.props.q || '',
+      openSearch: this.openSearch, closeSearch: this.closeSearch, setSearchBtn: this.setSearchBtn,
+      setRoot: this.setRoot,
+      fxPool: this.fxPool, setFx: this.setFx, setFxDot: this.setFxDot,
+      onKey: this.onKey,
+      hitB: s.key === 'b' ? 'hit' : '',
+      hitC: s.key === 'c' ? 'hit' : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

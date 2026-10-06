@@ -1,0 +1,6 @@
+/* 글 본문의 FIG. 01. 원본은 PostV2의 왼쪽 aside와 PostV2M의 접는 figure. 띠, 설명 줄, 접기는 BrainMap.module.css를 같이 쓴다 */
+.head { height: 36px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--ink); }
+.side { margin: 18px 0 0; border: 1px solid var(--ink); background: var(--panel); }
+.canvas { height: 240px; background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 12px 12px; background-position: 5px 4px; }
+.foldCanvas { height: 280px; border-top: 1px solid var(--ink); background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 12px 12px; background-position: 5px 4px; }
+.foldNote { font-size: 12.5px; color: var(--ink-3); }

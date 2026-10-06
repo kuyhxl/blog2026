@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.local.example
+!.env.production
+.DS_Store
+seed/
+next-env.d.ts
+*.tsbuildinfo
+.content-fixture/

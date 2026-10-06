@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>파비콘 시안 (v2)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F7F2}
+/* 파비콘 시안을 견주어 보는 판. 글꼴, 잉크 색, 라벨 표기는 v2 화면과 같다. 판의 바탕은 v2의 --panel 값.
+   --cw 시안 한 칸의 너비, --big 확대한 모습의 한 변, --c16 --c32 확대했을 때 한 칸의 크기, --chk 바둑판 무늬의 주기,
+   --hp --hg 홈 화면 줄의 안쪽 여백과 아이콘 사이 */
+.fv{--paper:#F3F7F2;--ink:#141A16;--ink-2:#38423B;--ink-3:#525D55;--line:rgba(20,26,22,.2);--line-2:rgba(20,26,22,.4);--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,"SF Mono",Menlo,Consolas,monospace;--ui:system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--cw:410px;--big:320px;--c16:20px;--c32:10px;--chk:80px;--hp:25px;--hg:24px;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.fv *,.fv *::before,.fv *::after{box-sizing:border-box}
+.fv .mono{font-family:var(--mono);font-size:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase}
+.fv .cap{font-family:var(--mono);font-size:11px;line-height:14px;color:var(--ink-3)}
+.fv .lab{height:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;white-space:nowrap}
+
+/* 배치. 아이콘이 화면의 픽셀에 딱 맞게 놓이도록 너비와 높이를 모두 정수 픽셀로 잡는다.
+   넓으면 시안 셋을 나란히 두고(창이 좁아지면 확대 크기를 320 → 288 → 256으로 줄인다), 더 좁으면 한 줄로 쌓는다 */
+.fv .wrap{max-width:1440px;margin:0 auto;padding:56px 64px 72px}
+.fv .title{margin:16px 0 0;font-size:68px;line-height:64px;font-weight:300;letter-spacing:-.045em;word-break:keep-all}
+.fv .cols{margin-top:36px;display:grid;grid-template-columns:repeat(3,var(--cw));justify-content:space-between;row-gap:64px}
+.fv .col{width:var(--cw);max-width:100%;min-width:0;display:flex;flex-direction:column;gap:36px}
+@media (max-width:1421px){
+.fv{--cw:378px;--big:288px;--c16:18px;--c32:9px;--chk:72px;--hp:15px;--hg:20px}
+.fv .wrap{padding:48px 40px 64px}
+}
+@media (max-width:1269px){
+.fv{--cw:346px;--big:256px;--c16:16px;--c32:8px;--chk:64px;--hp:11px;--hg:12px}
+}
+@media (max-width:1165px){
+.fv{--cw:410px;--big:320px;--c16:20px;--c32:10px;--chk:80px;--hp:25px;--hg:24px}
+.fv .cols{grid-template-columns:minmax(0,1fr);justify-content:stretch}
+}
+@media (max-width:489px){
+.fv{--cw:346px;--big:256px;--c16:16px;--c32:8px;--chk:64px;--hp:11px;--hg:12px}
+.fv .wrap{padding:32px 20px 48px}
+.fv .title{font-size:44px;line-height:42px}
+}
+/* 가운데 맞춤과 칸 사이 간격에서 반 픽셀이 생기지 않게 내림한다(round()를 모르는 브라우저는 위의 값 그대로) */
+@supports (width:round(down,1px,1px)){
+.fv .wrap{margin-left:max(0px,round(down,calc((100% - 1440px)/2),1px))}
+@media (min-width:1166px){.fv .cols{justify-content:start;column-gap:round(down,calc((100% - 3*var(--cw))/2),1px)}}
+}
+
+/* 아이콘 색: 사이트(v2) 토큰의 값 그대로. .day = 라이트의 값, .night = 다크의 값(밤의 소나무) */
+.fv .day{--bg:#E3ECE4;--pine-1:#7DAA6B;--pine-2:#4D8553;--pine-3:#2E5B3E;--bark-1:#6B5142;--bark-2:#43322A}
+.fv .night{--bg:#162119;--pine-1:#4E7767;--pine-2:#35584B;--pine-3:#243E36;--bark-1:#4F463E;--bark-2:#3B322C}
+
+/* 아이콘: 칸마다 1×1 사각형을 놓은 SVG. 색은 변수로 준다(화면의 소나무와 같은 방식). 흐림도 반투명도 없다 */
+.fv .ico{display:block;flex:none}
+.fv .ico .bg{fill:var(--bg)}
+.fv .ico .bg0{fill:none}
+.fv .ico .p1{fill:var(--pine-1)}
+.fv .ico .p2{fill:var(--pine-2)}
+.fv .ico .p3{fill:var(--pine-3)}
+.fv .ico .k1{fill:var(--bark-1)}
+.fv .ico .k2{fill:var(--bark-2)}
+
+/* 색 견본 */
+.fv .sw{width:14px;height:14px;flex:none}
+.fv .sw.edge{box-shadow:inset 0 0 0 1px var(--line-2)}
+.fv .sw.none{background:conic-gradient(#FFFFFF 25%,#D5DBD6 0 50%,#FFFFFF 0 75%,#D5DBD6 0) 0 0/14px 14px;box-shadow:inset 0 0 0 1px var(--line-2)}
+
+/* 확대한 모습. 투명한 시안은 바둑판 무늬 위에 놓는다(무늬 한 칸 = 16칸 격자의 두 칸). 격자선은 칸을 세기 위한 것이고 아이콘의 일부가 아니다 */
+.fv .big{position:relative;flex:none;width:var(--big);height:var(--big);outline:1px solid var(--line-2)}
+.fv .big .ico{width:100%;height:100%}
+.fv .big.chk{background:conic-gradient(#FFFFFF 25%,#EDF1ED 0 50%,#FFFFFF 0 75%,#EDF1ED 0) 0 0/var(--chk) var(--chk)}
+.fv .big .ln{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background-image:linear-gradient(to right,var(--cl) 1px,transparent 1px),linear-gradient(to bottom,var(--cl) 1px,transparent 1px)}
+.fv .big .ln.c16{background-size:var(--c16) var(--c16)}
+.fv .big .ln.c32{background-size:var(--c32) var(--c32)}
+.fv .big .ln.on-light{--cl:rgba(20,26,22,.1)}
+.fv .big .ln.on-dark{--cl:rgba(227,236,228,.11)}
+.fv.nogrid .big .ln{display:none}
+
+/* 실제 크기를 올려 보는 밝은 면과 어두운 면(탭 모형의 켜진 탭과 같은 색) */
+.fv .chip{height:52px;display:flex;align-items:center;justify-content:center;gap:12px}
+.fv .chip.lt{background:#FFFFFF;box-shadow:inset 0 0 0 1px var(--line)}
+.fv .chip.dk{background:#35363A}
+/* 2배 화면에서만: 32칸 버전이 16px 자리에 들어간 모습(한 칸이 화면의 1픽셀). 1배 화면에서는 그릴 수 없어 숨긴다 */
+.fv .hi{display:none}
+@media (resolution:2dppx),(-webkit-device-pixel-ratio:2){.fv .hi{display:block}}
+
+/* 브라우저 창 모형: 특정 브라우저를 본뜨지 않은 무채색. 밝은 창과 어두운 창 */
+.fv .win{border-radius:10px 10px 0 0;overflow:hidden;font-family:var(--ui);font-size:12px;line-height:1;box-shadow:inset 0 0 0 1px var(--w-edge)}
+.fv .win.lt{--w-strip:#DEE1E6;--w-face:#FFFFFF;--w-ink:#1F2328;--w-ink2:#5F6368;--w-pill:#F1F3F4;--w-ph:#C4C9CF;--w-edge:rgba(20,26,22,.22);--w-page:#E3ECE4}
+.fv .win.dk{--w-strip:#202124;--w-face:#35363A;--w-ink:#E8EAED;--w-ink2:#9AA0A6;--w-pill:#202124;--w-ph:#5F6368;--w-edge:rgba(20,26,22,.5);--w-page:#162119}
+.fv .win .strip{height:40px;padding:0 8px;display:flex;align-items:flex-end;background:var(--w-strip)}
+.fv .win .tab{height:32px;min-width:0;padding:0 10px;display:flex;align-items:center;gap:8px;border-radius:8px 8px 0 0;color:var(--w-ink2)}
+.fv .win .tab.on{background:var(--w-face);color:var(--w-ink)}
+.fv .win .tab .tt{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.fv .win .tab svg.x{flex:none;color:var(--w-ink2)}
+.fv .win .plus{width:28px;height:32px;flex:none;display:grid;place-items:center;color:var(--w-ink2)}
+.fv .win .bar{height:38px;padding:0 12px;display:flex;align-items:center;gap:12px;background:var(--w-face);color:var(--w-ink2)}
+.fv .win .pill{flex:1 1 auto;min-width:0;height:26px;padding:0 12px;display:flex;align-items:center;border-radius:13px;background:var(--w-pill);color:var(--w-ink);overflow:hidden;white-space:nowrap}
+.fv .win .bm{height:30px;padding:0 14px 4px;display:flex;align-items:center;gap:18px;background:var(--w-face);color:var(--w-ink);overflow:hidden;white-space:nowrap}
+.fv .win .bm .it{display:flex;align-items:center;gap:7px;flex:none}
+.fv .win .bm .ph{width:16px;height:16px;flex:none;border-radius:4px;background:var(--w-ph)}
+.fv .win .bm .phl{height:6px;border-radius:3px;background:var(--w-ph)}
+.fv .win .page{height:16px;background:var(--w-page);box-shadow:inset 0 1px 0 var(--w-edge)}
+
+/* 휴대폰 홈 화면의 한 줄. 아이콘은 60px(180px의 3분의 1)이고, 모서리는 홈 화면이 둥글린다 */
+.fv .home{margin-top:16px;padding:16px 0 14px var(--hp);display:flex;gap:var(--hg);align-items:flex-start;overflow:hidden;border-radius:18px;background:#66706A;font-family:var(--ui);font-size:11px;line-height:1;color:#FFFFFF}
+.fv .home .app{width:72px;flex:none;display:flex;flex-direction:column;align-items:center;gap:7px}
+.fv .home .tile{width:60px;height:60px;flex:none;border-radius:13.5px;overflow:hidden}
+.fv .home .tile.ph{background:#7C867F}
+.fv .home .nm{height:11px;max-width:72px;overflow:hidden;white-space:nowrap}
+.fv .home .nm.ph{width:34px;height:5px;margin-top:3px;border-radius:3px;background:#A3ABA6}
+</style>
+</helmet>
+<div class="{{rootCls}}">
+<div class="wrap">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 40px; padding-bottom: 28px; border-bottom: 1px solid var(--ink)">
+    <div>
+      <div class="mono" style="color: var(--ink-3)">[ Favicon ]</div>
+      <h1 class="title">소나무 아이콘</h1>
+    </div>
+    <div class="mono" style="padding-bottom: 6px; color: var(--ink-3); white-space: nowrap">16×16 · 32×32 · 180×180</div>
+  </header>
+
+  <div class="cols">
+    <sc-for list="{{opts}}" as="o" hint-placeholder-count="3">
+      <section class="col" aria-label="{{o.aria}}">
+
+        <div class="{{o.tone}}" style="padding-bottom: 16px; border-bottom: 1px solid var(--line-2)">
+          <div style="height: 30px; display: flex; align-items: baseline; gap: 12px">
+            <span class="mono" style="font-size: 13px; white-space: nowrap">[ {{o.key}} ]</span>
+            <h2 style="margin: 0; min-width: 0; font-size: 24px; line-height: 30px; font-weight: 500; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{o.name}}</h2>
+          </div>
+          <div style="height: 14px; margin-top: 14px; display: flex; align-items: center; gap: 14px; white-space: nowrap">
+            <div style="display: flex; gap: 3px">
+              <span class="sw" style="background: var(--pine-1)"></span>
+              <span class="sw" style="background: var(--pine-2)"></span>
+              <span class="sw" style="background: var(--pine-3)"></span>
+            </div>
+            <div style="display: flex; gap: 3px">
+              <span class="sw" style="background: var(--bark-1)"></span>
+              <span class="sw" style="background: var(--bark-2)"></span>
+            </div>
+            <span class="{{o.swBg}}" style="background-color: var(--bg)"></span>
+            <span class="cap">{{o.meta}}</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="lab">
+            <span class="mono">/16×16칸</span>
+            <span class="cap">{{o.used16}}</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <div class="big {{o.stage}}" role="img" aria-label="{{o.key}} 16×16칸 확대">
+              <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="320" height="320" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              <div class="ln c16 {{o.ln}}"></div>
+            </div>
+            <div style="width: 78px; display: flex; flex-direction: column; gap: 8px">
+              <div class="chip lt" role="img" aria-label="{{o.key}} 16px, 밝은 면">
+                <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              </div>
+              <div class="chip dk" role="img" aria-label="{{o.key}} 16px, 어두운 면">
+                <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              </div>
+              <span class="cap">16px</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="lab">
+            <span class="mono">/32×32칸</span>
+            <span class="cap">{{o.used32}}</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <div class="big {{o.stage}}" role="img" aria-label="{{o.key}} 32×32칸 확대">
+              <svg class="ico {{o.tone}}" viewBox="0 0 32 32" width="320" height="320" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="32" height="32"></rect><sc-for list="{{o.c32}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              <div class="ln c32 {{o.ln}}"></div>
+            </div>
+            <div style="width: 78px; display: flex; flex-direction: column; gap: 8px">
+              <div class="chip lt" role="img" aria-label="{{o.key}} 32px, 밝은 면">
+                <svg class="ico {{o.tone}}" viewBox="0 0 32 32" width="32" height="32" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="32" height="32"></rect><sc-for list="{{o.c32}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                <svg class="ico hi {{o.tone}}" viewBox="0 0 32 32" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="32" height="32"></rect><sc-for list="{{o.c32}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              </div>
+              <div class="chip dk" role="img" aria-label="{{o.key}} 32px, 어두운 면">
+                <svg class="ico {{o.tone}}" viewBox="0 0 32 32" width="32" height="32" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="32" height="32"></rect><sc-for list="{{o.c32}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                <svg class="ico hi {{o.tone}}" viewBox="0 0 32 32" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="32" height="32"></rect><sc-for list="{{o.c32}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              </div>
+              <span class="cap">32px</span>
+              <span class="cap hi">16px @2x</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="lab">
+            <span class="mono">/탭 · 북마크 줄</span>
+            <span class="cap">16px</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 14px">
+
+            <div class="win lt" role="img" aria-label="{{o.key}}, 밝은 브라우저 창의 탭과 북마크 줄">
+              <div class="strip">
+                <div class="tab on" style="width: 172px; flex: none">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span class="tt">[사이트 이름]</span>
+                  <svg class="x" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"></path></svg>
+                </div>
+                <div class="tab" style="flex: 0 1 164px">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span class="tt">문맥 교환이 비싼 이유</span>
+                  <svg class="x" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"></path></svg>
+                </div>
+                <div class="plus"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9"></path></svg></div>
+              </div>
+              <div class="bar">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M8.5 2.5 4 7l4.5 4.5"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M11.5 7a4.5 4.5 0 1 1-1.4-3.26M11.6 2.2v2.7H8.9"></path></svg>
+                <div class="pill">[사이트 주소]</div>
+              </div>
+              <div class="bm">
+                <span class="it">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span>[사이트 이름]</span>
+                </span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 46px"></span></span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 62px"></span></span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 38px"></span></span>
+              </div>
+              <div class="page"></div>
+            </div>
+
+            <div class="win dk" role="img" aria-label="{{o.key}}, 어두운 브라우저 창의 탭과 북마크 줄">
+              <div class="strip">
+                <div class="tab on" style="width: 172px; flex: none">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span class="tt">[사이트 이름]</span>
+                  <svg class="x" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"></path></svg>
+                </div>
+                <div class="tab" style="flex: 0 1 164px">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span class="tt">문맥 교환이 비싼 이유</span>
+                  <svg class="x" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"></path></svg>
+                </div>
+                <div class="plus"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9"></path></svg></div>
+              </div>
+              <div class="bar">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M8.5 2.5 4 7l4.5 4.5"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"></path></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M11.5 7a4.5 4.5 0 1 1-1.4-3.26M11.6 2.2v2.7H8.9"></path></svg>
+                <div class="pill">[사이트 주소]</div>
+              </div>
+              <div class="bm">
+                <span class="it">
+                  <svg class="ico {{o.tone}}" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><rect class="{{o.bgk}}" width="16" height="16"></rect><sc-for list="{{o.c16}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+                  <span>[사이트 이름]</span>
+                </span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 46px"></span></span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 62px"></span></span>
+                <span class="it"><span class="ph"></span><span class="phl" style="width: 38px"></span></span>
+              </div>
+              <div class="page"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div>
+          <div class="lab">
+            <span class="mono">/홈 화면 180×180</span>
+            <span class="cap">{{o.used180}}</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 20px">
+            <div role="img" aria-label="{{o.key}} 홈 화면 아이콘 180×180" style="width: 180px; height: 180px; flex: none; outline: 1px solid var(--line-2)">
+              <svg class="ico {{o.tone180}}" viewBox="0 0 30 30" width="180" height="180" shape-rendering="crispEdges" aria-hidden="true"><rect class="bg" width="30" height="30"></rect><sc-for list="{{o.c180}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="cap">30×30칸</span>
+              <span class="cap">한 칸 6px</span>
+              <span class="cap">둘레 여백 5칸</span>
+              <sc-if value="{{o.sameAsB}}" hint-placeholder-val="{{false}}">
+                <span class="cap" style="color: var(--ink)">B와 같은 그림</span>
+              </sc-if>
+            </div>
+          </div>
+          <div class="home" role="img" aria-label="{{o.key}}, 휴대폰 홈 화면에 놓인 아이콘">
+            <div class="app"><div class="tile ph"></div><span class="nm ph"></span></div>
+            <div class="app">
+              <div class="tile">
+                <svg class="ico {{o.tone180}}" viewBox="0 0 30 30" width="60" height="60" shape-rendering="crispEdges" aria-hidden="true"><rect class="bg" width="30" height="30"></rect><sc-for list="{{o.c180}}" as="c" hint-placeholder-count="0"><rect class="{{c.k}}" width="1" height="1" style="transform: translate({{c.x}}px, {{c.y}}px)"></rect></sc-for></svg>
+              </div>
+              <span class="nm">[사이트 이름]</span>
+            </div>
+            <div class="app"><div class="tile ph"></div><span class="nm ph"></span></div>
+            <div class="app"><div class="tile ph"></div><span class="nm ph"></span></div>
+          </div>
+        </div>
+
+      </section>
+    </sc-for>
+  </div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"gridLines":{"editor":"boolean","default":true},"$preview":{"width":1440,"height":1814}}'>
+// ── 파비콘 격자 ─────────────────────────────────────────────────────────────
+// 구현할 때 아래 격자를 그대로 옮긴다. 한 글자가 한 칸이고, 첫 줄 첫 글자가 왼쪽 위 칸(0,0)이다.
+//   .      빈 칸. 시안 A에서는 투명, B·C에서는 바탕(--bg)
+//   1 2 3  잎: --pine-1(밝음) · --pine-2 · --pine-3(어두움)
+//   a b    줄기: --bark-1(밝음) · --bark-2(어두움)
+// SVG로 옮길 때: viewBox="0 0 N N", shape-rendering="crispEdges", 칸마다 <rect x y width="1" height="1">.
+// B·C는 맨 아래에 <rect width="N" height="N">으로 바탕을 먼저 깐다.
+// (이 화면은 칸의 자리를 x, y 속성 대신 style의 translate로 준다. 놓이는 자리는 같다)
+//
+// 형태: 줄기가 오른쪽 아래에서 왼쪽 위로 기울어 올라가고, 잎 덩어리 셋이 높이를 달리해 좌우로 퍼진다
+// (위 왼쪽의 큰 덩어리, 오른쪽 중간, 왼쪽 아래). 덩어리마다 위는 밝고 아래는 어둡다.
+
+// 16×16칸: 브라우저 탭. 나무는 둘레 1칸을 비운 14×14칸. 줄기는 한 가지 색(--bark-1)
+const G16 = [
+  '................',
+  '..1111.11.......',
+  '.222222222......',
+  '..33333333......',
+  '.....a.....111..',
+  '.....a...222222.',
+  '.....aa.a33333..',
+  '......aaa.......',
+  '..111.aa........',
+  '.22222aaa.......',
+  '..3333.aa.......',
+  '........aa......',
+  '........aa......',
+  '.........aa.....',
+  '........aaaa....',
+  '................',
+];
+
+// 32×32칸: 16칸과 같은 자리, 같은 형태(둘레 2칸). 잎 덩어리를 둥근 봉우리 두 개씩으로 나누고,
+// 줄기는 기울다가 곧게 서기를 두 번 되풀이해 휘어 보이게 했다. 줄기 오른쪽 가장자리와 가지는 --bark-2
+const G32 = [
+  '................................',
+  '................................',
+  '.....11111......................',
+  '...111111111...1111.............',
+  '..1222222222111111111...........',
+  '..2222222222222222222...........',
+  '...333333332222222222...........',
+  '..........bb33333333............',
+  '..........ab............1111....',
+  '..........ab.......111.111111...',
+  '..........aab.....122212222221..',
+  '...........aab....222222222222..',
+  '............aab.bb33333333333...',
+  '.............aabb...33333333....',
+  '.............aab................',
+  '.............aab................',
+  '....11111....aab................',
+  '...111111.11.aab................',
+  '..1222222122aaaab...............',
+  '..2222222222...aab..............',
+  '...333333333....aab.............',
+  '.....333333.....aaab............',
+  '.................aaab...........',
+  '.................aaab...........',
+  '..................aaab..........',
+  '..................aaab..........',
+  '..................aaab..........',
+  '..................aaab..........',
+  '.................aaaabb.........',
+  '................aaaaaabb........',
+  '................................',
+  '................................',
+];
+
+// 180×180px: 휴대폰 홈 화면. 30×30칸이고 한 칸이 6px이다. 나무는 20×20칸, 둘레 여백 5칸(30px).
+// 빈 칸까지 전부 --bg로 채운다(홈 화면 아이콘은 투명할 수 없다)
+const G180 = [
+  '..............................',
+  '..............................',
+  '..............................',
+  '..............................',
+  '..............................',
+  '........1111..................',
+  '......1111111.111.............',
+  '.....1222222212221............',
+  '......333333333333............',
+  '..........bb........1111......',
+  '..........ab.....11122221.....',
+  '...........ab....22222222.....',
+  '...........aab..bb333333......',
+  '............aabb..............',
+  '............aab...............',
+  '......1111...aab..............',
+  '.....1222211aaab..............',
+  '.....2222222..aab.............',
+  '......333333..aab.............',
+  '...............aab............',
+  '...............aab............',
+  '................aab...........',
+  '................aaab..........',
+  '................aaab..........',
+  '...............aaaabb.........',
+  '..............................',
+  '..............................',
+  '..............................',
+  '..............................',
+  '..............................',
+];
+
+// ── 글자 → 색 ───────────────────────────────────────────────────────────────
+// p1 p2 p3 = --pine-1 --pine-2 --pine-3, k1 k2 = --bark-1 --bark-2 (화면의 소나무와 같은 이름)
+// FULL: 격자에 적힌 그대로. 시안 A·B의 모든 크기와 시안 C의 180에 쓴다
+const FULL = { 1: 'p1', 2: 'p2', 3: 'p3', a: 'k1', b: 'k2' };
+// NIGHT_SMALL: 시안 C의 16칸·32칸. 밤의 --pine-3와 --bark-2는 어두운 바탕에 묻혀서 색 단계를 줄였다.
+// 1과 2를 --pine-1로, 3을 --pine-2로, a와 b를 --bark-1로 칠한다
+const NIGHT_SMALL = { 1: 'p1', 2: 'p1', 3: 'p2', a: 'k1', b: 'k1' };
+
+// 격자를 칸 목록으로 바꾼다: 빈 칸을 뺀 칸마다 { x, y, k(색 이름) }
+function cells(grid, ink) {
+  const out = [];
+  grid.forEach((row, y) => {
+    for (let x = 0; x < row.length; x++) if (row[x] !== '.') out.push({ x, y, k: ink[row[x]] });
+  });
+  return out;
+}
+const DAY16 = cells(G16, FULL), DAY32 = cells(G32, FULL), DAY180 = cells(G180, FULL);
+const NIGHT16 = cells(G16, NIGHT_SMALL), NIGHT32 = cells(G32, NIGHT_SMALL), NIGHT180 = cells(G180, FULL);
+
+// ── 시안 ───────────────────────────────────────────────────────────────────
+// tone: 색 값(day = 라이트 토큰, night = 다크 토큰). bgk: 16·32칸의 바탕(bg = --bg로 채움, bg0 = 투명)
+const OPTS = [
+  {
+    key: 'A', name: '투명 배경', aria: '시안 A, 투명 배경', meta: '바탕 없음 · 나무만',
+    tone: 'day', tone180: 'day', bgk: 'bg0', stage: 'chk', ln: 'on-light', swBg: 'sw none',
+    c16: DAY16, c32: DAY32, c180: DAY180, sameAsB: true,
+    used16: 'pine-1·2·3 · bark-1', used32: 'pine-1·2·3 · bark-1·2', used180: 'bg #E3ECE4',
+  },
+  {
+    key: 'B', name: '옅은 녹색 바탕', aria: '시안 B, 옅은 녹색 바탕', meta: '--bg #E3ECE4',
+    tone: 'day', tone180: 'day', bgk: 'bg', stage: '', ln: 'on-light', swBg: 'sw edge',
+    c16: DAY16, c32: DAY32, c180: DAY180, sameAsB: false,
+    used16: 'pine-1·2·3 · bark-1', used32: 'pine-1·2·3 · bark-1·2', used180: 'bg #E3ECE4',
+  },
+  {
+    key: 'C', name: '어두운 녹색 바탕', aria: '시안 C, 어두운 녹색 바탕과 밤의 소나무', meta: '--bg #162119 · 밤의 색',
+    tone: 'night', tone180: 'night', bgk: 'bg', stage: '', ln: 'on-dark', swBg: 'sw edge',
+    c16: NIGHT16, c32: NIGHT32, c180: NIGHT180, sameAsB: false,
+    used16: 'pine-1·2 · bark-1', used32: 'pine-1·2 · bark-1', used180: 'bg #162119',
+  },
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    const lines = this.props.gridLines ?? true;
+    return { rootCls: lines ? 'fv' : 'fv nogrid', opts: OPTS };
+  }
+}
+</script>
+</body>
+</html>

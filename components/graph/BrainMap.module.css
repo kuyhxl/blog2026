@@ -1,0 +1,54 @@
+/* 브레인 맵 창. 원본은 MainV2의 aside 안 figure와 .veil, MainV2M의 접는 figure */
+.side { flex: none; margin: 14px 0 0; border: 1px solid var(--ink); background: var(--panel); }
+.bar { height: 28px; padding: 0 3px 0 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--ink); background: var(--sunken); }
+.no { font-size: 11px; white-space: nowrap; }
+.dimText { color: var(--ink-3); }
+.stripes { flex: 1 1 auto; height: 9px; background: repeating-linear-gradient(to bottom, var(--line-2) 0 1px, transparent 1px 4px); }
+.stripes.tall { height: 13px; }
+.iconBtn { width: 22px; height: 22px; display: grid; place-items: center; }
+.small { height: 200px; background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 12px 12px; background-position: 5px 4px; }
+.cap { height: 28px; padding: 0 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden; }
+.capDate { flex: none; font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+.capTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+.capStat { font-size: 11px; color: var(--ink-3); }
+
+/* 크게 보기 */
+.veil { position: fixed; inset: 0; z-index: 50; padding: 72px 48px 48px; display: flex; justify-content: center; align-items: flex-start; background: var(--veil); animation: fi .18s linear both; }
+.win { width: 100%; max-width: 1120px; margin: 0; border: 1px solid var(--ink); background: var(--panel); box-shadow: 10px 10px 0 var(--line); animation: wi .32s var(--ease) both; }
+.winBar { height: 36px; padding: 0 4px 0 14px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--ink); background: var(--sunken); white-space: nowrap; }
+.closeBtn { width: 28px; height: 28px; display: grid; place-items: center; }
+.big { height: min(600px, calc(100vh - 200px)); background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 16px 16px; background-position: 7px 4px; }
+.winCap { height: 40px; padding: 0 14px; display: flex; align-items: center; gap: 20px; border-top: 1px solid var(--line-2); white-space: nowrap; overflow: hidden; }
+.winAct { min-width: 0; display: flex; align-items: center; gap: 10px; }
+.sq { width: 8px; height: 8px; flex: none; background: var(--ink); }
+.winDate { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.winTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
+@keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wi { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* 좁은 화면: 접는 창 */
+.fold { margin: 0; border: 1px solid var(--ink); background: var(--panel); }
+.foldBtn { width: 100%; height: 44px; padding: 0 2px 0 12px; display: flex; align-items: center; gap: 10px; text-align: left; background: var(--sunken); }
+.pm { flex: none; width: 40px; height: 40px; display: grid; place-items: center; }
+.v { transform-origin: 7px 7px; }
+.open .v { transform: rotate(90deg); }
+.xp { display: grid; grid-template-rows: 0fr; visibility: hidden; }
+.xpIn { min-height: 0; overflow: hidden; }
+.xpC { opacity: 0; }
+.open .xp { grid-template-rows: 1fr; visibility: visible; }
+.open .xpC { opacity: 1; }
+.anim .xp { transition: grid-template-rows .6s var(--ease), visibility 0s linear .6s; }
+.anim.open .xp { transition: grid-template-rows .6s var(--ease), visibility 0s linear; }
+.anim .xpC { transition: opacity .18s linear; }
+.anim.open .xpC { transition: opacity .4s linear .08s; }
+.anim .v { transition: transform .5s var(--ease); }
+.foldCanvas { height: 264px; border-top: 1px solid var(--ink); background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px); background-size: 12px 12px; background-position: 5px 4px; }
+.foldCap { min-height: 44px; padding: 0 12px; display: flex; align-items: center; border-top: 1px solid var(--line-2); }
+.foldLink { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 8px 0; display: flex; align-items: center; gap: 10px; }
+.foldTitle { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 1.4; }
+.arrow { flex: none; font-family: var(--mono); font-size: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .veil, .win { animation: none; }
+  .anim .xp, .anim .xpC, .anim .v { transition: none !important; }
+}
