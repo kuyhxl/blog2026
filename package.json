@@ -11,6 +11,7 @@
     "dev:fixture": "CONTENT_DIR=.content-fixture next dev",
     "build": "next build",
     "build:fixture": "CONTENT_DIR=.content-fixture SITE_URL=http://localhost:3000 next build",
+    "build:checked": "npm run lint && npm run sync:fixture && npm run build:fixture && npm run test:privacy && npm run build",
     "lint": "eslint",
     "sync": "node --env-file-if-exists=.env.local scripts/sync.ts",
     "sync:fixture": "node scripts/sync.ts --vault scripts/fixtures/vault --out .content-fixture",
@@ -51,7 +52,8 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.8",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "4.147.0"
   },
   "overrides": {
     "katex": "$katex"

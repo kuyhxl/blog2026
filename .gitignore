@@ -9,3 +9,4 @@ seed/
 next-env.d.ts
 *.tsbuildinfo
 .content-fixture/
+.wrangler/

@@ -47,7 +47,8 @@ content/          볼트에서 복사해 온 공개 노트 (커밋 대상)
 scripts/          볼트 동기화 등 스크립트
 seed/             npm run new:cs가 만든 CS 노트 틀 (커밋하지 않음)
 public/           apple-touch-icon.png (npm run icons가 만든다)
-.github/workflows/ deploy.yml (GitHub Pages 배포. 아래 "배포")
+.github/workflows/ check.yml (검사만 한다. 아래 "배포")
+wrangler.jsonc    Cloudflare 배포 설정 (아래 "배포")
 ```
 
 ## 콘텐츠 파이프라인
@@ -122,22 +123,28 @@ id: ds-btree                # data/cs-map-graph.json의 id와 같게. CS 노트�
 | RSS | `/rss.xml` |
 | 그림 | `/assets/<파일 이름>` |
 
-- 주소 끝은 `/`로 통일한다(`next.config.ts`의 `trailingSlash`). 페이지마다 `폴더/index.html`로 만들어지고, GitHub Pages는 `/` 없는 주소를 301로 `/` 있는 주소로 보내며 쿼리(`?type=` 등)도 그대로 넘긴다. 사이트 안의 링크는 처음부터 `/`를 붙여 쓴다(글 주소는 `postHref()`)
+- 주소 끝은 `/`로 통일한다(`next.config.ts`의 `trailingSlash`). 페이지마다 `폴더/index.html`로 만들어지고, Cloudflare(`wrangler.jsonc`의 `html_handling`)는 `/` 없는 주소를 307로 `/` 있는 주소로 보내며 쿼리(`?type=` 등)도 그대로 넘긴다. 사이트 안의 링크는 처음부터 `/`를 붙여 쓴다(글 주소는 `postHref()`)
 - **글 종류와 날짜는 주소에 넣지 않는다.** 종류를 바꾸거나 날짜를 고쳐도 주소와 댓글이 그대로이게 한다
 - slug끼리, 그리고 CS가 아닌 글의 slug와 Beauty of CS 개념 id(`data/cs-map-graph.json`, 아직 공개 전인 개념 포함)는 겹치면 안 된다. 대소문자만 달라도 겹친 것으로 보고 동기화가 멈춘다
 
 ## 배포
 
-GitHub Pages에 GitHub Actions로 올린다(`.github/workflows/deploy.yml`). main에 커밋이 올라오거나 Actions 화면에서 직접 실행하면 돈다.
+Cloudflare Workers에 정적 파일로 올린다. 서버 코드 없이 `out/`만 올리는 설정이 `wrangler.jsonc`에 있다(OpenNext 어댑터나 서버용 설정은 쓰지 않는다). 저장소를 연결한 Workers Builds가 main에 커밋이 올라올 때마다 빌드하고 배포한다.
 
-- 순서: `npm ci --ignore-scripts` → `npm run lint` → `npm run sync:fixture` → `npm run build:fixture` → `npm run test:privacy` → `npm run build` → `out/`을 Pages에 올린다. 하나라도 실패하면 배포하지 않는다. 누출 검사의 빌드 결과물 검사는 가짜 볼트로 만든 `out/`이 있어야 돌고, 그 뒤 실제 빌드가 `out/`을 새로 만든다
-- 권한: 워크플로의 기본 권한은 없다. 빌드 작업은 저장소 읽기만 하고, `pages: write`·`id-token: write`는 배포 작업에만 준다
-- 바깥 Action은 커밋 SHA로 고정한다. 판을 올릴 때는 태그가 가리키는 SHA를 확인해 바꾸고, 뒤의 판 주석도 고친다
-- Node 판은 `mise.toml` 한 곳에 두고 워크플로가 거기서 읽는다. 의존성 캐시와 설치 스크립트는 쓰지 않는다
+- Cloudflare 설정(Workers & Pages → `blog2026` → Settings → Build)
+  - 빌드 명령 `npm run build:checked`, 배포 명령 `npx wrangler deploy`
+  - 빌드 변수 `NODE_VERSION`은 `mise.toml`의 Node 판과 같게 둔다. Workers Builds는 `mise.toml`을 읽지 않으므로 Node 판을 바꿀 때 둘을 함께 고친다
+  - Worker 이름은 `wrangler.jsonc`의 `name`(`blog2026`)과 같아야 한다
+  - wrangler는 devDependencies에 판을 고정해 두고(`^` 없이), Workers Builds의 `npx wrangler deploy`도 그 판을 쓴다. 판을 올릴 때는 `npm install -D -E wrangler@<판>` 뒤 `npx wrangler deploy --dry-run`으로 확인한다
+- `build:checked`: `npm run lint` → `npm run sync:fixture` → `npm run build:fixture` → `npm run test:privacy` → `npm run build`. 하나라도 실패하면 배포하지 않는다. 누출 검사의 빌드 결과물 검사는 가짜 볼트로 만든 `out/`이 있어야 돌고, 그 뒤 실제 빌드가 `out/`을 새로 만든다
+- `wrangler.jsonc`: 올리는 폴더는 `./out`. 없는 주소는 `out/404.html`을 404로 보여 주고(`not_found_handling: "404-page"`), 주소 끝의 `/`는 `trailingSlash`와 맞춘다(`html_handling: "force-trailing-slash"`). 이 파일이 없으면 `wrangler deploy`가 서버형 Next.js로 짐작해 자동 설정(OpenNext 설치)을 하다 실패한다
+- 도메인: Worker의 Settings → Domains & Routes → Custom Domain에 `pine.chanhyeokhwang.com`. DNS 레코드와 인증서는 Cloudflare가 만든다
 - 비밀 값은 없다. 사이트 주소는 `.env.production`에 있다
-- 저장소 Settings → Pages: Source는 GitHub Actions, Custom domain은 `pine.chanhyeokhwang.com`, Enforce HTTPS를 켠다. Actions로 올리므로 `CNAME` 파일과 `.nojekyll`은 두지 않는다
-- DNS는 Cloudflare: `pine` CNAME → `kuyhxl.github.io`, 프록시는 끈다(DNS only). 켜면 GitHub가 HTTPS 인증서를 받지 못한다
-- GitHub Pages는 응답 헤더(CSP 등)를 정할 수 없다. 그래서 헤더에 기대지 않고 빌드가 노트의 HTML과 SVG를 정화한다(위 "콘텐츠 파이프라인")
+- GitHub Actions(`.github/workflows/check.yml`)는 배포하지 않고, main 푸시와 PR마다 같은 `build:checked`를 돌린다
+  - 권한은 저장소 읽기만 준다
+  - 바깥 Action은 커밋 SHA로 고정한다. 판을 올릴 때는 태그가 가리키는 SHA를 확인해 바꾸고, 뒤의 판 주석도 고친다
+  - Node 판은 `mise.toml`에서 읽는다. 의존성 캐시와 설치 스크립트는 쓰지 않는다
+- 응답 헤더(CSP 등)는 아직 두지 않았다(Workers는 `_headers` 파일로 정할 수 있다). 노트의 HTML과 SVG는 헤더에 기대지 않고 빌드가 정화한다(위 "콘텐츠 파이프라인")
 
 ## 화면
 

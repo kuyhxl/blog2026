@@ -1,0 +1,15 @@
+// Cloudflare Workers 배포 설정(CLAUDE.md "배포"). 서버 코드(main) 없이 next build가 만든 out/의 정적 파일만 올린다
+// 이 파일이 있으면 wrangler deploy가 프레임워크를 짐작해 자동 설정(OpenNext 어댑터 설치)을 하지 않는다
+{
+  // Cloudflare 대시보드의 Worker 이름과 같아야 한다. 다르면 Workers Builds가 실패한다
+  "name": "blog2026",
+  // Workers 런타임 판을 고르는 날짜. 서버 코드가 없어서 정적 파일 응답에는 영향이 없다
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./out",
+    // 없는 주소는 가장 가까운 404.html(out/404.html)을 404 상태로 보여 준다
+    "not_found_handling": "404-page",
+    // next.config.ts의 trailingSlash: true와 맞춘다. 페이지는 폴더/index.html이고, / 없는 주소는 / 있는 주소로 보낸다
+    "html_handling": "force-trailing-slash"
+  }
+}
