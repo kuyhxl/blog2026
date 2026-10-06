@@ -56,6 +56,7 @@
     "wrangler": "4.147.0"
   },
   "overrides": {
-    "katex": "$katex"
+    "katex": "$katex",
+    "sharp": "0.35.5"
   }
 }

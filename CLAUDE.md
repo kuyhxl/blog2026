@@ -25,7 +25,7 @@ Obsidian으로 쓴 글을 보여주는 개인 기술 블로그. 일반적인 블
   - 브레인 맵: 디자인 소스의 움직임 규칙을 옮긴다
   - 검색: 빌드 때 만드는 정적 검색 인덱스. 본문까지 찾는다
   - 댓글: giscus. 아래 "댓글" 참고
-- 글꼴: IBM Plex Sans KR, IBM Plex Mono
+- 글꼴: IBM Plex Sans KR, IBM Plex Mono(`app/layout.tsx`). 한글 글꼴은 미리 받지(preload) 않는다. 구간 파일이 굵기마다 70개쯤이라 모두 미리 받으면 첫 화면에서 2.5MB가 넘는다. 미리 받지 않으면 브라우저가 화면에 쓰인 글자와 굵기의 구간만 받는다(홈 약 230KB)
 - RSS: 주소는 `/rss.xml`. 빌드 때 생성한다
   - 본문이 있는 공개 글만 넣는다. 빈 CS 노드와 TIL은 뺀다(TIL 피드가 필요해지면 따로 만든다)
   - 피드 안의 글 주소는 전체 주소로 쓴다. 사이트 주소는 `SITE_URL`이고, 값은 커밋되는 `.env.production`에 있다(아래 "주소")
@@ -46,7 +46,7 @@ data/             cs-map-graph.json (Beauty of CS의 개념과 선. 지도의 �
 content/          볼트에서 복사해 온 공개 노트 (커밋 대상)
 scripts/          볼트 동기화 등 스크립트
 seed/             npm run new:cs가 만든 CS 노트 틀 (커밋하지 않음)
-public/           apple-touch-icon.png (npm run icons가 만든다)
+public/           apple-touch-icon.png (npm run icons가 만든다), _headers (응답 헤더. 아래 "배포")
 .github/workflows/ check.yml (검사만 한다. 아래 "배포")
 wrangler.jsonc    Cloudflare 배포 설정 (아래 "배포")
 ```
@@ -139,12 +139,17 @@ Cloudflare Workers에 정적 파일로 올린다. 서버 코드 없이 `out/`만
 - `build:checked`: `npm run lint` → `npm run sync:fixture` → `npm run build:fixture` → `npm run test:privacy` → `npm run build`. 하나라도 실패하면 배포하지 않는다. 누출 검사의 빌드 결과물 검사는 가짜 볼트로 만든 `out/`이 있어야 돌고, 그 뒤 실제 빌드가 `out/`을 새로 만든다
 - `wrangler.jsonc`: 올리는 폴더는 `./out`. 없는 주소는 `out/404.html`을 404로 보여 주고(`not_found_handling: "404-page"`), 주소 끝의 `/`는 `trailingSlash`와 맞춘다(`html_handling: "force-trailing-slash"`). 이 파일이 없으면 `wrangler deploy`가 서버형 Next.js로 짐작해 자동 설정(OpenNext 설치)을 하다 실패한다
 - 도메인: Worker의 Settings → Domains & Routes → Custom Domain에 `pine.chanhyeokhwang.com`. DNS 레코드와 인증서는 Cloudflare가 만든다
+- HTTP는 HTTPS로 보낸다. Cloudflare의 SSL/TLS → Edge Certificates → Always Use HTTPS(도메인 전체에 걸린다). 이 설정은 저장소 밖에 있다
 - 비밀 값은 없다. 사이트 주소는 `.env.production`에 있다
 - GitHub Actions(`.github/workflows/check.yml`)는 배포하지 않고, main 푸시와 PR마다 같은 `build:checked`를 돌린다
   - 권한은 저장소 읽기만 준다
   - 바깥 Action은 커밋 SHA로 고정한다. 판을 올릴 때는 태그가 가리키는 SHA를 확인해 바꾸고, 뒤의 판 주석도 고친다
   - Node 판은 `mise.toml`에서 읽는다. 의존성 캐시와 설치 스크립트는 쓰지 않는다
-- 응답 헤더(CSP 등)는 아직 두지 않았다(Workers는 `_headers` 파일로 정할 수 있다). 노트의 HTML과 SVG는 헤더에 기대지 않고 빌드가 정화한다(위 "콘텐츠 파이프라인")
+- 응답 헤더는 `public/_headers`에 둔다. 빌드가 `out/`에 복사하고 Cloudflare가 읽는다(파일 자체는 내보내지 않는다)
+  - 모든 주소: HSTS(`max-age=31536000`, 이 호스트만), `nosniff`, 다른 사이트의 틀 안에 넣기 막기(`X-Frame-Options`, `frame-ancestors`), `Referrer-Policy`
+  - `/_next/static/*`: 이름에 내용 해시가 붙은 JS·CSS·글꼴이라 `max-age=31536000, immutable`. HTML·RSS·검색 인덱스·첨부 그림은 기본값(매번 확인)
+  - `/assets/*`: 첨부 그림을 주소창에서 바로 열 때 스크립트와 바깥 요청을 막는 CSP(`sandbox`). SVG 정화에 한 겹 더한 것이다
+  - 사이트 전체 CSP는 아직 없다. Next.js의 인라인 스크립트, Mermaid, giscus를 확인하며 정해야 한다. 노트의 HTML과 SVG는 헤더에 기대지 않고 빌드가 정화한다(위 "콘텐츠 파이프라인")
 
 ## 화면
 

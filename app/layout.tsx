@@ -9,11 +9,14 @@ import { themeScript } from "@/lib/theme";
 import "./globals.css";
 
 // 글꼴은 빌드 때 Google Fonts에서 받아 사이트와 함께 배포한다. 한글 글자는 구간별 파일로 나뉘어 필요한 것만 받는다
+// 한글 글꼴은 미리 받지(preload) 않는다. 구간 파일이 굵기마다 70개쯤 되어 모두 미리 받으면 첫 화면에서 2.5MB가 넘는다.
+// 미리 받지 않으면 브라우저가 화면에 쓰인 글자와 굵기의 구간만 받는다. 굵기 넷은 모두 디자인이 쓴다(300 큰 제목, 600 강조)
 const sans = IBM_Plex_Sans_KR({
   weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-plex-sans",
   display: "swap",
+  preload: false,
 });
 const mono = IBM_Plex_Mono({
   weight: ["400", "500"],
