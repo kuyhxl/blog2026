@@ -100,6 +100,82 @@
       "x": 2980,
       "y": 8840
     },
+    "LoaderV2.dc.html": {
+      "h": 560,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "부품 · 로딩 층",
+      "w": 880,
+      "x": 11260,
+      "y": 9860
+    },
+    "LoadingFramesV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "page": "v2",
+      "title": "로딩 · 프레임 표",
+      "w": 1440,
+      "x": 9740,
+      "y": 9860
+    },
+    "LoadingStillV2.dc.html": {
+      "expand": "fill",
+      "h": 560,
+      "page": "v2",
+      "title": "로딩 · 네 그루 확대",
+      "w": 1440,
+      "x": 6700,
+      "y": 9860
+    },
+    "LoadingStillV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 560,
+      "page": "v2",
+      "title": "로딩 · 네 그루 확대 · 다크",
+      "w": 1440,
+      "x": 8220,
+      "y": 9860
+    },
+    "LoadingV2.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 0 · 로딩",
+      "w": 1440,
+      "x": 6700,
+      "y": 8840
+    },
+    "LoadingV2Dark.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 0 · 로딩 · 다크",
+      "w": 1440,
+      "x": 8220,
+      "y": 8840
+    },
+    "LoadingV2M.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 0 · 로딩 · 모바일",
+      "w": 390,
+      "x": 9740,
+      "y": 8840
+    },
+    "LoadingV2MDark.dc.html": {
+      "expand": "fill",
+      "h": 844,
+      "is_interactive": true,
+      "page": "v2",
+      "title": "화면 0 · 로딩 · 모바일 · 다크",
+      "w": 390,
+      "x": 10210,
+      "y": 8840
+    },
     "Main.dc.html": {
       "expand": "fill",
       "h": 2440,
@@ -359,6 +435,15 @@
       "w": 240,
       "x": 0,
       "y": 8540
+    },
+    "v2-loading": {
+      "kind": "title1",
+      "maxW": 5440,
+      "page": "v2",
+      "text": "로딩 화면",
+      "w": 240,
+      "x": 6700,
+      "y": 8540
     }
   },
   "order": [
@@ -390,7 +475,15 @@
     "PostV2MDark.dc.html",
     "SearchHitV2MDark.dc.html",
     "BeautyOfCSV2MDark.dc.html",
-    "FaviconV2.dc.html"
+    "FaviconV2.dc.html",
+    "LoadingV2.dc.html",
+    "LoadingV2Dark.dc.html",
+    "LoadingV2M.dc.html",
+    "LoadingV2MDark.dc.html",
+    "LoadingStillV2.dc.html",
+    "LoadingStillV2Dark.dc.html",
+    "LoadingFramesV2.dc.html",
+    "LoaderV2.dc.html"
   ],
   "pages": [
     {

@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans_KR } from "next/font/google";
 import SiteHeader from "@/components/SiteHeader";
 import SearchProvider from "@/components/search/SearchProvider";
 import CursorFx from "@/components/CursorFx";
+import Loader from "@/components/loader/Loader";
 import { site } from "@/lib/site";
 import { siteUrl } from "@/lib/site-url";
 import { themeScript } from "@/lib/theme";
@@ -41,6 +42,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        {/* 로딩 화면은 사이트 내용보다 앞에 둔다. 보여 줄지를 내용이 그려지기 전에 정한다 */}
+        <Loader />
         <SearchProvider>
           <SiteHeader />
           {children}

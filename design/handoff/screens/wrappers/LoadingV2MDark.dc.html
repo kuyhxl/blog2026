@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>로딩 (v2 모바일 다크)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#162119}
+</style>
+</helmet>
+<dc-import name="LoadingV2" device="mobile" theme="dark" hint-size="100%,844px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+// 로딩 화면(LoadingV2)을 모바일, 다크 테마로 불러오기만 하는 화면이다. 그림과 동작은 LoaderV2에서 고친다.
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

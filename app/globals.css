@@ -59,7 +59,10 @@
   }
 }
 
+/* 스크롤 막대가 폭을 차지하는 환경(Windows 등)에서 막대 자리를 늘 비워 둔다. 로딩 화면이나 창이 스크롤을 잠가 막대가 사라지고
+   다시 생길 때, 그리고 짧은 페이지와 긴 페이지를 오갈 때 화면이 옆으로 밀리지 않는다. 막대가 겹쳐 뜨는 환경(macOS, 휴대폰)에서는 변화가 없다 */
 html {
+  scrollbar-gutter: stable;
   background: var(--bg);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;

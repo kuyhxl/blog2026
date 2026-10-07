@@ -1,0 +1,66 @@
+/* 로딩 화면(Loader.tsx). 원본은 design/handoff/screens/LoaderV2.dc.html의 <style>. 색은 사이트 토큰을 그대로 쓴다(다크는 :root.dark) */
+
+/* 층은 둘로 되어 있다. 바깥(.cover)은 보이지 않고 화면 전체에서 누름을 받는다. 안쪽(.veil)이 바탕색과 그림이고, 걷힐 때 이것만 잘린다.
+   그래서 걷히는 동안에도 누름은 바깥이 받고, 건너뛰려고 누른 것이 뒤 화면의 링크나 단추로 넘어가지 않는다.
+   다 걷혔는데 아직 누르고 있으면 바깥은 손을 뗄 때까지 남는다.
+   기본은 숨김이다. 층 안의 스크립트가 <html>에 .on을 붙일 때만 보인다(자바스크립트가 꺼져 있으면 나오지 않는다).
+   커서 효과(z-index 80)와 검색 창(60)보다 위에 놓인다 */
+.cover {
+  /* 한 칸의 크기(--cell)는 화면의 소나무와 같다: 넓은 화면 4px, 좁은 화면(720px 미만) 2px. 늘 정수 픽셀이어서 칸이 또렷하다.
+     나무 사이(--gap)는 8칸. 2px일 때 네 그루의 너비는 4×64 + 3×16 = 304px이어서 휴대폰에서도 한 줄에 들어간다.
+     360px보다 좁은 화면에서는 나무 사이만 4칸으로 좁힌다(280px) */
+  --cell: 4px;
+  --gap: 8;
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 719px) {
+  .cover { --cell: 2px; }
+}
+@media (max-width: 359px) {
+  .cover { --gap: 4; }
+}
+.on .cover { display: block; }
+/* 덮고 있는 동안 뒤 화면은 스크롤되지 않는다 */
+.on body { overflow: hidden; }
+
+/* 누름은 바깥이 직접 받는다. 안쪽이 받으면, 다 걷혀 안쪽을 치운 뒤 손을 뗄 때 브라우저가 click을 보내지 않아 바로 놓지 못한다 */
+.veil { position: absolute; inset: 0; background: var(--bg); pointer-events: none; }
+
+/* 네 자리의 묶음: 가로는 가운데, 세로는 나무의 한가운데가 화면 높이의 47% 자리(가운데보다 조금 위).
+   묶음의 너비 = 4×32칸 + 3×나무 사이. 놓는 자리는 한 칸의 배수로 맞춘다. 그래야 그림의 모든 칸이 화면의 픽셀에 딱 맞고,
+   화면 배율이 125%, 150%인 컴퓨터에서도 4px 칸이 고르게 그려진다(round()를 모르는 브라우저는 맞추지 않고 같은 자리에 놓는다) */
+.group {
+  position: absolute;
+  left: calc(50% - (64 + 1.5 * var(--gap)) * var(--cell));
+  top: calc(47% - 16 * var(--cell));
+  display: flex;
+  flex-direction: column;
+}
+@supports (width: round(1px, 1px)) {
+  .group {
+    left: round(calc(50% - (64 + 1.5 * var(--gap)) * var(--cell)), var(--cell));
+    top: round(calc(47% - 16 * var(--cell)), var(--cell));
+  }
+}
+.spots { display: flex; align-items: flex-end; gap: calc(var(--gap) * var(--cell)); }
+.shelf { height: 1px; margin: 0 calc(-6 * var(--cell)); background: var(--line-2); }
+
+/* 그림: 칸마다 사각형. 색은 변수로 준다(화면의 소나무, 파비콘과 같은 방식). 흐림도 반투명도 없다.
+   한 자리의 svg에 모든 프레임의 칸이 들어 있고, svg의 클래스가 어느 칸을 보일지 고른다.
+   s0~s3 = 솔씨에서 솔방울까지의 네 장, sp = 화분 위에 얹힌 솔방울, b1~b5 = 분재의 칸이 나타나는 순서(쌓인다) */
+.tree { display: block; flex: none; width: calc(32 * var(--cell)); height: calc(32 * var(--cell)); }
+.tree rect { display: none; }
+.p1 { fill: var(--pine-1); }
+.p2 { fill: var(--pine-2); }
+.p3 { fill: var(--pine-3); }
+.k1 { fill: var(--bark-1); }
+.k2 { fill: var(--bark-2); }
+.s0 .q0, .s1 .q1, .s2 .q2, .s3 .q3, .sp .qp,
+.b1 .o1, .b2 .o2, .b3 .o3, .b4 .o4, .b5 .o5 { display: inline; }

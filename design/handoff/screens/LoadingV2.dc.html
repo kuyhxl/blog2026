@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>로딩 (v2)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E3ECE4}
+body:has(.lw.dark){background:#162119}
+/* 이 화면이 직접 그리는 것은 아래쪽의 검토용 막대뿐이다. 토큰은 v2 화면과 같은 값 */
+.lw{--bg:#E3ECE4;--panel:#F3F7F2;--ink:#141A16;--ink-2:#38423B;--ink-3:#525D55;--line-2:rgba(20,26,22,.4);--hover:rgba(20,26,22,.06);--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;--mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.lw.dark{--bg:#162119;--panel:#1F2D23;--ink:#E3ECE4;--ink-2:#B7C3BA;--ink-3:#9AA79D;--line-2:rgba(227,236,228,.34);--hover:rgba(227,236,228,.07);color-scheme:dark}
+.lw-bar,.lw-bar *,.lw-note{box-sizing:border-box}
+.lw-bar,.lw-note{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.lw-bar button{font:inherit;color:inherit;background:none;border:0;border-radius:0;padding:0;margin:0;cursor:pointer}
+.lw-bar :focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
+.lw-bar .on{background:var(--ink);color:var(--bg)}
+.lw-bar .on:focus-visible{outline-color:var(--bg)}
+@media (hover:hover){.lw-bar button:not(.on):hover{background:var(--hover)}}
+/* 아주 좁은 화면에서는 막대의 이름표를 뺀다 */
+@media (max-width:379px){.lw-bar .lw-tag{display:none!important}}
+</style>
+</helmet>
+<div class="lw {{rootCls}}">
+
+  <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}">
+    <dc-import name="HomeV2" theme="{{theme}}" hint-size="100%,900px"></dc-import>
+  </sc-if>
+  <sc-if value="{{mob}}" hint-placeholder-val="{{ false }}">
+    <dc-import name="HomeV2M" theme="{{theme}}" hint-size="100%,844px"></dc-import>
+  </sc-if>
+
+  <sc-if value="{{curtain}}" hint-placeholder-val="{{ true }}">
+    <div aria-hidden="true" style="position: fixed; inset: 0; z-index: 90; background: var(--bg)"></div>
+  </sc-if>
+
+  <div style="position: absolute; left: 0; top: 0; width: 0; height: 0; overflow: hidden">
+    <dc-import name="LoaderV2" theme="{{theme}}" device="{{device}}" run="{{run}}" slow="{{slow}}" once="{{once}}" reduce="{{reduce}}" on-ready="{{onReady}}" on-play="{{onPlay}}" on-done="{{onDone}}" hint-size="0px,0px"></dc-import>
+  </div>
+
+  <sc-if value="{{note}}" hint-placeholder-val="{{ false }}">
+    <div class="lw-note" role="status" style="position: fixed; left: 0; right: 0; bottom: 76px; z-index: 120; width: max-content; max-width: calc(100% - 24px); margin: 0 auto; padding: 8px 12px; border: 1px solid var(--line-2); background: var(--panel); font-size: 13px; line-height: 18px; color: var(--ink-2); text-align: center; word-break: keep-all">{{note}}</div>
+  </sc-if>
+
+  <div class="lw-bar" role="group" aria-label="검토용: 로딩 화면 다시 보기" style="position: fixed; left: 0; right: 0; bottom: 20px; z-index: 120; width: max-content; max-width: calc(100% - 24px); margin: 0 auto; height: 44px; display: flex; align-items: stretch; border: 1px solid var(--ink); background: var(--panel); white-space: nowrap">
+    <span class="lw-tag" style="display: flex; align-items: center; padding: 0 12px; border-right: 1px solid var(--line-2); font-size: 12px; color: var(--ink-3)">검토용</span>
+    <button type="button" onClick="{{replay}}" style="display: flex; align-items: center; gap: 8px; padding: 0 16px 0 14px; font-size: 14px">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" style="flex: none" aria-hidden="true"><path d="M11.5 7a4.5 4.5 0 1 1-1.4-3.26M11.6 2.2v2.7H8.9"></path></svg>
+      <span>다시 재생</span>
+    </button>
+    <button type="button" class="{{slowCls}}" aria-pressed="{{slowStr}}" onClick="{{toggleSlow}}" style="display: flex; align-items: center; gap: 8px; padding: 0 16px; font-size: 14px; border-left: 1px solid var(--line-2)">
+      <span>느리게 보기</span>
+      <span style="font-family: var(--mono); font-size: 12px">×{{slowBy}}</span>
+    </button>
+    <span style="display: flex; align-items: center; padding: 0 14px; border-left: 1px solid var(--line-2); font-family: var(--mono); font-size: 12px; color: var(--ink-2)">{{len}}</span>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"device":{"editor":"enum","options":["desktop","mobile"],"default":"desktop"},"once":{"editor":"boolean","default":false},"reduce":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+// 사이트에 처음 들어왔을 때의 모습: 홈 화면이 뒤에서 이미 그려져 있고, 그 위를 로딩 층(LoaderV2)이 덮었다가 걷힌다.
+// 그림, 프레임, 길이, 동작 규칙은 LoaderV2에서 고친다. 뒤 화면은 HomeV2(모바일은 HomeV2M)에서 고친다.
+// 다크와 모바일 화면은 이 파일을 theme="dark", device="mobile"로 불러오기만 한다.
+//
+// 아래쪽 막대는 검토용이고 사이트에는 없다: 다시 재생, 느리게 보기(프레임을 하나씩 확인), 전체 길이.
+// Tweaks의 once는 "세션에서 한 번만", reduce는 운영체제의 "동작 줄이기"가 켜진 경우를 확인하는 스위치다.
+// 규칙 때문에 로딩 화면이 나오지 않았을 때는 막대 위에 그 까닭을 한 줄로 알려 준다(이것도 검토용). 다시 재생은 규칙과 상관없이 늘 재생한다.
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // run: 다시 재생을 누른 횟수. slow: 느리게 보기. ready: 로딩 층이 자리를 잡았는가. total, by: 전체 길이(ms)와 느리게 보기 배율
+    // skipped: 로딩 화면이 나오지 않은 까닭('reduce' | 'once'), 나왔으면 ''
+    this.state = { run: 0, slow: false, ready: false, total: 0, by: 5, skipped: '' };
+    this.replay = () => this.setState((st) => ({ run: st.run + 1 }));
+    this.toggleSlow = () => this.setState((st) => ({ slow: !st.slow }));
+    this.onReady = (info) => this.setState({ ready: true, total: (info && info.total) || 0, by: (info && info.slow) || 5 });
+    this.onPlay = () => { if (this.state.skipped) this.setState({ skipped: '' }); };
+    this.onDone = (info) => { const why = (info && info.skipped) || ''; if (why !== this.state.skipped) this.setState({ skipped: why }); };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const mobile = this.props.device === 'mobile';
+    const ms = st.total * (st.slow ? st.by : 1);
+    return {
+      rootCls: this.props.theme === 'dark' ? 'dark' : '',
+      theme: this.props.theme === 'dark' ? 'dark' : 'light',
+      device: mobile ? 'mobile' : 'desktop',
+      desk: !mobile,
+      mob: mobile,
+      once: !!this.props.once,
+      reduce: !!this.props.reduce,
+      // 로딩 층이 자리를 잡기 전에 뒤 화면이 먼저 비치지 않게 같은 바탕색으로 가려 둔다
+      curtain: !st.ready,
+      run: st.run,
+      slow: st.slow,
+      slowStr: st.slow ? 'true' : 'false',
+      slowCls: st.slow ? 'on' : '',
+      slowBy: st.by,
+      len: st.total ? (ms / 1000).toFixed(2) + 's' : '',
+      note: st.skipped === 'reduce' ? '동작 줄이기가 켜져 있어 로딩 화면을 건너뛰었습니다' : st.skipped === 'once' ? '이 세션에서 이미 보여 주어 건너뛰었습니다' : '',
+      replay: this.replay,
+      toggleSlow: this.toggleSlow,
+      onReady: this.onReady,
+      onPlay: this.onPlay,
+      onDone: this.onDone,
+    };
+  }
+}
+</script>
+</body>
+</html>
