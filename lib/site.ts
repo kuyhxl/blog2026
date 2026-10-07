@@ -5,7 +5,7 @@ export const site = {
   // 홈의 자기소개이자 RSS 채널 설명. 우선 짧게 두었다
   intro: "황찬혁의 개발 블로그입니다. 잘 부탁드립니다.",
   github: "https://github.com/kuyhxl",
-  email: "ozzing727@naver.com",
+  email: "markhwang710@gmail.com",
   // RSS 피드. 빌드 때 app/rss.xml/route.ts가 만든다
   feed: "/rss.xml",
   // 댓글(giscus). 사이트 저장소와 분리한 공개 저장소의 Discussions에 모인다.

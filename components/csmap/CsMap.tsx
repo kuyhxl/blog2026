@@ -6,6 +6,7 @@ import { formatDate, postHref } from "@/lib/content/format";
 import { ZONES, MW, autoView, drawEdges, fitAll, hasAny, hasPost, layout, type Layout, type MapData } from "@/lib/csmap/layout";
 import { site } from "@/lib/site";
 import Pine from "@/components/pine/Pine";
+import EmailCopy from "@/components/EmailCopy";
 import MapLayer from "./MapLayer";
 import s from "./CsMap.module.css";
 
@@ -409,9 +410,7 @@ export default function CsMap({ data }: { data: MapData }) {
           <a className="mono lk" href={site.feed}>
             RSS
           </a>
-          <a className="mono lk" href={`mailto:${site.email}`}>
-            Email
-          </a>
+          <EmailCopy />
         </div>
       </div>
     </main>
